@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import { Lora, Plus_Jakarta_Sans } from 'next/font/google';
+import Navbar from '@/components/layout/Navbar';
+import Footer from '@/components/layout/Footer';
 import './globals.css';
 
 const lora = Lora({
@@ -16,7 +18,7 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 
 export const metadata: Metadata = {
   title: 'Elite Group Dental Network',
-  description: 'Find a trusted dentist near you. Present your ID. That\'s it.',
+  description: "Find a trusted dentist near you. Present your ID. That's it.",
 };
 
 export default function RootLayout({
@@ -24,10 +26,10 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${lora.variable} ${plusJakartaSans.variable} h-full`}>
-      <body className="min-h-full flex flex-col antialiased">
-        {/* Navbar placeholder — Phase B */}
+      <body className="min-h-full flex flex-col antialiased bg-bg text-text font-body">
+        <Navbar />
         <main className="flex-1">{children}</main>
-        {/* Footer placeholder — Phase B */}
+        <Footer />
       </body>
     </html>
   );

@@ -3,7 +3,8 @@
 @theme {
   /* Colors */
   --color-brand: #1B7FA8;
-  --color-brand-light: color-mix(in srgb, #1B7FA8 12%, white);
+  --color-brand-light: #E3F0F5;
+  --color-brand-tint: #EDF5F8;
   --color-bg: #FAF7F4;
   --color-surface: #FFFFFF;
   --color-border: #E8E0D8;
