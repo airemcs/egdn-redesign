@@ -25,6 +25,16 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  // Lock body scroll while the mobile menu overlay is open
+  useEffect(() => {
+    if (!open) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [open]);
+
   return (
     <header
       className={[
@@ -85,44 +95,74 @@ export default function Navbar() {
 
       {/* Mobile overlay */}
       {open && (
-        <div className="fixed inset-0 z-50 flex flex-col bg-bg px-6 py-6">
-          <div className="flex items-center justify-between">
+        <div className="fixed inset-0 z-50 flex flex-col bg-bg animate-[mFadeIn_200ms_cubic-bezier(0.2,0.6,0.2,1)]">
+          {/* Header — matches sticky navbar height (56px) with bottom border */}
+          <div className="flex h-14 items-center justify-between border-b border-border px-5">
             <Link href="/" className="flex items-center gap-2.5" onClick={() => setOpen(false)}>
-              <span className="flex h-8 w-8 items-center justify-center rounded-md bg-brand text-[11px] font-bold text-white tracking-wide select-none">EG</span>
-              <span className="font-display text-xl font-bold text-text">EGDN</span>
+              <span className="flex h-7 w-7 items-center justify-center rounded-[7px] bg-brand text-[11px] font-bold text-white tracking-wide select-none font-body">EG</span>
+              <span className="font-display text-[17px] font-bold text-text">EGDN</span>
             </Link>
             <button
-              className="p-2 text-text focus:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
+              className="-mr-2 grid h-10 w-10 place-items-center rounded-lg text-text focus:outline-none focus-visible:ring-2 focus-visible:ring-brand active:bg-brand-light"
               onClick={() => setOpen(false)}
               aria-label="Close menu"
             >
-              <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden>
-                <path d="M5 5l12 12M17 5L5 17" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
               </svg>
             </button>
           </div>
 
-          <nav className="mt-10 flex flex-col gap-6">
-            {links.map((l) => (
-              <Link
-                key={l.href}
-                href={l.href}
-                className={[
-                  'text-[18px] font-medium transition-colors',
-                  pathname === l.href ? 'text-brand' : 'text-text',
-                ].join(' ')}
+          {/* Link list — Lora serif, divider rows, chevron indicator */}
+          <nav className="flex flex-1 flex-col px-5 pt-4">
+            {links.map((l, i) => {
+              const active =
+                l.href === '/'
+                  ? pathname === '/'
+                  : pathname === l.href || pathname.startsWith(l.href + '/');
+              const isLast = i === links.length - 1;
+              return (
+                <Link
+                  key={l.href}
+                  href={l.href}
+                  onClick={() => setOpen(false)}
+                  className={[
+                    'flex items-center justify-between py-4 font-display text-[18px] font-semibold transition-colors',
+                    isLast ? '' : 'border-b border-border',
+                    active ? 'text-brand' : 'text-text',
+                  ].join(' ')}
+                >
+                  <span>{l.label}</span>
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className={active ? 'text-brand' : 'text-text-muted'}
+                    aria-hidden
+                  >
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                </Link>
+              );
+            })}
+
+            <div className="mt-auto pt-5 pb-7">
+              <Button
+                href="/book-appointment"
+                size="large"
+                className="w-full justify-center"
                 onClick={() => setOpen(false)}
               >
-                {l.label}
-              </Link>
-            ))}
+                Book an Appointment
+              </Button>
+            </div>
           </nav>
-
-          <div className="mt-auto">
-            <Button href="/book-appointment" size="large" className="w-full justify-center" onClick={() => setOpen(false)}>
-              Book an Appointment
-            </Button>
-          </div>
         </div>
       )}
     </header>
