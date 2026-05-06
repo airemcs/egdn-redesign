@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls -la \"/c/Users/airelle/Documents/seed/\" 2>&1 | head -10)",
+      "Read(//c/Users/airelle/Documents/seed//**)",
+      "Read(//c/Users/airelle/Documents/seed/**)",
+      "Bash(node -e ' *)",
+      "Bash(npx tsx -e ' *)",
+      "Bash(npx tsx *)"
+    ]
+  }
+}

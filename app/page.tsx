@@ -3,6 +3,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import Button from '@/components/ui/Button';
 import CtaSection from '@/components/sections/CtaSection';
+import { connectDB } from '@/lib/mongodb';
+import Dentist from '@/lib/models/Dentist';
 
 export const metadata: Metadata = {
   title: 'Elite Group Dental Network — Quality Dental Care, Wherever You Are',
@@ -10,30 +12,38 @@ export const metadata: Metadata = {
     'Find a trusted EGDN partner dentist near you. Present your member ID. Get the care you deserve.',
 };
 
-// [CONFIRM WITH CLIENT — verify these numbers before launch]
-const stats: { value: string; label: string; shortLabel?: string }[] = [
-  { value: '600+', label: 'Partner Clinics' },
-  { value: '16', label: 'Regions' },
-  { value: '138', label: 'Cities & Municipalities', shortLabel: 'Cities & Munis' },
-];
+// Re-render at most once an hour; the network only grows on a clinic-onboarding cadence.
+export const revalidate = 3600;
 
-const steps = [
-  {
-    n: '01',
-    title: 'Find a dentist',
-    body: 'Search by region or city. 600+ partner clinics nationwide.',
-  },
-  {
-    n: '02',
-    title: 'Book an appointment',
-    body: 'Call or book online. Bring your member ID.',
-  },
-  {
-    n: '03',
-    title: 'Get treated',
-    body: 'Present your ID at the clinic. We handle the rest.',
-  },
-];
+async function getNetworkStats() {
+  await connectDB();
+  const [agg] = await Dentist.aggregate<{
+    clinics: number;
+    regions: number;
+    cities: number;
+  }>([
+    { $unwind: '$clinics' },
+    {
+      $group: {
+        _id: null,
+        clinics: { $sum: 1 },
+        regions: { $addToSet: '$clinics.region' },
+        // region+city composite — same city name in different regions stays distinct
+        cities: { $addToSet: { $concat: ['$clinics.region', '|', '$clinics.city'] } },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        clinics: 1,
+        regions: { $size: '$regions' },
+        cities: { $size: '$cities' },
+      },
+    },
+  ]);
+  return agg ?? { clinics: 0, regions: 0, cities: 0 };
+}
+
 
 const audienceCards = [
   {
@@ -73,7 +83,36 @@ const ArrowIcon = () => (
   </svg>
 );
 
-export default function HomePage() {
+export default async function HomePage() {
+  const networkStats = await getNetworkStats();
+  const stats: { value: string; label: string; shortLabel?: string }[] = [
+    { value: String(networkStats.clinics), label: 'Partner Clinics' },
+    { value: String(networkStats.regions), label: 'Regions' },
+    {
+      value: String(networkStats.cities),
+      label: 'Cities & Municipalities',
+      shortLabel: 'Cities & Munis',
+    },
+  ];
+
+  const steps = [
+    {
+      n: '01',
+      title: 'Find a dentist',
+      body: `Search by region or city. ${networkStats.clinics} partner clinics nationwide.`,
+    },
+    {
+      n: '02',
+      title: 'Book an appointment',
+      body: 'Call or book online. Bring your member ID.',
+    },
+    {
+      n: '03',
+      title: 'Get treated',
+      body: 'Present your ID at the clinic. We handle the rest.',
+    },
+  ];
+
   return (
     <>
       {/* ── Hero ───────────────────────────────────────────────────────────── */}
