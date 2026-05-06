@@ -24,14 +24,14 @@ interface DentistListProps {
 export default function DentistList({ dentists, region, cities, selectedCity }: DentistListProps) {
   return (
     <div>
-      <div className="mb-6 flex flex-wrap items-center gap-4">
-        <Suspense>
-          <CityFilter cities={cities} region={region} selectedCity={selectedCity} />
-        </Suspense>
-        <span className="text-[14px] text-text-muted">
-          {dentists.length} {dentists.length === 1 ? 'clinic' : 'clinics'}
-          {selectedCity ? ` in ${selectedCity}` : ''}
-        </span>
+      {/* Filter bar */}
+      <div className="mb-6 rounded-card border border-border bg-surface p-6 flex flex-wrap items-end gap-6">
+        <div className="flex flex-col gap-1.5 flex-1 max-w-sm">
+          <span className="text-[13px] font-medium text-text">Filter by city</span>
+          <Suspense>
+            <CityFilter cities={cities} region={region} selectedCity={selectedCity} />
+          </Suspense>
+        </div>
       </div>
 
       {dentists.length === 0 ? (
@@ -45,7 +45,7 @@ export default function DentistList({ dentists, region, cities, selectedCity }: 
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {dentists.map((d) => (
             <DentistCard key={d._id} {...d} />
           ))}

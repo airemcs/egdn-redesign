@@ -14,29 +14,27 @@ export default function CtaSection({
   subtext = 'Browse 600+ partner clinics across 16 regions.',
   primaryLabel = 'Find a Dentist',
   primaryHref = '/find-a-dentist',
-  secondaryLabel = 'Book an Appointment',
-  secondaryHref = '/book-appointment',
+  secondaryLabel,
+  secondaryHref,
 }: CtaSectionProps) {
   return (
-    <section className="bg-brand-tint">
-      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <h2 className="font-display text-2xl font-semibold text-text lg:text-3xl">{headline}</h2>
-            {subtext && <p className="mt-2 text-[15px] text-text-muted">{subtext}</p>}
-          </div>
-          <div className="flex flex-wrap gap-3 lg:shrink-0">
-            <Button href={primaryHref} size="large">
-              {primaryLabel}
+    <div className="mx-auto max-w-300 px-5 py-10 sm:px-6 sm:py-24 lg:px-10">
+      <div className="grid items-center gap-5 rounded-[18px] bg-brand-tint px-[22px] py-7 sm:gap-[40px] sm:rounded-[20px] sm:p-8 lg:grid-cols-[1.3fr_1fr] lg:p-[64px]">
+        <div>
+          <h2 className="font-display text-[22px] font-semibold text-text sm:text-[26px] lg:text-[30px]">{headline}</h2>
+          {subtext && <p className="mt-2 text-[14px] text-text-muted sm:mt-2.5 sm:text-[16px]">{subtext}</p>}
+        </div>
+        <div className="flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:gap-3 lg:justify-end">
+          <Button href={primaryHref} size="large" className="w-full justify-center sm:w-auto">
+            {primaryLabel}
+          </Button>
+          {secondaryLabel && secondaryHref && (
+            <Button href={secondaryHref} variant="secondary" size="large" className="w-full justify-center sm:w-auto">
+              {secondaryLabel}
             </Button>
-            {secondaryLabel && secondaryHref && (
-              <Button href={secondaryHref} variant="secondary" size="large">
-                {secondaryLabel}
-              </Button>
-            )}
-          </div>
+          )}
         </div>
       </div>
-    </section>
+    </div>
   );
 }

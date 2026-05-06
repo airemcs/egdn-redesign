@@ -13,6 +13,8 @@
   --color-text-on-brand: #FFFFFF;
   --color-error: #C0392B;
   --color-footer-bg: #F0EBE4;
+  --color-bg-deep: #F0EBE4;
+  --color-border-strong: #D9CFC4;
 
   /* Typography */
   --font-display: var(--font-lora), Georgia, serif;
@@ -50,7 +52,33 @@ body {
   }
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1, h2, h4, h5, h6 {
   font-family: var(--font-display);
   line-height: 1.3;
+}
+
+h3 {
+  font-family: var(--font-body);
+  line-height: 1.3;
+}
+
+/* Hero overlay — vertical fade on mobile, diagonal on desktop */
+.hero-overlay {
+  background: linear-gradient(
+    180deg,
+    rgba(250, 247, 244, 0.55) 0%,
+    rgba(250, 247, 244, 0.9) 40%,
+    rgba(250, 247, 244, 1) 65%
+  );
+}
+@media (min-width: 1024px) {
+  .hero-overlay {
+    background: linear-gradient(
+      100deg,
+      rgba(250, 247, 244, 0.96) 0%,
+      rgba(250, 247, 244, 0.92) 40%,
+      rgba(250, 247, 244, 0.55) 70%,
+      rgba(250, 247, 244, 0.2) 100%
+    );
+  }
 }

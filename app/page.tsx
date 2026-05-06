@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 import Button from '@/components/ui/Button';
 import CtaSection from '@/components/sections/CtaSection';
@@ -9,14 +10,14 @@ export const metadata: Metadata = {
     'Find a trusted EGDN partner dentist near you. Present your member ID. Get the care you deserve.',
 };
 
-const stats = [
+// [CONFIRM WITH CLIENT — verify these numbers before launch]
+const stats: { value: string; label: string; shortLabel?: string }[] = [
   { value: '600+', label: 'Partner Clinics' },
   { value: '16', label: 'Regions' },
-  { value: '138', label: 'Cities & Municipalities' },
-  // [CONFIRM WITH CLIENT — verify these numbers before launch]
+  { value: '138', label: 'Cities & Municipalities', shortLabel: 'Cities & Munis' },
 ];
 
-const howItWorksCards = [
+const steps = [
   {
     n: '01',
     title: 'Find a dentist',
@@ -38,91 +39,182 @@ const audienceCards = [
   {
     eyebrow: "I'm a member",
     title: 'Find your nearest partner dentist',
-    linkLabel: 'Search the directory →',
+    linkLabel: 'Search the directory',
     href: '/find-a-dentist',
   },
   {
     eyebrow: 'I represent a company',
     title: 'Add dental coverage to your employee benefits',
-    linkLabel: 'Partner with us →',
+    linkLabel: 'Partner with us',
     href: '/partner-with-us',
   },
   {
     eyebrow: "I'm a dental provider",
     title: 'Join our growing network of clinics',
-    linkLabel: 'Join our network →',
+    linkLabel: 'Join our network',
     href: '/join-our-network',
   },
 ];
 
+const ArrowIcon = () => (
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden
+  >
+    <line x1="5" y1="12" x2="19" y2="12" />
+    <polyline points="12 5 19 12 12 19" />
+  </svg>
+);
+
 export default function HomePage() {
   return (
     <>
-      {/* Hero — replace bg-brand-light with a real full-bleed photo via next/image once available */}
-      <section className="relative bg-brand-light overflow-hidden">
-        <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-32">
-          <div className="max-w-xl">
-            <h1 className="font-display text-4xl font-bold text-text leading-tight lg:text-5xl">
+      {/* ── Hero ───────────────────────────────────────────────────────────── */}
+      <section className="relative overflow-hidden border-b border-border">
+        <Image
+          src="/images/hero.jpg"
+          alt="Warm clinic setting"
+          fill
+          className="object-cover object-center"
+          priority
+        />
+        <div className="hero-overlay absolute inset-0 z-[1]" />
+
+        {/* Content — flex+min-height live here to match .hero-full-content */}
+        <div className="relative z-[2] mx-auto flex min-h-[420px] w-full max-w-300 items-end px-5 pt-12 pb-4 sm:min-h-125 sm:items-center sm:px-6 sm:py-16 lg:min-h-135 lg:px-10 lg:py-24">
+          <div className="max-w-[560px]">
+            <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:mb-3 sm:text-[12px]">
+              Quality dental care, nationwide
+            </span>
+            <h1 className="mt-3 mb-[14px] font-display text-[28px] font-bold leading-[1.2] text-text sm:mt-4 sm:mb-[18px] sm:text-[34px] lg:text-[40px]">
               Your dental benefit, everywhere you need it.
             </h1>
-            <p className="mt-5 text-[17px] text-text-muted leading-relaxed">
+            <p
+              className="mb-5 max-w-[480px] text-[16px] leading-[1.55] text-text-muted sm:mb-[40px] lg:text-[19px]"
+              style={{ textWrap: 'pretty' } as React.CSSProperties}
+            >
               Find a trusted partner dentist near you — and get the care you deserve.
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Button href="/find-a-dentist" size="large">Find a Dentist</Button>
-              <Button href="/how-it-works" variant="secondary" size="large">How It Works</Button>
+
+            <div className="flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:gap-3">
+              <Button href="/find-a-dentist" size="large" className="w-full justify-center sm:w-auto">
+                Find a Dentist
+                <ArrowIcon />
+              </Button>
+              <Button href="/how-it-works" variant="secondary" size="large" className="w-full justify-center sm:w-auto">
+                How It Works
+              </Button>
+            </div>
+
+            {/* Trust block */}
+            <div className="mt-[22px] flex max-w-[420px] items-center gap-3 border-t border-border pt-3.5 sm:mt-[40px] sm:gap-[14px] sm:pt-4">
+              <div className="flex shrink-0">
+                {[
+                  { initials: 'MS', bg: '#E8D9C7' },
+                  { initials: 'JC', bg: '#D9D2C2' },
+                  { initials: 'AR', bg: '#CFD8C8' },
+                ].map((a, i) => (
+                  <span
+                    key={a.initials}
+                    className="flex h-[30px] w-[30px] select-none items-center justify-center rounded-full border-2 border-bg font-body text-[10px] font-semibold text-text sm:h-9 sm:w-9 sm:text-[12px]"
+                    style={{ background: a.bg, marginLeft: i === 0 ? 0 : '-7px' }}
+                  >
+                    {a.initials}
+                  </span>
+                ))}
+              </div>
+              <div className="flex flex-col text-[12px] leading-[1.3] sm:text-[14px]">
+                <strong className="text-text">Trusted since 2005</strong>
+                <span className="text-text-muted">by partner clinics across the Philippines</span>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Stats bar */}
-      <section className="bg-brand">
-        <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-          <dl className="grid grid-cols-1 gap-8 sm:grid-cols-3 text-center">
-            {stats.map((s) => (
-              <div key={s.label}>
-                <dt className="font-display text-4xl font-bold text-text-on-brand">{s.value}</dt>
-                <dd className="mt-1 text-[14px] text-text-on-brand opacity-80">{s.label}</dd>
+      {/* ── Stats bar ──────────────────────────────────────────────────────── */}
+      <section className="border-y border-border bg-bg-deep">
+        <div className="mx-auto max-w-300 px-5 py-6 sm:px-6 sm:py-[40px] lg:px-10">
+          <dl className="flex items-stretch gap-3 sm:grid sm:grid-cols-3 sm:gap-0">
+            {stats.map((s, i) => (
+              <div
+                key={s.label}
+                className={[
+                  'flex flex-1 flex-col justify-start gap-1.5 sm:flex-row sm:items-baseline sm:gap-4 sm:px-6',
+                  i > 0 ? 'border-l border-border-strong pl-4 sm:pl-6' : '',
+                ].join(' ')}
+              >
+                <dt className="font-display text-[32px] font-bold leading-none tracking-[-0.02em] text-brand sm:text-[52px] lg:text-[64px]">
+                  {s.value}
+                </dt>
+                <dd className="max-w-40 text-[11px] font-medium leading-[1.3] text-balance text-text sm:text-[14px] lg:text-[15px]">
+                  <span className="sm:hidden">{s.shortLabel ?? s.label}</span>
+                  <span className="hidden sm:inline">{s.label}</span>
+                </dd>
               </div>
             ))}
           </dl>
         </div>
       </section>
 
-      {/* How it works summary */}
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
-        <div className="text-center">
-          <h2 className="font-display text-2xl font-semibold text-text lg:text-3xl">
+      {/* ── How it works ───────────────────────────────────────────────────── */}
+      <section className="mx-auto max-w-300 px-5 py-10 sm:px-6 sm:py-16 lg:px-10 lg:py-24">
+        <div className="mb-6 max-w-[640px] sm:mb-[40px]">
+          <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:mb-3 sm:text-[12px]">
+            How it works
+          </span>
+          <h2 className="font-display text-[22px] font-semibold text-text sm:text-[26px] lg:text-[30px]">
             Using your benefit is simple.
           </h2>
-          <p className="mt-2 text-[16px] text-text-muted">Three steps from start to treatment.</p>
+          <p className="mt-2 text-[15px] leading-relaxed text-text-muted sm:mt-3 sm:text-[16px] lg:text-[17px]">
+            Three steps from start to treatment.
+          </p>
         </div>
-        <div className="mt-12 grid gap-6 sm:grid-cols-3">
-          {howItWorksCards.map((c) => (
-            <div key={c.n} className="rounded-card border border-border bg-surface p-6">
-              <span className="font-display text-3xl font-bold text-brand opacity-40">{c.n}</span>
-              <h3 className="mt-3 font-body text-[16px] font-semibold text-text">{c.title}</h3>
-              <p className="mt-2 text-[14px] text-text-muted leading-relaxed">{c.body}</p>
+
+        <div className="grid gap-3 sm:grid-cols-3 sm:gap-[24px]">
+          {steps.map((c) => (
+            <div
+              key={c.n}
+              className="flex flex-col gap-1.5 rounded-card border border-border bg-surface px-5 py-[18px] transition-all duration-200 hover:-translate-y-0.5 hover:border-brand sm:gap-3 sm:p-7 lg:p-[40px]"
+            >
+              <span className="font-display text-[24px] font-bold leading-none text-brand sm:text-[28px] lg:text-[32px]">
+                {c.n}
+              </span>
+              <h3 className="mt-0.5 font-body text-[16px] font-semibold text-text sm:mt-1 sm:text-[18px]">{c.title}</h3>
+              <p className="text-[14px] leading-relaxed text-text-muted">{c.body}</p>
             </div>
           ))}
         </div>
-        <div className="mt-8 text-center">
-          <Link href="/how-it-works" className="text-[14px] text-brand hover:underline">
-            See the full process →
-          </Link>
+
+        <div className="mt-4 sm:mt-[24px]">
+          <Button href="/how-it-works" variant="ghost">
+            See the full process
+            <ArrowIcon />
+          </Button>
         </div>
       </section>
 
-      {/* About EGDN */}
-      <section className="bg-surface border-y border-border">
-        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
-          <div className="max-w-2xl mx-auto text-center">
-            <h2 className="font-display text-2xl font-semibold text-text lg:text-3xl">
-              A dental network built around you.
-            </h2>
-            <p className="mt-4 text-[16px] text-text-muted leading-relaxed">
-              {/* [CONFIRM WITH CLIENT — verify founding year and messaging accuracy] */}
+      {/* ── About EGDN ─────────────────────────────────────────────────────── */}
+      <section className="border-y border-border bg-surface">
+        <div className="mx-auto max-w-300 px-5 py-10 sm:px-6 sm:py-16 lg:px-10 lg:py-24">
+          <div className="grid gap-4 lg:grid-cols-[1fr_1.4fr] lg:gap-[64px] lg:items-start">
+            <div>
+              <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:mb-3 sm:text-[12px]">
+                About EGDN
+              </span>
+              <h2 className="font-display text-[22px] font-semibold text-text sm:text-[26px] lg:text-[30px]">
+                A dental network built around you.
+              </h2>
+            </div>
+            {/* [CONFIRM WITH CLIENT — verify founding year and messaging accuracy] */}
+            <p className="text-[16px] leading-[1.65] text-text sm:leading-[1.7] lg:text-[19px]" style={{ textWrap: 'pretty' } as React.CSSProperties}>
               Elite Group Dental Network has been connecting members with quality dental care across
               the Philippines since 2005. We partner with trusted clinics so you always have a
               dentist near home, near work, or wherever life takes you.
@@ -131,24 +223,42 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Three audience CTAs */}
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
-        <div className="grid gap-6 sm:grid-cols-3">
+      {/* ── Audience cards ─────────────────────────────────────────────────── */}
+      <section className="mx-auto max-w-300 px-5 py-10 sm:px-6 sm:py-16 lg:px-10 lg:py-24">
+        <div className="mb-6 sm:mb-[40px]">
+          <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:mb-3 sm:text-[12px]">
+            Find your path
+          </span>
+          <h2 className="font-display text-[22px] font-semibold text-text sm:text-[26px] lg:text-[30px]">
+            Made for everyone in the network.
+          </h2>
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-3 sm:gap-[24px]">
           {audienceCards.map((c) => (
-            <div key={c.href} className="rounded-card border border-border bg-surface p-8 flex flex-col">
-              <p className="text-[12px] font-semibold uppercase tracking-widest text-brand">{c.eyebrow}</p>
-              <h3 className="mt-3 font-display text-[20px] font-semibold text-text leading-snug">
-                {c.title}
-              </h3>
-              <Link href={c.href} className="mt-auto pt-6 text-[14px] font-medium text-brand hover:underline">
+            <Link
+              key={c.href}
+              href={c.href}
+              className="group flex flex-col gap-2 rounded-card border border-border bg-surface p-5 text-text transition-all duration-200 hover:-translate-y-0.5 hover:border-brand sm:min-h-45 sm:justify-between sm:gap-0 sm:p-7 lg:min-h-55 lg:p-[40px]"
+            >
+              <div>
+                <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-text-muted sm:text-[12px]">
+                  {c.eyebrow}
+                </span>
+                <h3 className="mt-2 font-display text-[19px] font-semibold leading-[1.25] text-text sm:mt-3 lg:text-[22px]">
+                  {c.title}
+                </h3>
+              </div>
+              <span className="mt-1 inline-flex items-center gap-[6px] text-[13px] font-semibold text-brand transition-[gap] duration-[180ms] group-hover:gap-[10px] sm:mt-0 sm:text-[14px]">
                 {c.linkLabel}
-              </Link>
-            </div>
+                <ArrowIcon />
+              </span>
+            </Link>
           ))}
         </div>
       </section>
 
-      {/* CTA */}
+      {/* ── CTA ────────────────────────────────────────────────────────────── */}
       <CtaSection
         headline="Ready to get started?"
         subtext="Your benefit is already waiting — find a dentist near you today."

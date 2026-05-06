@@ -14,19 +14,21 @@ interface ButtonBaseProps {
 type ButtonProps = ButtonBaseProps & React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 const variants: Record<Variant, string> = {
-  primary: 'bg-brand text-text-on-brand border-brand hover:opacity-90',
-  secondary: 'bg-surface text-brand border-[1.5px] border-brand hover:bg-brand-light',
-  ghost: 'bg-transparent text-brand border-transparent hover:underline',
+  primary:
+    'bg-brand text-text-on-brand border-brand hover:bg-[#166889] hover:border-[#166889] hover:-translate-y-px',
+  secondary:
+    'bg-surface text-brand border-[1.5px] border-brand hover:bg-brand-light hover:-translate-y-px',
+  ghost: 'bg-transparent text-brand border-transparent hover:underline underline-offset-[3px]',
 };
 
 const sizes: Record<Size, string> = {
-  default: 'px-[22px] py-[10px] text-[13px] leading-none',
-  large: 'px-[28px] py-[12px] text-[14px] leading-none',
+  default: 'px-[24px] py-[12px] text-[14px] leading-none',
+  large: 'px-[30px] py-[14px] text-[15px] leading-none',
 };
 
 const base =
-  'inline-flex items-center justify-center font-body font-semibold rounded-pill border ' +
-  'transition-colors focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 ' +
+  'inline-flex items-center justify-center gap-2 font-body font-semibold rounded-pill border ' +
+  'transition-all focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 ' +
   'disabled:opacity-50 disabled:pointer-events-none';
 
 export default function Button({

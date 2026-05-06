@@ -5,14 +5,30 @@ interface Region {
   count: number;
 }
 
-interface RegionGridProps {
-  regions: Region[];
-}
+const SUBTITLES: Record<string, string> = {
+  NCR: 'National Capital Region',
+  CAR: 'Cordillera Administrative Region',
+  'Region I': 'Ilocos Region',
+  'Region II': 'Cagayan Valley',
+  'Region III': 'Central Luzon',
+  'Region IV-A': 'CALABARZON',
+  'Region IV-B': 'MIMAROPA',
+  'Region V': 'Bicol Region',
+  'Region VI': 'Western Visayas',
+  'Region VII': 'Central Visayas',
+  'Region VIII': 'Eastern Visayas',
+  'Region IX': 'Zamboanga Peninsula',
+  'Region X': 'Northern Mindanao',
+  'Region XI': 'Davao Region',
+  'Region XII': 'SOCCSKSARGEN',
+  'Region XIII': 'Caraga',
+  BARMM: 'Bangsamoro',
+};
 
-export default function RegionGrid({ regions }: RegionGridProps) {
+export default function RegionGrid({ regions }: { regions: Region[] }) {
   if (regions.length === 0) {
     return (
-      <p className="text-text-muted text-[15px]">No regions found. Check back soon.</p>
+      <p className="text-[15px] text-text-muted">No regions found. Check back soon.</p>
     );
   }
 
@@ -22,17 +38,56 @@ export default function RegionGrid({ regions }: RegionGridProps) {
         <Link
           key={region._id}
           href={`/find-a-dentist?region=${encodeURIComponent(region._id)}`}
-          className="group flex flex-col justify-between rounded-card border border-border bg-surface p-5 transition-shadow hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
+          className="group relative flex min-h-44 flex-col justify-between rounded-card border border-border bg-surface p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-brand focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
         >
-          <span className="font-body text-[14px] font-semibold text-text group-hover:text-brand transition-colors leading-snug">
-            {region._id}
-          </span>
-          <div className="mt-4 flex items-center justify-between">
-            <span className="text-[13px] text-text-muted">
+          {/* Top row */}
+          <div className="flex items-center justify-between">
+            <div className="flex h-9 w-9 items-center justify-center rounded-input bg-brand-light text-brand">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden
+              >
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
+            </div>
+            <span className="text-[12px] font-semibold text-text-muted">
               {region.count} {region.count === 1 ? 'clinic' : 'clinics'}
             </span>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden className="text-brand">
-              <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </div>
+
+          {/* Region name + subtitle */}
+          <div>
+            <div className="font-display text-[20px] font-semibold leading-snug text-text">
+              {region._id}
+            </div>
+            {SUBTITLES[region._id] && (
+              <div className="mt-0.5 text-[13px] text-text-muted">{SUBTITLES[region._id]}</div>
+            )}
+          </div>
+
+          {/* Arrow on hover */}
+          <div className="absolute bottom-5 right-5 translate-x-0 text-brand opacity-0 transition-all duration-200 group-hover:translate-x-0.5 group-hover:opacity-100">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden
+            >
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
             </svg>
           </div>
         </Link>

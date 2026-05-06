@@ -26,11 +26,11 @@ export default function CityFilter({ cities, region, selectedCity }: CityFilterP
 
   return (
     <div className="flex items-center gap-3">
-      <div className="relative">
+      <div className="relative flex-1">
         <select
           value={selectedCity ?? ''}
           onChange={handleChange}
-          className="rounded-input border border-border bg-surface py-2.5 pl-4 pr-10 text-[14px] text-text focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 appearance-none cursor-pointer min-w-[220px]"
+          className="w-full rounded-input border border-border bg-surface py-3 pl-4 pr-10 text-[14px] text-text focus:outline-none focus:border-brand focus:ring-2 focus:ring-[rgba(27,127,168,0.12)] appearance-none cursor-pointer"
         >
           <option value="">All cities & municipalities</option>
           {cities.map((city) => (
@@ -40,8 +40,8 @@ export default function CityFilter({ cities, region, selectedCity }: CityFilterP
           ))}
         </select>
         <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-text-muted">
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
-            <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+            <polyline points="6 9 12 15 18 9" />
           </svg>
         </span>
       </div>
@@ -52,9 +52,9 @@ export default function CityFilter({ cities, region, selectedCity }: CityFilterP
             params.delete('city');
             router.push(`${pathname}?${params.toString()}`);
           }}
-          className="text-[13px] text-text-muted hover:text-brand transition-colors"
+          className="text-[13px] font-semibold text-brand hover:underline underline-offset-[3px] whitespace-nowrap"
         >
-          Clear
+          Clear filter
         </button>
       )}
     </div>
