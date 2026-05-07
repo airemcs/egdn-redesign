@@ -74,7 +74,7 @@ export default function ContactPage() {
       {/* Whole header block (breadcrumb + title) is pushed down so "Get in touch"
           aligns with the home hero's "Quality dental care" eyebrow. Breadcrumb stays
           tight against the eyebrow with a small mb. */}
-      <section className="mx-auto max-w-300 px-5 pt-2.5 pb-10 sm:px-6 sm:pt-14 sm:pb-12 lg:px-10 lg:pt-[58px] lg:pb-7">
+      <section className="mx-auto max-w-300 px-5 pt-12 pb-4 sm:px-6 sm:pt-16 lg:px-10 lg:pt-[58px] lg:pb-[27px]">
         <nav aria-label="Breadcrumb" className="mb-4 flex flex-wrap items-center gap-1.5 text-[13px] text-text-muted">
           <Link href="/" className="hover:text-brand">Home</Link>
           <span className="text-border-strong">›</span>
@@ -90,8 +90,8 @@ export default function ContactPage() {
           className="text-[16px] leading-[1.55] text-text-muted lg:text-[19px]"
           style={{ textWrap: 'pretty' } as React.CSSProperties}
         >
-          Questions about your benefit, our network, or partnering with EGDN — reach us the
-          way that works for you. We respond to most inquiries within one business day.
+          Questions about your benefit, our network, or partnering with EGDN - reach us the
+          way that works for you.
         </p>
       </section>
 

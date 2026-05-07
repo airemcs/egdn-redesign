@@ -22,10 +22,12 @@ export default async function FindADentistPage({ searchParams }: PageProps) {
 
   // ── No region selected — show region picker ──────────────────────────────
   if (!region) {
+    // Order by clinic count desc; alphabetical as a tiebreaker so ties (e.g.
+    // CAR and Region IV-B both at 2) stay in a predictable order.
     const regions = await Dentist.aggregate<{ _id: string; count: number }>([
       { $unwind: '$clinics' },
       { $group: { _id: '$clinics.region', count: { $sum: 1 } } },
-      { $sort: { _id: 1 } },
+      { $sort: { count: -1, _id: 1 } },
     ]);
 
     return (
@@ -52,12 +54,6 @@ export default async function FindADentistPage({ searchParams }: PageProps) {
           <RegionGrid regions={regions} />
         </section>
 
-        <CtaSection
-          headline="Don't know your region?"
-          subtext="Contact us and we'll help you find the right clinic."
-          primaryLabel="Contact EGDN"
-          primaryHref="/contact"
-        />
       </>
     );
   }

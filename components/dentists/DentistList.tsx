@@ -24,14 +24,25 @@ interface DentistListProps {
 export default function DentistList({ dentists, region, cities, selectedCity }: DentistListProps) {
   return (
     <div>
-      {/* Filter bar */}
-      <div className="mb-6 rounded-card border border-border bg-surface p-6 flex flex-wrap items-end gap-6">
-        <div className="flex flex-col gap-1.5 flex-1 max-w-sm">
-          <span className="text-[13px] font-medium text-text">Filter by city</span>
-          <Suspense>
+      {/* Filter bar — block layout on mobile (filter, then count below),
+          flex-row on sm+. The width-controlling div around the filter has
+          `w-full max-w-sm` so the select inside always has real width to
+          claim, regardless of flex behavior. */}
+      <div className="mb-5 sm:mb-6 sm:flex sm:items-center sm:gap-5">
+        <div className="">
+          <Suspense
+            fallback={
+              <div className="flex h-12 items-center rounded-input border border-border bg-surface px-4">
+                <span className="text-[14px] text-text-muted">All cities &amp; municipalities</span>
+              </div>
+            }
+          >
             <CityFilter cities={cities} region={region} selectedCity={selectedCity} />
           </Suspense>
         </div>
+        <p className="mt-2 text-[13px] text-text-muted sm:mt-0">
+          {dentists.length} {dentists.length === 1 ? 'result' : 'results'}
+        </p>
       </div>
 
       {dentists.length === 0 ? (
