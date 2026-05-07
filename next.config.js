@@ -2,6 +2,7 @@
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  devIndicators: false,
   async redirects() {
     return [
       { source: '/our-dentists', destination: '/find-a-dentist', permanent: true },

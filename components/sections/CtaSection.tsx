@@ -18,7 +18,7 @@ export default function CtaSection({
   secondaryHref,
 }: CtaSectionProps) {
   return (
-    <div className="mx-auto max-w-300 px-5 py-10 sm:px-6 sm:py-24 lg:px-10">
+    <div className="mx-auto max-w-300 px-5 py-8 sm:px-6 sm:py-12 lg:px-10 lg:py-16">
       <div className="grid items-center gap-5 rounded-[18px] bg-brand-tint px-[22px] py-7 sm:gap-[40px] sm:rounded-[20px] sm:p-8 lg:grid-cols-[1.3fr_1fr] lg:p-[64px]">
         <div>
           <h2 className="font-display text-[22px] font-semibold text-text sm:text-[26px] lg:text-[30px]">{headline}</h2>

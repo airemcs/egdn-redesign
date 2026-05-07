@@ -177,7 +177,12 @@ export default function AppointmentForm({ dentist }: AppointmentFormProps) {
         </p>
       )}
 
-      <Button type="submit" disabled={status === 'loading'} size="large">
+      <Button
+        type="submit"
+        disabled={status === 'loading'}
+        size="large"
+        className="w-full justify-center sm:w-auto"
+      >
         {status === 'loading' ? 'Sending…' : 'Request Appointment'}
       </Button>
     </form>

@@ -204,7 +204,7 @@ export default async function HomePage() {
       </section>
 
       {/* ── How it works ───────────────────────────────────────────────────── */}
-      <section className="mx-auto max-w-300 px-5 py-10 sm:px-6 sm:py-16 lg:px-10 lg:py-24">
+      <section className="mx-auto max-w-300 px-5 py-10 sm:px-6 sm:py-14 lg:px-10 lg:py-20">
         <div className="mb-6 max-w-[640px] sm:mb-[40px]">
           <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:mb-3 sm:text-[12px]">
             How it works
@@ -242,7 +242,7 @@ export default async function HomePage() {
 
       {/* ── About EGDN ─────────────────────────────────────────────────────── */}
       <section className="border-y border-border bg-surface">
-        <div className="mx-auto max-w-300 px-5 py-10 sm:px-6 sm:py-16 lg:px-10 lg:py-24">
+        <div className="mx-auto max-w-300 px-5 py-10 sm:px-6 sm:py-14 lg:px-10 lg:py-20">
           <div className="grid gap-4 lg:grid-cols-[1fr_1.4fr] lg:gap-[64px] lg:items-start">
             <div>
               <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:mb-3 sm:text-[12px]">
@@ -252,7 +252,6 @@ export default async function HomePage() {
                 A dental network built around you.
               </h2>
             </div>
-            {/* [CONFIRM WITH CLIENT — verify founding year and messaging accuracy] */}
             <p className="text-[16px] leading-[1.65] text-text sm:leading-[1.7] lg:text-[19px]" style={{ textWrap: 'pretty' } as React.CSSProperties}>
               Elite Group Dental Network has been connecting members with quality dental care across
               the Philippines since 2005. We partner with trusted clinics so you always have a
@@ -263,7 +262,7 @@ export default async function HomePage() {
       </section>
 
       {/* ── Audience cards ─────────────────────────────────────────────────── */}
-      <section className="mx-auto max-w-300 px-5 py-10 sm:px-6 sm:py-16 lg:px-10 lg:py-24">
+      <section className="mx-auto max-w-300 px-5 py-10 sm:px-6 sm:py-14 lg:px-10 lg:py-20">
         <div className="mb-6 sm:mb-[40px]">
           <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:mb-3 sm:text-[12px]">
             Find your path

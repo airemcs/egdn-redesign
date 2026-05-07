@@ -46,7 +46,7 @@ export default function DigitalIdPage() {
             </div>
             <div className="flex gap-4">
               <dt className="w-24 shrink-0 font-medium text-text">Hours</dt>
-              <dd className="text-text-muted">Monday–Friday, 8:00 AM – 5:00 PM {/* [CONFIRM WITH CLIENT] */}</dd>
+              <dd className="text-text-muted">Monday–Friday, 9:00 AM – 6:00 PM</dd>
             </div>
           </dl>
         </div>

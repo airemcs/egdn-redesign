@@ -21,7 +21,7 @@ const benefits = [
     body: 'Coverage options that match your team size and budget.', // [CONFIRM WITH CLIENT]
   },
   {
-    title: 'Trusted since 2005', // [CONFIRM WITH CLIENT]
+    title: 'Trusted since 2005',
     body: 'Hundreds of companies across the Philippines rely on EGDN for their dental benefits.',
   },
 ];

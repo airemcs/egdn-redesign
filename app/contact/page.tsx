@@ -28,7 +28,7 @@ export default function ContactPage() {
           <span className="flex flex-col">
             <span className="text-[11px] font-semibold uppercase tracking-widest text-text-muted">Call us</span>
             <span className="text-[16px] font-bold leading-tight text-brand">(632) 8836.7181</span>
-            <span className="mt-0.5 text-[12px] text-text-muted">Mon–Fri, 8AM–5PM</span>
+            <span className="mt-0.5 text-[12px] text-text-muted">Mon–Fri, 9AM–6PM</span>
           </span>
         </a>
 
@@ -120,7 +120,7 @@ export default function ContactPage() {
             </div>
             <div>
               <dt className="text-[13px] font-medium uppercase tracking-wide text-text-muted">Office Hours</dt>
-              <dd className="mt-1 text-text">Monday–Friday, 8:00 AM – 5:00 PM {/* [CONFIRM WITH CLIENT] */}</dd>
+              <dd className="mt-1 text-text">Monday–Friday, 9:00 AM – 6:00 PM</dd>
             </div>
           </dl>
         </div>
