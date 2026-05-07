@@ -74,7 +74,7 @@ export default function ContactPage() {
       {/* Whole header block (breadcrumb + title) is pushed down so "Get in touch"
           aligns with the home hero's "Quality dental care" eyebrow. Breadcrumb stays
           tight against the eyebrow with a small mb. */}
-      <section className="mx-auto max-w-300 px-5 pt-12 pb-10 sm:px-6 sm:pt-16 sm:pb-12 lg:px-10 lg:pt-[58px] lg:pb-7">
+      <section className="mx-auto max-w-300 px-5 pt-2.5 pb-10 sm:px-6 sm:pt-14 sm:pb-12 lg:px-10 lg:pt-[58px] lg:pb-7">
         <nav aria-label="Breadcrumb" className="mb-4 flex flex-wrap items-center gap-1.5 text-[13px] text-text-muted">
           <Link href="/" className="hover:text-brand">Home</Link>
           <span className="text-border-strong">›</span>
@@ -97,16 +97,19 @@ export default function ContactPage() {
 
       {/* ── Form + Sidebar ─────────────────────────────────────────────────── */}
       <section className="mx-auto max-w-300 px-5 pb-12 sm:px-6 sm:pb-16 lg:px-10 lg:pb-20">
-        <div className="grid gap-8 lg:grid-cols-[1.35fr_1fr] lg:items-start lg:gap-10">
-          {/* Form — order 2 on mobile (after tiles), 1 on desktop (left) */}
-          <div className="order-2 rounded-card border border-border bg-surface p-6 sm:p-8 lg:order-1 lg:p-10">
+        <div className="grid gap-3.5 lg:grid-cols-[1.35fr_1fr] lg:items-start lg:gap-10">
+          {/* Form — first on mobile, left column on desktop */}
+          <div className="rounded-card border border-border bg-surface p-6 sm:p-8 lg:p-10">
             <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:mb-3 sm:text-[12px]">
               Send a message
             </span>
-            <h2 className="font-display text-[24px] font-semibold text-text sm:text-[28px]">
+            <h2 className="mb-7 font-display text-[24px] font-semibold text-text sm:mb-0 sm:text-[28px]">
               Drop us a line.
             </h2>
-            <p className="mt-2 mb-7 text-[15px] text-text-muted sm:mt-3 sm:mb-9">
+            {/* Subtitle is hidden on mobile to save vertical space; h2's mb-7 above
+                takes over the spacing. On sm+, this paragraph reappears with its own
+                mt/mb and h2's mb resets to 0 (sm:mb-0). */}
+            <p className="hidden text-[15px] text-text-muted sm:mt-3 sm:mb-9 sm:block">
               Fill out the form and we'll route it to the right person on our team.
             </p>
             <ContactForm />
@@ -115,15 +118,52 @@ export default function ContactPage() {
             </p>
           </div>
 
-          {/* Sidebar — order 1 on mobile (above form), 2 on desktop (right) */}
-          <aside className="order-1 flex flex-col gap-3.5 lg:order-2">
-            <ContactTile
-              href="tel:+63288367181"
-              label="Call us"
-              value="(632) 8836.7181"
-              sub="Mon–Fri, 9AM–6PM"
-              icon={<PhoneIcon />}
-            />
+          {/* Sidebar — below form on mobile (Hours card first via order-first),
+              right column on desktop with tiles → hours in source order */}
+          <aside className="flex flex-col gap-3.5">
+            {/* Call us — three numbers (one landline, two mobile carriers).
+                Each number is a tel: link; the carrier tag and "Telephone/Mobile"
+                labels stay muted so the number is the focal point. */}
+            <div className="flex items-start gap-4 rounded-card border border-border bg-surface p-5 sm:p-[22px]">
+              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-brand-light text-brand">
+                <PhoneIcon />
+              </span>
+              <div className="min-w-0">
+                <div className="text-[12px] font-semibold uppercase tracking-[0.08em] text-text-muted">
+                  Call us
+                </div>
+                <ul className="mt-2 flex flex-col gap-1.5">
+                  <li className="flex flex-wrap items-baseline gap-x-1.5 text-[13px] text-text-muted">
+                    <span>Telephone:</span>
+                    <a
+                      href="tel:+63288367181"
+                      className="font-display text-[15px] font-semibold text-text"
+                    >
+                      (+632) 8836-7181
+                    </a>
+                  </li>
+                  <li className="flex flex-wrap items-baseline gap-x-1.5 text-[13px] text-text-muted">
+                    <span>Smart Mobile:</span>
+                    <a
+                      href="tel:+639209517005"
+                      className="font-display text-[15px] font-semibold text-text"
+                    >
+                      0920-951-7005
+                    </a>
+                  </li>
+                  <li className="flex flex-wrap items-baseline gap-x-1.5 text-[13px] text-text-muted">
+                    <span>Globe Mobile:</span>
+                    <a
+                      href="tel:+639173154926"
+                      className="font-display text-[15px] font-semibold text-text"
+                    >
+                      0917-315-4926
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
             <ContactTile
               href="mailto:info@elitegroupph.com"
               label="Email"
@@ -139,8 +179,10 @@ export default function ContactPage() {
               icon={<PinIcon />}
             />
 
-            {/* Hours card */}
-            <div className="rounded-card border border-border bg-surface p-5 sm:p-[22px]">
+            {/* Hours card — order-first on mobile floats it above the tiles
+                (right after the form); on desktop it stays at the bottom of the
+                sidebar via lg:order-none (resets to default 0 = source order). */}
+            <div className="order-first rounded-card border border-border bg-surface p-5 sm:p-[22px] lg:order-0">
               <h4 className="mb-3.5 text-[12px] font-semibold uppercase tracking-[0.08em] text-text-muted">
                 Office hours
               </h4>
@@ -159,48 +201,8 @@ export default function ContactPage() {
         </div>
       </section>
 
-      {/* ── FAQ strip ──────────────────────────────────────────────────────── */}
-      <section className="mx-auto max-w-300 px-5 py-12 sm:px-6 sm:py-14 lg:px-10 lg:py-20">
-        <div className="mb-8 max-w-[640px] sm:mb-10">
-          <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:mb-3 sm:text-[12px]">
-            Before you write
-          </span>
-          <h2 className="font-display text-[22px] font-semibold text-text sm:text-[26px] lg:text-[30px]">
-            Common questions, quickly answered.
-          </h2>
-          <p className="mt-2 text-[15px] leading-relaxed text-text-muted sm:mt-3 sm:text-[16px]">
-            Many members find what they need here without sending a message.
-          </p>
-        </div>
-        <div className="grid gap-4 sm:grid-cols-3 sm:gap-6">
-          {faqs.map((f) => (
-            <div
-              key={f.q}
-              className="rounded-card border border-border bg-surface p-5 sm:p-7"
-            >
-              <h3 className="font-display text-[17px] font-semibold leading-[1.25] text-text sm:text-[19px]">
-                {f.q}
-              </h3>
-              <p className="mt-2.5 text-[14px] leading-[1.55] text-text-muted">{f.a}</p>
-            </div>
-          ))}
-        </div>
-        <div className="mt-6 sm:mt-8">
-          <Link
-            href="/faqs"
-            className="inline-flex items-center gap-1.5 text-[14px] font-semibold text-brand hover:gap-2 transition-[gap]"
-          >
-            See all FAQs
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-              <line x1="5" y1="12" x2="19" y2="12" />
-              <polyline points="12 5 19 12 12 19" />
-            </svg>
-          </Link>
-        </div>
-      </section>
-
       {/* ── Office / Map ───────────────────────────────────────────────────── */}
-      <section className="border-y border-border bg-bg-deep">
+      <section className="border-y border-border bg-surface">
         <div className="mx-auto max-w-300 px-5 py-12 sm:px-6 sm:py-14 lg:px-10 lg:py-20">
           <div className="grid gap-10 lg:grid-cols-[1fr_1.2fr] lg:items-center lg:gap-16">
             <div>
@@ -236,35 +238,7 @@ export default function ContactPage() {
                     </dd>
                   </div>
                 </div>
-                <div className="flex gap-3.5">
-                  <span className="mt-0.5 shrink-0 text-brand"><MapMiniIcon /></span>
-                  <div>
-                    <dt className="font-semibold text-[15px] text-text">Getting here</dt>
-                    <dd className="mt-0.5 text-[14px] leading-[1.5] text-text-muted">
-                      Within walking distance of Ayala Triangle • building parking available
-                    </dd>
-                  </div>
-                </div>
               </dl>
-
-              <div className="mt-8 flex flex-wrap gap-3 sm:mt-10">
-                <a
-                  href={MAPS_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 rounded-pill border border-brand bg-brand px-6 py-3 text-[14px] font-semibold text-white transition-colors hover:bg-[#166889] hover:border-[#166889]"
-                >
-                  Open in Google Maps
-                </a>
-                <a
-                  href={`https://www.google.com/maps/dir/?api=1&destination=${MAPS_QUERY}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 rounded-pill border-[1.5px] border-brand bg-surface px-6 py-3 text-[14px] font-semibold text-brand transition-colors hover:bg-brand-light"
-                >
-                  Get Directions
-                </a>
-              </div>
             </div>
 
             {/* Map illustration — stylized placeholder, not a real map */}
@@ -343,11 +317,13 @@ function ContactTile({
   );
 
   const cls =
-    'flex items-start gap-4 rounded-card border border-border bg-surface p-5 sm:p-[22px] transition-colors';
+    'flex items-start gap-4 rounded-card border border-border bg-surface p-5 sm:p-[22px]';
 
   if (href) {
+    // Anchor stays so tel:/mailto: still works on tap, but cursor-default
+    // removes the pointer hover so the card visually matches the static Office tile.
     return (
-      <a href={href} className={`${cls} hover:border-brand`}>
+      <a href={href} className={`${cls} cursor-default`}>
         {inner}
       </a>
     );
