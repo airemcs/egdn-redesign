@@ -30,21 +30,28 @@ export default async function FindADentistPage({ searchParams }: PageProps) {
 
     return (
       <>
-        <div className="mx-auto max-w-300 px-4 py-16 sm:px-6 lg:px-10 lg:py-24">
+        {/* ── Page header ────────────────────────────────────────────────── */}
+        <section className="mx-auto max-w-300 px-5 pt-12 pb-4 sm:px-6 sm:pt-16 lg:px-10 lg:pt-[58px]">
           <Breadcrumb crumbs={[{ label: 'Home', href: '/' }, { label: 'Find a Dentist' }]} />
-          <div className="mb-10 max-w-2xl">
-            <span className="mb-3 block text-[11px] font-semibold uppercase tracking-[0.18em] text-brand">
-              Find a dentist
-            </span>
-            <h1 className="font-display text-3xl font-bold text-text lg:text-4xl">
-              Find a Dentist
-            </h1>
-            <p className="mt-3 text-[16px] text-text-muted">
-              Choose your region to see partner clinics near you.
-            </p>
-          </div>
+          <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:mb-3 sm:text-[12px]">
+            Find a dentist
+          </span>
+          <h1 className="mt-3 mb-[14px] font-display text-[28px] font-bold leading-[1.2] text-text sm:mt-4 sm:mb-[18px] sm:text-[34px] lg:text-[40px]">
+            Find a Dentist
+          </h1>
+          <p
+            className="max-w-[620px] text-[16px] leading-[1.55] text-text-muted lg:text-[19px]"
+            style={{ textWrap: 'pretty' } as React.CSSProperties}
+          >
+            Choose your region to see partner clinics near you.
+          </p>
+        </section>
+
+        {/* ── Region cards ───────────────────────────────────────────────── */}
+        <section className="mx-auto max-w-300 px-5 pt-8 pb-16 sm:px-6 sm:pt-10 lg:px-10 lg:pb-24">
           <RegionGrid regions={regions} />
-        </div>
+        </section>
+
         <CtaSection
           headline="Don't know your region?"
           subtext="Contact us and we'll help you find the right clinic."
@@ -92,29 +99,40 @@ export default async function FindADentistPage({ searchParams }: PageProps) {
 
   return (
     <>
-      <div className="mx-auto max-w-300 px-4 py-16 sm:px-6 lg:px-10 lg:py-24">
+      {/* ── Page header ────────────────────────────────────────────────────── */}
+      <section className="mx-auto max-w-300 px-5 pt-12 pb-4 sm:px-6 sm:pt-16 lg:px-10 lg:pt-[58px]">
         <Breadcrumb
           crumbs={[
+            { label: 'Home', href: '/' },
             { label: 'Find a Dentist', href: '/find-a-dentist' },
             { label: region },
           ]}
         />
-        <div className="mb-10 max-w-2xl">
-          <h1 className="font-display text-3xl font-bold text-text lg:text-4xl">
-            Dentists in {region}
-          </h1>
-          <p className="mt-3 text-[16px] text-text-muted">
-            {dentists.length} partner {dentists.length === 1 ? 'clinic' : 'clinics'}
-            {city ? ` in ${city}` : ''}
-          </p>
-        </div>
+        <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:mb-3 sm:text-[12px]">
+          Browse the network
+        </span>
+        <h1 className="mt-3 mb-[14px] font-display text-[28px] font-bold leading-[1.2] text-text sm:mt-4 sm:mb-[18px] sm:text-[34px] lg:text-[40px]">
+          Dentists in {region}
+        </h1>
+        <p
+          className="max-w-[620px] text-[16px] leading-[1.55] text-text-muted lg:text-[19px]"
+          style={{ textWrap: 'pretty' } as React.CSSProperties}
+        >
+          {dentists.length} partner {dentists.length === 1 ? 'clinic' : 'clinics'}
+          {city ? ` in ${city}` : ''}.
+        </p>
+      </section>
+
+      {/* ── Dentist list ───────────────────────────────────────────────────── */}
+      <section className="mx-auto max-w-300 px-5 pt-8 pb-16 sm:px-6 sm:pt-10 lg:px-10 lg:pb-24">
         <DentistList
           dentists={dentists}
           region={region}
           cities={cities}
           selectedCity={city}
         />
-      </div>
+      </section>
+
       <CtaSection
         headline="Can't find a dentist nearby?"
         subtext="Nominate a clinic and we'll look into adding them to the network."

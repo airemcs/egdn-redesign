@@ -74,7 +74,7 @@ export default function ContactPage() {
       {/* Whole header block (breadcrumb + title) is pushed down so "Get in touch"
           aligns with the home hero's "Quality dental care" eyebrow. Breadcrumb stays
           tight against the eyebrow with a small mb. */}
-      <section className="mx-auto max-w-300 px-5 pt-12 pb-4 sm:px-6 sm:pt-16 lg:px-10 lg:pt-[58px]">
+      <section className="mx-auto max-w-300 px-5 pt-12 pb-10 sm:px-6 sm:pt-16 sm:pb-12 lg:px-10 lg:pt-[58px] lg:pb-7">
         <nav aria-label="Breadcrumb" className="mb-4 flex flex-wrap items-center gap-1.5 text-[13px] text-text-muted">
           <Link href="/" className="hover:text-brand">Home</Link>
           <span className="text-border-strong">›</span>
@@ -87,7 +87,7 @@ export default function ContactPage() {
           We're here to help.
         </h1>
         <p
-          className="max-w-[620px] text-[16px] leading-[1.55] text-text-muted lg:text-[19px]"
+          className="text-[16px] leading-[1.55] text-text-muted lg:text-[19px]"
           style={{ textWrap: 'pretty' } as React.CSSProperties}
         >
           Questions about your benefit, our network, or partnering with EGDN — reach us the
@@ -96,21 +96,21 @@ export default function ContactPage() {
       </section>
 
       {/* ── Form + Sidebar ─────────────────────────────────────────────────── */}
-      <section className="mx-auto max-w-300 px-5 pb-10 sm:px-6 sm:pb-14 lg:px-10 lg:pb-20">
-        <div className="grid gap-6 lg:grid-cols-[1.35fr_1fr] lg:items-start lg:gap-10">
+      <section className="mx-auto max-w-300 px-5 pb-12 sm:px-6 sm:pb-16 lg:px-10 lg:pb-20">
+        <div className="grid gap-8 lg:grid-cols-[1.35fr_1fr] lg:items-start lg:gap-10">
           {/* Form — order 2 on mobile (after tiles), 1 on desktop (left) */}
-          <div className="order-2 rounded-card border border-border bg-surface p-6 sm:p-8 lg:order-1 lg:p-9">
-            <span className="block text-[11px] font-semibold uppercase tracking-widest text-brand sm:text-[12px]">
+          <div className="order-2 rounded-card border border-border bg-surface p-6 sm:p-8 lg:order-1 lg:p-10">
+            <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:mb-3 sm:text-[12px]">
               Send a message
             </span>
-            <h2 className="mt-1.5 font-display text-[24px] font-semibold text-text sm:text-[28px]">
+            <h2 className="font-display text-[24px] font-semibold text-text sm:text-[28px]">
               Drop us a line.
             </h2>
-            <p className="mt-2 mb-6 text-[15px] text-text-muted sm:mb-8">
+            <p className="mt-2 mb-7 text-[15px] text-text-muted sm:mt-3 sm:mb-9">
               Fill out the form and we'll route it to the right person on our team.
             </p>
             <ContactForm />
-            <p className="mt-4 text-[13px] leading-[1.5] text-text-muted">
+            <p className="mt-5 text-[13px] leading-[1.5] text-text-muted sm:mt-6">
               By submitting, you agree to our <Link href="/privacy" className="underline underline-offset-[3px] hover:text-text">privacy policy</Link>. We never share your information.
             </p>
           </div>
@@ -160,19 +160,19 @@ export default function ContactPage() {
       </section>
 
       {/* ── FAQ strip ──────────────────────────────────────────────────────── */}
-      <section className="mx-auto max-w-300 px-5 py-10 sm:px-6 sm:py-14 lg:px-10 lg:py-20">
-        <div className="mb-6 max-w-[640px] sm:mb-10">
-          <span className="block text-[11px] font-semibold uppercase tracking-widest text-brand sm:text-[12px]">
+      <section className="mx-auto max-w-300 px-5 py-12 sm:px-6 sm:py-14 lg:px-10 lg:py-20">
+        <div className="mb-8 max-w-[640px] sm:mb-10">
+          <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:mb-3 sm:text-[12px]">
             Before you write
           </span>
-          <h2 className="mt-2 font-display text-[22px] font-semibold text-text sm:text-[26px] lg:text-[30px]">
+          <h2 className="font-display text-[22px] font-semibold text-text sm:text-[26px] lg:text-[30px]">
             Common questions, quickly answered.
           </h2>
           <p className="mt-2 text-[15px] leading-relaxed text-text-muted sm:mt-3 sm:text-[16px]">
             Many members find what they need here without sending a message.
           </p>
         </div>
-        <div className="grid gap-3 sm:grid-cols-3 sm:gap-6">
+        <div className="grid gap-4 sm:grid-cols-3 sm:gap-6">
           {faqs.map((f) => (
             <div
               key={f.q}
@@ -185,7 +185,7 @@ export default function ContactPage() {
             </div>
           ))}
         </div>
-        <div className="mt-5">
+        <div className="mt-6 sm:mt-8">
           <Link
             href="/faqs"
             className="inline-flex items-center gap-1.5 text-[14px] font-semibold text-brand hover:gap-2 transition-[gap]"
@@ -201,21 +201,21 @@ export default function ContactPage() {
 
       {/* ── Office / Map ───────────────────────────────────────────────────── */}
       <section className="border-y border-border bg-bg-deep">
-        <div className="mx-auto max-w-300 px-5 py-10 sm:px-6 sm:py-14 lg:px-10 lg:py-20">
-          <div className="grid gap-8 lg:grid-cols-[1fr_1.2fr] lg:items-center lg:gap-16">
+        <div className="mx-auto max-w-300 px-5 py-12 sm:px-6 sm:py-14 lg:px-10 lg:py-20">
+          <div className="grid gap-10 lg:grid-cols-[1fr_1.2fr] lg:items-center lg:gap-16">
             <div>
-              <span className="block text-[11px] font-semibold uppercase tracking-widest text-brand sm:text-[12px]">
+              <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:mb-3 sm:text-[12px]">
                 Visit us
               </span>
-              <h2 className="mt-2 font-display text-[22px] font-semibold text-text sm:text-[26px] lg:text-[30px]">
+              <h2 className="font-display text-[22px] font-semibold text-text sm:text-[26px] lg:text-[30px]">
                 Stop by our office.
               </h2>
-              <p className="mt-3 text-[15px] leading-relaxed text-text-muted sm:text-[16px]">
+              <p className="mt-2 text-[15px] leading-relaxed text-text-muted sm:mt-3 sm:text-[16px]">
                 Walk-ins are welcome during office hours. We're located in the heart of
                 Salcedo Village, Makati's central business district.
               </p>
 
-              <dl className="mt-6 flex flex-col gap-4">
+              <dl className="mt-7 flex flex-col gap-5 sm:mt-8">
                 <div className="flex gap-3.5">
                   <span className="mt-0.5 shrink-0 text-brand"><PinIcon /></span>
                   <div>
@@ -247,7 +247,7 @@ export default function ContactPage() {
                 </div>
               </dl>
 
-              <div className="mt-7 flex flex-wrap gap-3">
+              <div className="mt-8 flex flex-wrap gap-3 sm:mt-10">
                 <a
                   href={MAPS_URL}
                   target="_blank"
