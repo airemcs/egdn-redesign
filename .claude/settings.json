@@ -6,7 +6,9 @@
       "Read(//c/Users/airelle/Documents/seed/**)",
       "Bash(node -e ' *)",
       "Bash(npx tsx -e ' *)",
-      "Bash(npx tsx *)"
+      "Bash(npx tsx *)",
+      "Bash(mkdir -p /tmp/contact-design)",
+      "Bash(cp \"/c/Users/airelle/.claude/projects/c--Users-airelle-Documents-egdn/cd6d6d88-9781-49e8-a9a1-cad69c6f1eef/tool-results/webfetch-1778136007933-bv4rcb.bin\" /tmp/contact-design/design.tar.gz)"
     ]
   }
 }
