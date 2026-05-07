@@ -104,12 +104,12 @@ export default async function HomePage() {
     {
       n: '02',
       title: 'Book an appointment',
-      body: 'Call or book online. Bring your member ID.',
+      body: 'Call or book online. Bring your member ID and a valid government-issued ID.',
     },
     {
       n: '03',
       title: 'Get treated',
-      body: 'Present your ID at the clinic. We handle the rest.',
+      body: "Present your ID at the clinic. They'll verify your coverage with us and you're set.",
     },
   ];
 
@@ -243,7 +243,21 @@ export default async function HomePage() {
       {/* ── About EGDN ─────────────────────────────────────────────────────── */}
       <section className="border-y border-border bg-surface">
         <div className="mx-auto max-w-300 px-5 py-10 sm:px-6 sm:py-14 lg:px-10 lg:py-20">
-          <div className="grid gap-4 lg:grid-cols-[1fr_1.4fr] lg:gap-[64px] lg:items-start">
+          <div className="grid gap-8 sm:gap-10 lg:grid-cols-2 lg:gap-[64px] lg:items-center">
+            {/*
+              Image placeholder — replace this entire <div> with:
+              <Image src="/images/about-egdn.jpg" alt="..." fill className="rounded-card object-cover" />
+              wrapped in <div className="relative aspect-[5/4] overflow-hidden rounded-card">
+            */}
+            <div className="relative aspect-5/4 overflow-hidden rounded-card border border-border bg-linear-to-br from-brand-tint via-bg-deep to-bg-deep">
+              <span
+                className="absolute inset-0 grid place-items-center select-none font-display text-[140px] font-bold leading-none tracking-[-0.04em] text-brand/10 lg:text-[180px]"
+                aria-hidden
+              >
+                EG
+              </span>
+            </div>
+
             <div>
               <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:mb-3 sm:text-[12px]">
                 About EGDN
@@ -251,18 +265,22 @@ export default async function HomePage() {
               <h2 className="font-display text-[22px] font-semibold text-text sm:text-[26px] lg:text-[30px]">
                 A dental network built around you.
               </h2>
+              <p
+                className="mt-4 text-[16px] leading-[1.65] text-text sm:mt-5 sm:leading-[1.7] lg:text-[19px]"
+                style={{ textWrap: 'pretty' } as React.CSSProperties}
+              >
+                Elite Group Dental Network has been connecting members with quality dental care across
+                the Philippines since 2005. We partner with trusted clinics so you always have a
+                dentist near home, near work, or wherever life takes you.
+              </p>
             </div>
-            <p className="text-[16px] leading-[1.65] text-text sm:leading-[1.7] lg:text-[19px]" style={{ textWrap: 'pretty' } as React.CSSProperties}>
-              Elite Group Dental Network has been connecting members with quality dental care across
-              the Philippines since 2005. We partner with trusted clinics so you always have a
-              dentist near home, near work, or wherever life takes you.
-            </p>
           </div>
         </div>
       </section>
 
       {/* ── Audience cards ─────────────────────────────────────────────────── */}
-      <section className="mx-auto max-w-300 px-5 py-10 sm:px-6 sm:py-14 lg:px-10 lg:py-20">
+      {/* asymmetric padding — CTA below has its own top padding, so pb is intentionally smaller */}
+      <section className="mx-auto max-w-300 px-5 py-10 sm:px-6 sm:py-14  lg:px-10 lg:py-20">
         <div className="mb-6 sm:mb-[40px]">
           <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:mb-3 sm:text-[12px]">
             Find your path
@@ -295,16 +313,6 @@ export default async function HomePage() {
           ))}
         </div>
       </section>
-
-      {/* ── CTA ────────────────────────────────────────────────────────────── */}
-      <CtaSection
-        headline="Ready to get started?"
-        subtext="Your benefit is already waiting — find a dentist near you today."
-        primaryLabel="Find a Dentist"
-        primaryHref="/find-a-dentist"
-        secondaryLabel="Book an Appointment"
-        secondaryHref="/book-appointment"
-      />
     </>
   );
 }

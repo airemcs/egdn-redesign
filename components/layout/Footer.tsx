@@ -18,8 +18,8 @@ const companyLinks = [{ href: '/contact', label: 'Contact Us' }];
 
 export default function Footer() {
   return (
-    <footer className="bg-footer-bg border-t border-border mt-10 sm:mt-16">
-      <div className="mx-auto max-w-300 px-5 pt-9 pb-7 sm:px-6 sm:pt-14 sm:pb-10 lg:px-10 lg:pt-16">
+    <footer className="bg-footer-bg border-t border-border">
+      <div className="mx-auto max-w-300 px-5 pt-8 pb-7 sm:px-6 sm:pt-10 sm:pb-10 lg:px-10 lg:pt-12">
         <div className="grid grid-cols-1 gap-7 sm:grid-cols-2 sm:gap-10 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
           {/* Brand */}
           <div className="max-w-65">
