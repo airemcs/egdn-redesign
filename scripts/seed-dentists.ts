@@ -13,7 +13,7 @@ import mongoose from 'mongoose';
 import { connectDB } from '../lib/mongodb';
 import Dentist from '../lib/models/Dentist';
 
-const DEFAULT_FILE = 'C:/Users/airelle/Documents/seed/dentists_clean.json';
+const DEFAULT_FILE = 'C:/Users/airelle/Documents/seed/dentists-v2.json';
 
 const REQUIRED_CLINIC_FIELDS = [
   'clinicName',

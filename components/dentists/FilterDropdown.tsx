@@ -2,10 +2,15 @@
 
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 
-interface CityFilterProps {
-  cities: string[];
-  region: string;
-  selectedCity?: string;
+interface FilterDropdownProps {
+  options: string[];
+  selected?: string;
+  /** URL search-param key to read/write (e.g., "city", "specialization"). */
+  paramName: string;
+  /** Shown as the first option / empty-state label inside the select. */
+  placeholder: string;
+  /** Accessible label for the underlying <select>. */
+  ariaLabel: string;
 }
 
 const ChevronDown = () => (
@@ -14,45 +19,46 @@ const ChevronDown = () => (
   </svg>
 );
 
-export default function CityFilter({ cities, region, selectedCity }: CityFilterProps) {
+export default function FilterDropdown({
+  options,
+  selected,
+  paramName,
+  placeholder,
+  ariaLabel,
+}: FilterDropdownProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
   function handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const params = new URLSearchParams(searchParams.toString());
-    params.set('region', region);
     if (e.target.value) {
-      params.set('city', e.target.value);
+      params.set(paramName, e.target.value);
     } else {
-      params.delete('city');
+      params.delete(paramName);
     }
     router.push(`${pathname}?${params.toString()}`);
   }
 
-  function clearFilter() {
+  function clear() {
     const params = new URLSearchParams(searchParams.toString());
-    params.set('region', region);
-    params.delete('city');
+    params.delete(paramName);
     router.push(`${pathname}?${params.toString()}`);
   }
 
   return (
     <div className="flex items-center gap-3">
-      {/* Width is owned by the parent wrapper in DentistList. flex-1 here
-          just means "fill that wrapper". min-w-0 prevents the select's intrinsic
-          option text width from forcing the flex item wider than its share. */}
       <div className="relative h-12 min-w-0 flex-1">
         <select
-          value={selectedCity ?? ''}
+          value={selected ?? ''}
           onChange={handleChange}
-          aria-label="Filter by city"
+          aria-label={ariaLabel}
           className="block h-12 w-full cursor-pointer appearance-none rounded-input border border-border bg-surface pl-4 pr-10 text-[14px] text-text transition-colors focus:border-brand focus:outline-none focus:ring-2 focus:ring-[rgba(27,127,168,0.12)]"
         >
-          <option value="">All cities &amp; municipalities</option>
-          {cities.map((city) => (
-            <option key={city} value={city}>
-              {city}
+          <option value="">{placeholder}</option>
+          {options.map((opt) => (
+            <option key={opt} value={opt}>
+              {opt}
             </option>
           ))}
         </select>
@@ -61,13 +67,14 @@ export default function CityFilter({ cities, region, selectedCity }: CityFilterP
         </span>
       </div>
 
-      {selectedCity && (
+      {selected && (
         <button
           type="button"
-          onClick={clearFilter}
+          onClick={clear}
           className="text-[13px] font-semibold text-brand underline-offset-[3px] hover:underline whitespace-nowrap"
+          aria-label={`Clear ${paramName} filter`}
         >
-          Clear filter
+          Clear
         </button>
       )}
     </div>

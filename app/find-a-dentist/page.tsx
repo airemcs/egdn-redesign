@@ -12,11 +12,11 @@ export const metadata: Metadata = {
 };
 
 interface PageProps {
-  searchParams: Promise<{ region?: string; city?: string }>;
+  searchParams: Promise<{ region?: string; city?: string; specialization?: string }>;
 }
 
 export default async function FindADentistPage({ searchParams }: PageProps) {
-  const { region, city } = await searchParams;
+  const { region, city, specialization } = await searchParams;
 
   await connectDB();
 
@@ -61,6 +61,7 @@ export default async function FindADentistPage({ searchParams }: PageProps) {
   // ── Region selected — fetch and filter dentists ──────────────────────────
   const filter: Record<string, string> = { 'clinics.region': region };
   if (city) filter['clinics.city'] = city;
+  if (specialization) filter.specializations = specialization;
 
   const rawDentists = await Dentist.find(filter).select('name slug specializations clinics').lean();
 
@@ -82,7 +83,11 @@ export default async function FindADentistPage({ searchParams }: PageProps) {
     };
   });
 
-  const allInRegion = await Dentist.find({ 'clinics.region': region }).select('clinics').lean();
+  // Aggregate all available cities and specializations IN THIS REGION
+  // (independent of current city/specialization filter so users can switch).
+  const allInRegion = await Dentist.find({ 'clinics.region': region })
+    .select('clinics specializations')
+    .lean();
   const cities = [
     ...new Set(
       allInRegion.flatMap((d) =>
@@ -91,6 +96,9 @@ export default async function FindADentistPage({ searchParams }: PageProps) {
           .map((c: DentistClinic) => c.city)
       )
     ),
+  ].sort();
+  const specializations = [
+    ...new Set(allInRegion.flatMap((d) => d.specializations as string[])),
   ].sort();
 
   return (
@@ -125,7 +133,9 @@ export default async function FindADentistPage({ searchParams }: PageProps) {
           dentists={dentists}
           region={region}
           cities={cities}
+          specializations={specializations}
           selectedCity={city}
+          selectedSpecialization={specialization}
         />
       </section>
 

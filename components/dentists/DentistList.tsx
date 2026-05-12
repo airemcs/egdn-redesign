@@ -1,5 +1,5 @@
 import DentistCard from './DentistCard';
-import CityFilter from './CityFilter';
+import FilterDropdown from './FilterDropdown';
 import { Suspense } from 'react';
 
 interface Dentist {
@@ -18,29 +18,53 @@ interface DentistListProps {
   dentists: Dentist[];
   region: string;
   cities: string[];
+  specializations: string[];
   selectedCity?: string;
+  selectedSpecialization?: string;
 }
 
-export default function DentistList({ dentists, region, cities, selectedCity }: DentistListProps) {
+const FilterFallback = ({ placeholder }: { placeholder: string }) => (
+  <div className="flex h-12 items-center rounded-input border border-border bg-surface px-4">
+    <span className="text-[14px] text-text-muted">{placeholder}</span>
+  </div>
+);
+
+export default function DentistList({
+  dentists,
+  cities,
+  specializations,
+  selectedCity,
+  selectedSpecialization,
+}: DentistListProps) {
   return (
     <div>
-      {/* Filter bar — block layout on mobile (filter, then count below),
-          flex-row on sm+. The width-controlling div around the filter has
-          `w-full max-w-sm` so the select inside always has real width to
-          claim, regardless of flex behavior. */}
-      <div className="mb-5 sm:mb-6 sm:flex sm:items-center sm:gap-5">
-        <div className="">
-          <Suspense
-            fallback={
-              <div className="flex h-12 items-center rounded-input border border-border bg-surface px-4">
-                <span className="text-[14px] text-text-muted">All cities &amp; municipalities</span>
-              </div>
-            }
-          >
-            <CityFilter cities={cities} region={region} selectedCity={selectedCity} />
-          </Suspense>
+      {/* Filter card — both dropdowns under a shared "Filter by" label,
+          two-column on sm+ and stacked on mobile. */}
+      <div className="mb-5 sm:mb-6">
+        <div className="rounded-card border border-border bg-surface p-5 sm:p-6">
+          <span className="mb-3 block text-[13px] font-medium text-text">Filter by</span>
+          <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
+            <Suspense fallback={<FilterFallback placeholder="All cities & municipalities" />}>
+              <FilterDropdown
+                options={cities}
+                selected={selectedCity}
+                paramName="city"
+                placeholder="All cities & municipalities"
+                ariaLabel="Filter by city"
+              />
+            </Suspense>
+            <Suspense fallback={<FilterFallback placeholder="All specializations" />}>
+              <FilterDropdown
+                options={specializations}
+                selected={selectedSpecialization}
+                paramName="specialization"
+                placeholder="All specializations"
+                ariaLabel="Filter by specialization"
+              />
+            </Suspense>
+          </div>
         </div>
-        <p className="mt-2 text-[13px] text-text-muted sm:mt-0">
+        <p className="mt-3 text-[13px] text-text-muted">
           {dentists.length} {dentists.length === 1 ? 'result' : 'results'}
         </p>
       </div>
@@ -48,7 +72,10 @@ export default function DentistList({ dentists, region, cities, selectedCity }: 
       {dentists.length === 0 ? (
         <div className="rounded-card border border-border bg-surface p-10 text-center">
           <p className="text-[15px] text-text-muted">
-            No dentists found{selectedCity ? ` in ${selectedCity}` : ''}. Try a nearby city or{' '}
+            No dentists found
+            {selectedCity ? ` in ${selectedCity}` : ''}
+            {selectedSpecialization ? ` for ${selectedSpecialization}` : ''}
+            . Try a different filter or{' '}
             <a href="/contact" className="text-brand hover:underline">
               contact us
             </a>

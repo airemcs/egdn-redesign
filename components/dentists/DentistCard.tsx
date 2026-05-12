@@ -1,5 +1,6 @@
 import Avatar from '@/components/ui/Avatar';
 import Button from '@/components/ui/Button';
+import { formatDentistName } from '@/lib/utils';
 
 interface DentistCardProps {
   name: string;
@@ -27,20 +28,31 @@ export default function DentistCard({
       <div className="flex gap-4 items-start">
         <Avatar name={name} size={56} />
         <div className="flex-1 min-w-0">
-          <div className="flex flex-wrap items-center gap-2 mb-1">
-            <h3 className="font-display text-[20px] font-semibold text-text leading-snug">{name}</h3>
+          {/* Name + specialization.
+              Mobile: name wraps naturally (full-width), spec tag drops below
+              the clinic name on its own line.
+              sm+: name and spec sit on one row; name takes flex-1 with
+              truncate so the spec tag is always visible. */}
+          <div className="sm:flex sm:items-center sm:gap-2">
+            <h3
+              className="font-display text-[20px] font-semibold leading-snug text-text sm:min-w-0 sm:flex-1 sm:truncate"
+              title={formatDentistName(name)}
+            >
+              {formatDentistName(name)}
+            </h3>
             {specializations[0] && (
-              <span className="text-[12px] font-semibold text-brand bg-brand-light rounded-full px-2.5 py-1 shrink-0">
+              <span className="hidden shrink-0 rounded-full bg-brand-light px-2.5 py-1 text-[12px] font-semibold text-brand sm:inline-block">
                 {specializations[0]}
               </span>
             )}
-            {multipleLocations && (
-              <span className="text-[11px] font-medium text-text-muted bg-surface border border-border rounded-full px-2.5 py-1 shrink-0">
-                Multiple locations
-              </span>
-            )}
           </div>
-          <p className="text-[14px] text-text-muted leading-snug">{clinicName}</p>
+          <p className="mt-0.5 text-[14px] text-text-muted leading-snug">{clinicName}</p>
+          {/* Mobile-only specialization — own line below clinic */}
+          {specializations[0] && (
+            <span className="mt-1.5 inline-block rounded-full bg-brand-light px-2.5 py-1 text-[12px] font-semibold text-brand sm:hidden">
+              {specializations[0]}
+            </span>
+          )}
           <ul className="mt-3 space-y-1.5">
             <li className="flex items-start gap-2 text-[13px] text-text">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0 text-text-muted" aria-hidden>
@@ -60,7 +72,12 @@ export default function DentistCard({
           </ul>
         </div>
       </div>
-      <div className="flex justify-end">
+
+      {/* Footer — (multiple locations) on the left, View Profile on the right */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <span className="text-[12px] text-text-muted">
+          {multipleLocations ? '(multiple locations)' : ''}
+        </span>
         <Button href={`/dentist/${slug}`} variant="secondary" size="default">
           View Profile →
         </Button>
