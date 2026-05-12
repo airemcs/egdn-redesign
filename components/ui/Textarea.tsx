@@ -1,5 +1,5 @@
 interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
-  label: string;
+  label: React.ReactNode;
   error?: string;
   id: string;
 }

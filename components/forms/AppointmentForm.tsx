@@ -103,28 +103,29 @@ export default function AppointmentForm({ dentist }: AppointmentFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+      {/* Member identity */}
       <div className="grid gap-5 sm:grid-cols-2">
-        <Input id="memberName" name="memberName" label="Member Name" required error={errors.memberName} />
-        <Input id="memberId" name="memberId" label="Member ID" required error={errors.memberId} />
+        <Input
+          id="memberName"
+          name="memberName"
+          label="Member Name"
+          placeholder="Juan Dela Cruz"
+          required
+          error={errors.memberName}
+        />
+        <Input
+          id="memberId"
+          name="memberId"
+          label="Member ID"
+          placeholder="EGDN-000000"
+          required
+          error={errors.memberId}
+        />
       </div>
 
-      {isProfile ? (
-        <>
-          <div className="rounded-input border border-border bg-bg px-4 py-3 text-[15px] text-text-muted">
-            {dentist!.name}
-            {selectedClinic && ` — ${selectedClinic}`}
-          </div>
-          {dentist!.clinics.length > 1 && (
-            <Select
-              id="clinicName"
-              label="Select Clinic Location"
-              options={clinicOptions}
-              value={selectedClinic}
-              onChange={(e) => setSelectedClinic(e.target.value)}
-            />
-          )}
-        </>
-      ) : (
+      {/* Standalone-only dentist text field. Profile flow shows the selected
+          dentist as a read-only block near the bottom of the form instead. */}
+      {!isProfile && (
         <Input
           id="dentistName"
           name="dentistName"
@@ -134,6 +135,7 @@ export default function AppointmentForm({ dentist }: AppointmentFormProps) {
         />
       )}
 
+      {/* Preferred date + time */}
       <div className="grid gap-5 sm:grid-cols-2">
         <Input
           id="preferredDate"
@@ -141,6 +143,7 @@ export default function AppointmentForm({ dentist }: AppointmentFormProps) {
           label="Preferred Date"
           type="date"
           min={minDate()}
+          helper="Earliest: 3 days from today"
           required
           error={errors.preferredDate}
         />
@@ -160,6 +163,7 @@ export default function AppointmentForm({ dentist }: AppointmentFormProps) {
         name="contactNumber"
         label="Contact Number"
         type="tel"
+        placeholder="+63 9XX XXX XXXX"
         required
         error={errors.contactNumber}
       />
@@ -167,9 +171,40 @@ export default function AppointmentForm({ dentist }: AppointmentFormProps) {
       <Textarea
         id="notes"
         name="notes"
-        label="Notes / Special Requests"
-        placeholder="Optional — let us know if you have any special needs or questions."
+        label={
+          <>
+            Notes / Special Requests{' '}
+            <span className="font-normal text-text-muted">(optional)</span>
+          </>
+        }
+        placeholder="Any allergies, preferences, or context for the dentist."
       />
+
+      {/* Selected Dentist — readonly display at the bottom of the form so the
+          form input fields lead, and the pre-chosen dentist sits as a summary
+          right above the submit button. */}
+      {isProfile && (
+        <div className="flex flex-col gap-1.5">
+          <span className="text-[13px] font-medium text-text">Selected Dentist</span>
+          <div className="rounded-input border border-border bg-bg px-4 py-3 text-[15px] text-text">
+            <strong className="font-semibold">{dentist!.name}</strong>
+            {selectedClinic && (
+              <span className="text-text-muted"> — {selectedClinic}</span>
+            )}
+          </div>
+          {dentist!.clinics.length > 1 && (
+            <div className="mt-1.5">
+              <Select
+                id="clinicName"
+                label="Select Clinic Location"
+                options={clinicOptions}
+                value={selectedClinic}
+                onChange={(e) => setSelectedClinic(e.target.value)}
+              />
+            </div>
+          )}
+        </div>
+      )}
 
       {status === 'error' && (
         <p className="text-[14px] text-error">
@@ -180,10 +215,26 @@ export default function AppointmentForm({ dentist }: AppointmentFormProps) {
       <Button
         type="submit"
         disabled={status === 'loading'}
-        size="large"
+        size="default"
         className="w-full justify-center sm:w-auto"
       >
         {status === 'loading' ? 'Sending…' : 'Request Appointment'}
+        {status !== 'loading' && (
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden
+          >
+            <line x1="5" y1="12" x2="19" y2="12" />
+            <polyline points="12 5 19 12 12 19" />
+          </svg>
+        )}
       </Button>
     </form>
   );

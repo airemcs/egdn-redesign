@@ -1,104 +1,93 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
-import AppointmentForm from '@/components/forms/AppointmentForm';
-import CtaSection from '@/components/sections/CtaSection';
+import Breadcrumb from '@/components/ui/Breadcrumb';
+import BookingWizard, { type DentistSummary } from '@/components/forms/BookingWizard';
+import { connectDB } from '@/lib/mongodb';
+import Dentist, { type DentistClinic } from '@/lib/models/Dentist';
+import { formatDentistName } from '@/lib/utils';
 
 export const metadata: Metadata = {
   title: 'Book an Appointment — EGDN',
   description: "Request a dental appointment through EGDN. We'll confirm within 1 business day.",
 };
 
-const beforeYouBook = [
-  {
-    n: '01',
-    title: 'Pick a partner dentist',
-    body: 'Already have one in mind? Great. If not, search our directory first.',
-  },
-  {
-    n: '02',
-    title: "We'll confirm within 1 business day",
-    body: 'Expect a call or email to confirm your slot. Bookings need at least 3 days lead time.',
-  },
-  {
-    n: '03',
-    title: 'Bring your IDs to the clinic',
-    body: 'Bring your EGDN member ID and a valid government-issued ID to your appointment.',
-  },
-];
+// Re-render hourly; the partner network only grows on a clinic-onboarding cadence.
+export const revalidate = 3600;
 
-export default function BookAppointmentPage() {
+function initialsOf(name: string): string {
+  // Pick first letter of given name + first letter of surname when possible.
+  const tokens = name.replace(/^(DR\.?|Dr\.?)\s+/i, '').split(/\s+/).filter(Boolean);
+  if (tokens.length === 0) return '?';
+  const first = tokens[0][0];
+  const last = tokens[tokens.length - 1][0];
+  return (first + (tokens.length > 1 ? last : '')).toUpperCase();
+}
+
+async function fetchBookingData() {
+  await connectDB();
+
+  // Region list (ordered by clinic count desc, alphabetical tiebreaker)
+  const regions = await Dentist.aggregate<{ _id: string; count: number }>([
+    { $unwind: '$clinics' },
+    { $group: { _id: '$clinics.region', count: { $sum: 1 } } },
+    { $sort: { count: -1, _id: 1 } },
+  ]);
+
+  // Per-dentist summary the client form needs. Each dentist is represented
+  // once (using their first clinic) for the picker UI — the booking flow
+  // doesn't need every clinic location at this stage.
+  const rawDentists = await Dentist.find({})
+    .select('name slug specializations clinics')
+    .lean();
+
+  const dentists: DentistSummary[] = rawDentists.map((d) => {
+    const clinic = (d.clinics?.[0] ?? {}) as DentistClinic;
+    return {
+      slug: d.slug,
+      name: formatDentistName(d.name),
+      initials: initialsOf(d.name),
+      region: clinic.region ?? '',
+      city: clinic.city ?? '',
+      specialty: d.specializations?.[0] ?? '',
+      clinicName: clinic.clinicName ?? '',
+    };
+  });
+
+  const specialties = [
+    ...new Set(rawDentists.flatMap((d) => (d.specializations ?? []) as string[])),
+  ].sort();
+
+  return { regions, dentists, specialties };
+}
+
+export default async function BookAppointmentPage() {
+  const { regions, dentists, specialties } = await fetchBookingData();
+
   return (
     <>
-      <div className="mx-auto max-w-5xl px-5 py-10 sm:px-6 sm:py-16 lg:px-8 lg:py-24">
-        <div className="max-w-3xl">
-          <h1 className="font-display text-[30px] font-bold leading-[1.1] tracking-[-0.01em] text-text sm:text-[40px] lg:text-[52px]">
-            Book an Appointment
+      {/* ── Page header ────────────────────────────────────────────────────── */}
+      <section className="mx-auto max-w-300 px-5 pt-12 pb-4 sm:px-6 sm:pt-16 lg:px-10">
+        <Breadcrumb crumbs={[{ label: 'Home', href: '/' }, { label: 'Book an Appointment' }]} />
+        <div className="max-w-[720px]">
+          <span className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:text-[12px]">
+            Member benefit
+          </span>
+          <h1 className="mb-3 font-display text-[28px] font-bold leading-[1.2] text-text sm:text-[34px] lg:text-[40px]">
+            Book your appointment
           </h1>
-          <p className="mt-5 max-w-[640px] text-[16px] leading-[1.65] text-text-muted sm:mt-6 sm:text-[18px] lg:text-[20px]">
-            Tell us when you'd like to come in and we'll handle the rest. EGDN will confirm
-            your booking within 1 business day.
+          <p
+            className="text-[16px] leading-[1.55] text-text-muted lg:text-[19px]"
+            style={{ textWrap: 'pretty' } as React.CSSProperties}
+          >
+            Tell us a bit about you and where you&apos;d like to be seen. EGDN will confirm your
+            booking by phone within 1 business day — no paperwork at the clinic.
           </p>
         </div>
+      </section>
 
-        <div className="mt-10 grid gap-10 sm:mt-14 lg:mt-16 lg:grid-cols-[1fr_1.7fr] lg:gap-16">
-          {/* Sidebar — helpful context. Below the form on mobile via lg:order-1 */}
-          <aside className="order-2 flex flex-col gap-6 lg:order-1 lg:sticky lg:top-24 lg:self-start">
-            <div>
-              <span className="block text-[11px] font-semibold uppercase tracking-widest text-brand">
-                Before you book
-              </span>
-              <h2 className="mt-2 font-display text-[20px] font-semibold text-text lg:text-[22px]">
-                Three quick things to know
-              </h2>
-            </div>
-
-            <ol className="flex flex-col gap-4">
-              {beforeYouBook.map((s) => (
-                <li key={s.n} className="flex gap-4">
-                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-brand-light font-display text-[14px] font-bold text-brand">
-                    {s.n}
-                  </span>
-                  <div>
-                    <h3 className="font-body text-[15px] font-semibold text-text">{s.title}</h3>
-                    <p className="mt-0.5 text-[14px] leading-relaxed text-text-muted">{s.body}</p>
-                  </div>
-                </li>
-              ))}
-            </ol>
-
-            <div className="rounded-card border border-border bg-surface p-5">
-              <span className="text-[11px] font-semibold uppercase tracking-widest text-text-muted">
-                Need a dentist?
-              </span>
-              <p className="mt-1.5 text-[14px] leading-relaxed text-text">
-                Browse our partner clinics by region or city — 16 regions, hundreds of clinics nationwide.
-              </p>
-              <Link
-                href="/find-a-dentist"
-                className="mt-3 inline-flex items-center gap-1.5 text-[14px] font-semibold text-brand hover:gap-2 transition-[gap]"
-              >
-                Find a Dentist
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                  <line x1="5" y1="12" x2="19" y2="12" />
-                  <polyline points="12 5 19 12 12 19" />
-                </svg>
-              </Link>
-            </div>
-          </aside>
-
-          {/* Form — first on mobile, right column on desktop */}
-          <div className="order-1 lg:order-2 rounded-card border border-border bg-surface p-5 sm:p-7 lg:p-9">
-            <AppointmentForm />
-          </div>
-        </div>
-      </div>
-
-      <CtaSection
-        headline="Already have a dentist in mind?"
-        subtext="Browse our directory of partner clinics to make sure they're in-network."
-        primaryLabel="Find a Dentist"
-        primaryHref="/find-a-dentist"
-      />
+      {/* ── Wizard ─────────────────────────────────────────────────────────── */}
+      <section className="mx-auto max-w-300 px-5 pt-8 pb-16 sm:px-6 sm:pt-10 lg:px-10 lg:pb-24">
+        <BookingWizard regions={regions} dentists={dentists} specialties={specialties} />
+      </section>
     </>
   );
 }

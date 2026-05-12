@@ -22,31 +22,62 @@ export default async function FindADentistPage({ searchParams }: PageProps) {
 
   // ── No region selected — show region picker ──────────────────────────────
   if (!region) {
-    // Order by clinic count desc; alphabetical as a tiebreaker so ties (e.g.
-    // CAR and Region IV-B both at 2) stay in a predictable order.
+    // Standard Philippine region order — NCR, CAR, then I → XIII numerically.
+    // Anything not in this list (future regions, typos) falls to the bottom.
+    const REGION_ORDER = [
+      'NCR',
+      'CAR',
+      'Region I (Ilocos)',
+      'Region II (Cagayan Valley)',
+      'Region III (Central Luzon)',
+      'Region IV-A (CALABARZON)',
+      'Region IV-B (MIMAROPA)',
+      'Region V (Bicol)',
+      'Region VI (Western Visayas)',
+      'Region VII (Central Visayas)',
+      'Region VIII (Eastern Visayas)',
+      'Region IX (Zamboanga Peninsula)',
+      'Region X (Northern Mindanao)',
+      'Region XI (Davao)',
+      'Region XII (SOCCSKSARGEN)',
+      'Region XIII (Caraga)',
+      'BARMM (Bangsamoro)',
+    ];
     const regions = await Dentist.aggregate<{ _id: string; count: number }>([
       { $unwind: '$clinics' },
       { $group: { _id: '$clinics.region', count: { $sum: 1 } } },
-      { $sort: { count: -1, _id: 1 } },
     ]);
+    regions.sort((a, b) => {
+      const ia = REGION_ORDER.indexOf(a._id);
+      const ib = REGION_ORDER.indexOf(b._id);
+      const ra = ia === -1 ? Number.MAX_SAFE_INTEGER : ia;
+      const rb = ib === -1 ? Number.MAX_SAFE_INTEGER : ib;
+      if (ra !== rb) return ra - rb;
+      return a._id.localeCompare(b._id);
+    });
 
     return (
       <>
         {/* ── Page header ────────────────────────────────────────────────── */}
-        <section className="mx-auto max-w-300 px-5 pt-12 pb-4 sm:px-6 sm:pt-16 lg:px-10 lg:pt-[58px]">
+        <section className="mx-auto max-w-300 px-5 pt-12 pb-4 sm:px-6 sm:pt-16 lg:px-10">
           <Breadcrumb crumbs={[{ label: 'Home', href: '/' }, { label: 'Find a Dentist' }]} />
-          <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:mb-3 sm:text-[12px]">
-            Find a dentist
-          </span>
-          <h1 className="mt-3 mb-[14px] font-display text-[28px] font-bold leading-[1.2] text-text sm:mt-4 sm:mb-[18px] sm:text-[34px] lg:text-[40px]">
-            Find a Dentist
-          </h1>
-          <p
-            className="max-w-[620px] text-[16px] leading-[1.55] text-text-muted lg:text-[19px]"
-            style={{ textWrap: 'pretty' } as React.CSSProperties}
-          >
-            Choose your region to see partner clinics near you.
-          </p>
+          {/* Only the title block (eyebrow + h1 + subtitle) is constrained —
+              breadcrumb stays at full container width. Matches the design's
+              <div className="section-head" style={{maxWidth: 720}}> pattern. */}
+          <div className="max-w-[720px]">
+            <span className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:text-[12px]">
+              Find a dentist
+            </span>
+            <h1 className="mb-3 font-display text-[28px] font-bold leading-[1.2] text-text sm:text-[34px] lg:text-[40px]">
+              Find a Dentist
+            </h1>
+            <p
+              className="text-[16px] leading-[1.55] text-text-muted lg:text-[19px]"
+              style={{ textWrap: 'pretty' } as React.CSSProperties}
+            >
+              Choose your region to see partner clinics near you.
+            </p>
+          </div>
         </section>
 
         {/* ── Region cards ───────────────────────────────────────────────── */}
@@ -104,7 +135,7 @@ export default async function FindADentistPage({ searchParams }: PageProps) {
   return (
     <>
       {/* ── Page header ────────────────────────────────────────────────────── */}
-      <section className="mx-auto max-w-300 px-5 pt-12 pb-4 sm:px-6 sm:pt-16 lg:px-10 lg:pt-[58px]">
+      <section className="mx-auto max-w-300 px-5 pt-12 pb-4 sm:px-6 sm:pt-16 lg:px-10">
         <Breadcrumb
           crumbs={[
             { label: 'Home', href: '/' },
@@ -112,23 +143,25 @@ export default async function FindADentistPage({ searchParams }: PageProps) {
             { label: region },
           ]}
         />
-        <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:mb-3 sm:text-[12px]">
-          Browse the network
-        </span>
-        <h1 className="mt-3 mb-[14px] font-display text-[28px] font-bold leading-[1.2] text-text sm:mt-4 sm:mb-[18px] sm:text-[34px] lg:text-[40px]">
-          Dentists in {region}
-        </h1>
-        <p
-          className="max-w-[620px] text-[16px] leading-[1.55] text-text-muted lg:text-[19px]"
-          style={{ textWrap: 'pretty' } as React.CSSProperties}
-        >
-          {dentists.length} partner {dentists.length === 1 ? 'clinic' : 'clinics'}
-          {city ? ` in ${city}` : ''}.
-        </p>
+        <div className="max-w-[720px]">
+          <span className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:text-[12px]">
+            Browse the network
+          </span>
+          <h1 className="mb-3 font-display text-[28px] font-bold leading-[1.2] text-text sm:text-[34px] lg:text-[40px]">
+            Dentists in {region}
+          </h1>
+          <p
+            className="text-[16px] leading-[1.55] text-text-muted lg:text-[19px]"
+            style={{ textWrap: 'pretty' } as React.CSSProperties}
+          >
+            {dentists.length} partner {dentists.length === 1 ? 'clinic' : 'clinics'}
+            {city ? ` in ${city}` : ''}.
+          </p>
+        </div>
       </section>
 
       {/* ── Dentist list ───────────────────────────────────────────────────── */}
-      <section className="mx-auto max-w-300 px-5 pt-8 pb-16 sm:px-6 sm:pt-10 lg:px-10 lg:pb-24">
+      <section className="mx-auto max-w-300 px-5 py-8 sm:px-6 sm:py-10 lg:px-10">
         <DentistList
           dentists={dentists}
           region={region}

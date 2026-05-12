@@ -1,6 +1,7 @@
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
   error?: string;
+  helper?: string;
   id: string;
 }
 
@@ -10,7 +11,7 @@ const fieldBase =
   'focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 ' +
   'disabled:opacity-50';
 
-export default function Input({ label, error, id, className = '', ...rest }: InputProps) {
+export default function Input({ label, error, helper, id, className = '', ...rest }: InputProps) {
   return (
     <div className="flex flex-col gap-1.5">
       <label htmlFor={id} className="text-[13px] font-medium text-text">
@@ -19,9 +20,14 @@ export default function Input({ label, error, id, className = '', ...rest }: Inp
       <input
         id={id}
         className={[fieldBase, error ? 'border-error' : '', className].join(' ')}
-        aria-describedby={error ? `${id}-error` : undefined}
+        aria-describedby={error ? `${id}-error` : helper ? `${id}-helper` : undefined}
         {...rest}
       />
+      {helper && !error && (
+        <span id={`${id}-helper`} className="text-[12px] text-text-muted">
+          {helper}
+        </span>
+      )}
       {error && (
         <span id={`${id}-error`} className="text-[13px] text-error">
           {error}

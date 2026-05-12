@@ -28,31 +28,20 @@ export default function DentistCard({
       <div className="flex gap-4 items-start">
         <Avatar name={name} size={56} />
         <div className="flex-1 min-w-0">
-          {/* Name + specialization.
-              Mobile: name wraps naturally (full-width), spec tag drops below
-              the clinic name on its own line.
-              sm+: name and spec sit on one row; name takes flex-1 with
-              truncate so the spec tag is always visible. */}
-          <div className="sm:flex sm:items-center sm:gap-2">
-            <h3
-              className="font-display text-[20px] font-semibold leading-snug text-text sm:min-w-0 sm:flex-1 sm:truncate"
-              title={formatDentistName(name)}
-            >
+          {/* Head row — name + specialty tag. flex-wrap lets them sit on one
+              line normally and wrap to the next line when the name is long.
+              No truncation: per the design's .dentist-head pattern. */}
+          <div className="mb-1 flex flex-wrap items-center gap-x-2.5 gap-y-1">
+            <h3 className="font-display text-[20px] font-semibold leading-tight text-text">
               {formatDentistName(name)}
             </h3>
             {specializations[0] && (
-              <span className="hidden shrink-0 rounded-full bg-brand-light px-2.5 py-1 text-[12px] font-semibold text-brand sm:inline-block">
+              <span className="rounded-full bg-brand-light px-2.5 py-1 text-[12px] font-semibold text-brand">
                 {specializations[0]}
               </span>
             )}
           </div>
-          <p className="mt-0.5 text-[14px] text-text-muted leading-snug">{clinicName}</p>
-          {/* Mobile-only specialization — own line below clinic */}
-          {specializations[0] && (
-            <span className="mt-1.5 inline-block rounded-full bg-brand-light px-2.5 py-1 text-[12px] font-semibold text-brand sm:hidden">
-              {specializations[0]}
-            </span>
-          )}
+          <p className="text-[14px] text-text-muted leading-snug">{clinicName}</p>
           <ul className="mt-3 space-y-1.5">
             <li className="flex items-start gap-2 text-[13px] text-text">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0 text-text-muted" aria-hidden>
