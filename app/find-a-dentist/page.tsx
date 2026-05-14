@@ -12,11 +12,16 @@ export const metadata: Metadata = {
 };
 
 interface PageProps {
-  searchParams: Promise<{ region?: string; city?: string; specialization?: string }>;
+  searchParams: Promise<{
+    region?: string;
+    city?: string;
+    specialization?: string;
+    name?: string;
+  }>;
 }
 
 export default async function FindADentistPage({ searchParams }: PageProps) {
-  const { region, city, specialization } = await searchParams;
+  const { region, city, specialization, name } = await searchParams;
 
   await connectDB();
 
@@ -90,9 +95,28 @@ export default async function FindADentistPage({ searchParams }: PageProps) {
   }
 
   // ── Region selected — fetch and filter dentists ──────────────────────────
-  const filter: Record<string, string> = { 'clinics.region': region };
+  const filter: Record<string, unknown> = { 'clinics.region': region };
   if (city) filter['clinics.city'] = city;
   if (specialization) filter.specializations = specialization;
+  if (name) {
+    // Single search field matches either dentist name OR clinic phone number.
+    // - Name search is a case-insensitive substring (names are stored uppercase
+    //   like "DR. MELISSA M. GATMAITAN").
+    // - Phone search strips the query to digits-only and builds a regex that
+    //   allows arbitrary non-digit separators between each digit, so a query
+    //   of "6159" matches "(02) 6159-4010".
+    const trimmed = name.trim();
+    const escapedName = trimmed.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const digits = trimmed.replace(/\D/g, '');
+    const or: Record<string, unknown>[] = [
+      { name: { $regex: escapedName, $options: 'i' } },
+    ];
+    if (digits.length >= 3) {
+      const phoneRegex = digits.split('').join('\\D*');
+      or.push({ 'clinics.contactNumber': { $regex: phoneRegex } });
+    }
+    filter.$or = or;
+  }
 
   const rawDentists = await Dentist.find(filter).select('name slug specializations clinics').lean();
 
@@ -110,7 +134,6 @@ export default async function FindADentistPage({ searchParams }: PageProps) {
       city: clinic?.city ?? '',
       address: clinic?.address ?? '',
       contactNumber: clinic?.contactNumber ?? '',
-      multipleLocations: d.clinics.length > 1,
     };
   });
 
@@ -169,6 +192,7 @@ export default async function FindADentistPage({ searchParams }: PageProps) {
           specializations={specializations}
           selectedCity={city}
           selectedSpecialization={specialization}
+          selectedName={name}
         />
       </section>
 

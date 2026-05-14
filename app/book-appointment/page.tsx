@@ -41,6 +41,9 @@ async function fetchBookingData() {
 
   const dentists: DentistSummary[] = rawDentists.map((d) => {
     const clinic = (d.clinics?.[0] ?? {}) as DentistClinic;
+    const contactNumbers = ((d.clinics ?? []) as DentistClinic[])
+      .map((c) => c.contactNumber)
+      .filter((p): p is string => Boolean(p));
     return {
       slug: d.slug,
       name: formatDentistName(d.name),
@@ -49,6 +52,7 @@ async function fetchBookingData() {
       city: clinic.city ?? '',
       specialty: d.specializations?.[0] ?? '',
       clinicName: clinic.clinicName ?? '',
+      contactNumbers,
     };
   });
 

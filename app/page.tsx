@@ -17,31 +17,38 @@ export const revalidate = 3600;
 
 async function getNetworkStats() {
   await connectDB();
-  const [agg] = await Dentist.aggregate<{
-    clinics: number;
-    regions: number;
-    cities: number;
-  }>([
-    { $unwind: '$clinics' },
-    {
-      $group: {
-        _id: null,
-        clinics: { $sum: 1 },
-        regions: { $addToSet: '$clinics.region' },
-        // region+city composite — same city name in different regions stays distinct
-        cities: { $addToSet: { $concat: ['$clinics.region', '|', '$clinics.city'] } },
+  // Run the per-clinic aggregation and the per-dentist count in parallel —
+  // the aggregation $unwinds clinics so it can't count distinct dentists
+  // directly, hence the separate countDocuments call.
+  const [aggResult, dentistsCount] = await Promise.all([
+    Dentist.aggregate<{
+      clinics: number;
+      regions: number;
+      cities: number;
+    }>([
+      { $unwind: '$clinics' },
+      {
+        $group: {
+          _id: null,
+          clinics: { $sum: 1 },
+          regions: { $addToSet: '$clinics.region' },
+          // region+city composite — same city name in different regions stays distinct
+          cities: { $addToSet: { $concat: ['$clinics.region', '|', '$clinics.city'] } },
+        },
       },
-    },
-    {
-      $project: {
-        _id: 0,
-        clinics: 1,
-        regions: { $size: '$regions' },
-        cities: { $size: '$cities' },
+      {
+        $project: {
+          _id: 0,
+          clinics: 1,
+          regions: { $size: '$regions' },
+          cities: { $size: '$cities' },
+        },
       },
-    },
+    ]),
+    Dentist.countDocuments(),
   ]);
-  return agg ?? { clinics: 0, regions: 0, cities: 0 };
+  const agg = aggResult[0] ?? { clinics: 0, regions: 0, cities: 0 };
+  return { ...agg, dentists: dentistsCount };
 }
 
 
@@ -87,7 +94,7 @@ export default async function HomePage() {
   const networkStats = await getNetworkStats();
   const stats: { value: string; label: string; shortLabel?: string }[] = [
     { value: String(networkStats.clinics), label: 'Partner Clinics' },
-    { value: String(networkStats.regions), label: 'Regions' },
+    { value: String(networkStats.dentists), label: 'Dentists' },
     {
       value: String(networkStats.cities),
       label: 'Cities & Municipalities',
@@ -205,16 +212,32 @@ export default async function HomePage() {
 
       {/* ── How it works ───────────────────────────────────────────────────── */}
       <section className="mx-auto max-w-300 px-5 py-10 sm:px-6 sm:py-14 lg:px-10 lg:py-20">
-        <div className="mb-6 max-w-[640px] sm:mb-[40px]">
-          <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:mb-3 sm:text-[12px]">
-            How it works
-          </span>
-          <h2 className="font-display text-[22px] font-semibold text-text sm:text-[26px] lg:text-[30px]">
-            Using your benefit is simple.
-          </h2>
-          <p className="mt-2 text-[15px] leading-relaxed text-text-muted sm:mt-3 sm:text-[16px] lg:text-[17px]">
-            Three steps from start to treatment.
-          </p>
+        <div className="mb-6 grid items-center gap-6 sm:mb-[40px] sm:gap-8 lg:grid-cols-2 lg:gap-12">
+          <div className="max-w-[640px]">
+            <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:mb-3 sm:text-[12px]">
+              How it works
+            </span>
+            <h2 className="font-display text-[22px] font-semibold text-text sm:text-[26px] lg:text-[30px]">
+              Using your benefit is simple.
+            </h2>
+            <p className="mt-2 text-[15px] leading-relaxed text-text-muted sm:mt-3 sm:text-[16px] lg:text-[17px]">
+              Three steps from start to treatment. Your EGDN member card is your key to any
+              partner clinic in the network.
+            </p>
+          </div>
+
+          {/* Member ID card — container aspect matches the source image
+              (1195×672 ≈ 16:9) so object-cover fills the frame with no
+              letterboxing, and the card sits centered by default. */}
+          <div className="relative aspect-1195/672 overflow-hidden rounded-card border border-border">
+            <Image
+              src="/images/member-card.png"
+              alt="EGDN member ID card"
+              fill
+              className="object-cover object-center"
+              sizes="(min-width: 1024px) 480px, 100vw"
+            />
+          </div>
         </div>
 
         <div className="grid gap-3 sm:grid-cols-3 sm:gap-[24px]">

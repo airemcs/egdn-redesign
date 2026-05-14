@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import Breadcrumb from '@/components/ui/Breadcrumb';
 import ContactForm from '@/components/forms/ContactForm';
 
 export const metadata: Metadata = {
@@ -70,29 +71,26 @@ const MapMiniIcon = () => (
 export default function ContactPage() {
   return (
     <>
-      {/* ── Page header ────────────────────────────────────────────────────── */}
-      {/* Whole header block (breadcrumb + title) is pushed down so "Get in touch"
-          aligns with the home hero's "Quality dental care" eyebrow. Breadcrumb stays
-          tight against the eyebrow with a small mb. */}
-      <section className="mx-auto max-w-300 px-5 pt-12 pb-4 sm:px-6 sm:pt-16 lg:px-10 lg:pt-[58px] lg:pb-[27px]">
-        <nav aria-label="Breadcrumb" className="mb-4 flex flex-wrap items-center gap-1.5 text-[13px] text-text-muted">
-          <Link href="/" className="hover:text-brand">Home</Link>
-          <span className="text-border-strong">›</span>
-          <span className="text-text">Contact</span>
-        </nav>
-        <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:mb-3 sm:text-[12px]">
-          Get in touch
-        </span>
-        <h1 className="mt-3 mb-[14px] font-display text-[28px] font-bold leading-[1.2] text-text sm:mt-4 sm:mb-[18px] sm:text-[34px] lg:text-[40px]">
-          We're here to help.
-        </h1>
-        <p
-          className="text-[16px] leading-[1.55] text-text-muted lg:text-[19px]"
-          style={{ textWrap: 'pretty' } as React.CSSProperties}
-        >
-          Questions about your benefit, our network, or partnering with EGDN - reach us the
-          way that works for you.
-        </p>
+      {/* ── Page header ─ matches the find-a-dentist heading pattern:
+          breadcrumb at full container width, title block constrained to 720px,
+          tight rhythm (eyebrow → h1 → subtitle, no extra mt/mb on h1). ── */}
+      <section className="mx-auto max-w-300 px-5 pt-12 pb-4 sm:px-6 sm:pt-16 lg:px-10">
+        <Breadcrumb crumbs={[{ label: 'Home', href: '/' }, { label: 'Contact' }]} />
+        <div className="max-w-[720px]">
+          <span className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:text-[12px]">
+            Get in touch
+          </span>
+          <h1 className="mb-3 font-display text-[28px] font-bold leading-[1.2] text-text sm:text-[34px] lg:text-[40px]">
+            We&apos;re here to help.
+          </h1>
+          <p
+            className="text-[16px] leading-[1.55] text-text-muted lg:text-[19px]"
+            style={{ textWrap: 'pretty' } as React.CSSProperties}
+          >
+            Questions about your benefit, our network, or partnering with EGDN — reach us the
+            way that works for you.
+          </p>
+        </div>
       </section>
 
       {/* ── Form + Sidebar ─────────────────────────────────────────────────── */}
@@ -103,19 +101,13 @@ export default function ContactPage() {
             <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:mb-3 sm:text-[12px]">
               Send a message
             </span>
-            <h2 className="mb-7 font-display text-[24px] font-semibold text-text sm:mb-0 sm:text-[28px]">
-              Drop us a line.
+            <h2 className="font-display text-[24px] font-semibold leading-tight text-text sm:text-[28px]">
+              Tell us what&apos;s going on
             </h2>
-            {/* Subtitle is hidden on mobile to save vertical space; h2's mb-7 above
-                takes over the spacing. On sm+, this paragraph reappears with its own
-                mt/mb and h2's mb resets to 0 (sm:mb-0). */}
-            <p className="hidden text-[15px] text-text-muted sm:mt-3 sm:mb-9 sm:block">
-              Fill out the form and we'll route it to the right person on our team.
+            <p className="mt-2 mb-7 text-[15px] text-text-muted sm:mt-3 sm:mb-9">
+              We typically reply within 1 business day. For urgent issues, call our hotline.
             </p>
             <ContactForm />
-            <p className="mt-5 text-[13px] leading-[1.5] text-text-muted sm:mt-6">
-              By submitting, you agree to our <Link href="/privacy" className="underline underline-offset-[3px] hover:text-text">privacy policy</Link>. We never share your information.
-            </p>
           </div>
 
           {/* Sidebar — below form on mobile (Hours card first via order-first),

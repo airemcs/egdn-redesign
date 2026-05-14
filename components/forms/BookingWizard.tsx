@@ -11,6 +11,8 @@ export interface DentistSummary {
   city: string;
   specialty: string;
   clinicName: string;
+  /** All clinic phone numbers for this dentist — used for phone-search. */
+  contactNumbers: string[];
 }
 
 interface BookingWizardProps {
@@ -22,12 +24,24 @@ interface BookingWizardProps {
 const REASON_OPTIONS = [
   { id: 'checkup', label: 'Routine check-up & cleaning' },
   { id: 'pain', label: 'Tooth pain or discomfort' },
-  { id: 'cosmetic', label: 'Cosmetic / orthodontic consult' },
   { id: 'procedure', label: 'Specific procedure' },
   { id: 'other', label: 'Other / not sure yet' },
 ];
 
 const TIME_OPTIONS = ['Morning', 'Afternoon', 'Evening'] as const;
+
+// Specializations to hide from the Step 2 chip picker. The dentists who
+// hold these as their primary specialty are still findable — they just
+// don't surface a dedicated filter chip. Keeping the set centralized so
+// it's easy to toggle later.
+const HIDDEN_SPECIALTIES = new Set<string>([
+  'CPS',
+  'Cosmetic Dentistry',
+  'Dental Sleep Medicine',
+  'Implant Dentistry',
+  'Prosthodontics',
+  'TMJ',
+]);
 
 const ArrowRight = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
@@ -55,6 +69,29 @@ const SearchIcon = () => (
   </svg>
 );
 
+const ClinicIcon = () => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <path d="M3 21h18" />
+    <path d="M5 21V7l7-4 7 4v14" />
+    <path d="M10 11h4" />
+    <path d="M12 9v4" />
+    <path d="M10 17h4" />
+  </svg>
+);
+
+const VideoIcon = () => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <rect x="2" y="6" width="14" height="12" rx="2" />
+    <polyline points="22 8 16 12 22 16 22 8" />
+  </svg>
+);
+
+const BoltIcon = () => (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+    <path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z" />
+  </svg>
+);
+
 const minDateString = () => {
   const d = new Date();
   d.setDate(d.getDate() + 3);
@@ -62,7 +99,7 @@ const minDateString = () => {
 };
 
 export default function BookingWizard({ regions, dentists, specialties }: BookingWizardProps) {
-  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [refNum, setRefNum] = useState<string>('');
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -77,6 +114,7 @@ export default function BookingWizard({ regions, dentists, specialties }: Bookin
     phone: '',
     email: '',
     // Step 2
+    visitType: 'in-person' as 'in-person' | 'teleconsult',
     regionId: '',
     city: '',
     specialty: '',
@@ -92,6 +130,13 @@ export default function BookingWizard({ regions, dentists, specialties }: Bookin
   const update = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) => {
     setForm((f) => {
       const next = { ...f, [key]: value };
+      // Switching to teleconsult wipes any in-person location/dentist picks.
+      // Switching back leaves them empty (user will fill in fresh).
+      if (key === 'visitType' && value === 'teleconsult') {
+        next.regionId = '';
+        next.city = '';
+        next.dentistSlug = '';
+      }
       // Reset downstream selectors when upstream changes
       if (key === 'regionId') {
         next.city = '';
@@ -138,25 +183,41 @@ export default function BookingWizard({ regions, dentists, specialties }: Bookin
   }, [dentists, form.regionId, form.city, form.specialty]);
   // Specialties available given the current region + city filters. Before a
   // region is picked, fall back to the full list passed in from the server.
+  // The HIDDEN_SPECIALTIES set strips a few specialties from the chip picker
+  // (still findable via "Any" — just no dedicated chip).
   const availableSpecialties = useMemo(() => {
-    if (!form.regionId) return specialties;
-    const pool = dentists
-      .filter((d) => d.region === form.regionId)
-      .filter((d) => !form.city || d.city === form.city);
-    return [...new Set(pool.map((d) => d.specialty).filter(Boolean))].sort();
+    const base = !form.regionId
+      ? specialties
+      : [
+          ...new Set(
+            dentists
+              .filter((d) => d.region === form.regionId)
+              .filter((d) => !form.city || d.city === form.city)
+              .map((d) => d.specialty)
+              .filter(Boolean),
+          ),
+        ].sort();
+    return base.filter((s) => !HIDDEN_SPECIALTIES.has(s));
   }, [dentists, specialties, form.regionId, form.city]);
   // Dropdown results — only computed/shown while the user is searching.
   // No default top-5; the picker stays compact ("Let EGDN match me" + search)
   // until the user types, at which point matches drop down from the input.
+  // Matches on name, clinic name, or any of the dentist's clinic phone numbers
+  // (digits-only comparison so "(02) 6159-4010" matches "6159").
   const searchResults = useMemo(() => {
-    const q = dentistQuery.trim().toLowerCase();
-    if (!q) return [];
+    const raw = dentistQuery.trim();
+    if (!raw) return [];
+    const q = raw.toLowerCase();
+    const digits = raw.replace(/\D/g, '');
     return matchingDentists
-      .filter(
-        (d) =>
-          d.name.toLowerCase().includes(q) ||
-          d.clinicName.toLowerCase().includes(q),
-      )
+      .filter((d) => {
+        if (d.name.toLowerCase().includes(q)) return true;
+        if (d.clinicName.toLowerCase().includes(q)) return true;
+        if (digits.length >= 3) {
+          return d.contactNumbers.some((p) => p.replace(/\D/g, '').includes(digits));
+        }
+        return false;
+      })
       .slice(0, 10);
   }, [matchingDentists, dentistQuery]);
   const selectedDentist = useMemo(
@@ -164,7 +225,7 @@ export default function BookingWizard({ regions, dentists, specialties }: Bookin
     [dentists, form.dentistSlug],
   );
 
-  function validateStep(s: 1 | 2 | 3) {
+  function validateStep(s: 1 | 2 | 3 | 4) {
     const err: Record<string, string> = {};
     if (s === 1) {
       if (!form.name.trim()) err.name = 'Required';
@@ -174,11 +235,16 @@ export default function BookingWizard({ regions, dentists, specialties }: Bookin
         err.email = 'Enter a valid email';
       }
     }
-    if (s === 2) {
-      if (!form.regionId) err.regionId = 'Choose a region';
+    // Step 2 (visit type) — always has a default ('in-person'), so no validation.
+    if (s === 3) {
+      // Region is only required for in-person visits — teleconsult skips
+      // location entirely (EGDN matches you with any partner).
+      if (form.visitType === 'in-person' && !form.regionId) {
+        err.regionId = 'Choose a region';
+      }
       if (!form.date) err.date = 'Required';
     }
-    if (s === 3) {
+    if (s === 4) {
       if (!form.reason) err.reason = 'Select a reason';
     }
     return err;
@@ -189,18 +255,18 @@ export default function BookingWizard({ regions, dentists, specialties }: Bookin
     setErrors(err);
     if (Object.keys(err).length === 0) {
       window.scrollTo({ top: 0, behavior: 'instant' });
-      setStep((step + 1) as 1 | 2 | 3);
+      setStep((step + 1) as 1 | 2 | 3 | 4);
     }
   }
 
   function goBack() {
     window.scrollTo({ top: 0, behavior: 'instant' });
-    setStep((step - 1) as 1 | 2 | 3);
+    setStep((step - 1) as 1 | 2 | 3 | 4);
   }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const err = validateStep(3);
+    const err = validateStep(4);
     setErrors(err);
     if (Object.keys(err).length > 0) return;
 
@@ -214,7 +280,11 @@ export default function BookingWizard({ regions, dentists, specialties }: Bookin
           ? 'Returning patient'
           : 'EGDN to assign';
 
+    const modeLabel =
+      form.visitType === 'teleconsult' ? 'Teleconsultation (virtual)' : 'In-person visit';
+
     const composedNotes = [
+      `Mode: ${modeLabel}`,
       `Reason: ${reasonLabel}`,
       `Visit type: ${visitLabel}`,
       form.email ? `Email: ${form.email}` : '',
@@ -227,13 +297,24 @@ export default function BookingWizard({ regions, dentists, specialties }: Bookin
     const body = {
       memberName: form.name,
       memberId: form.memberId,
-      dentistName: selectedDentist?.name ?? `EGDN match — ${region?._id ?? ''}`,
-      clinicName: selectedDentist?.clinicName ?? 'To be assigned',
+      dentistName:
+        form.visitType === 'teleconsult'
+          ? 'EGDN teleconsult — to be assigned'
+          : (selectedDentist?.name ?? `EGDN match — ${region?._id ?? ''}`),
+      clinicName:
+        form.visitType === 'teleconsult'
+          ? 'Virtual consultation'
+          : (selectedDentist?.clinicName ?? 'To be assigned'),
       preferredDate: form.date,
       preferredTime: form.time,
       contactNumber: form.phone,
       notes: composedNotes,
-      source: selectedDentist ? 'profile' : 'standalone',
+      source:
+        form.visitType === 'teleconsult'
+          ? 'teleconsult'
+          : selectedDentist
+            ? 'profile'
+            : 'standalone',
     };
 
     try {
@@ -268,17 +349,21 @@ export default function BookingWizard({ regions, dentists, specialties }: Bookin
             You're all set, {form.name.split(' ')[0] || 'member'}.
           </h1>
           <p className="mt-3 text-[16px] leading-[1.55] text-text-muted">
-            EGDN will contact you at <strong className="text-text">{form.phone}</strong> within 1
-            business day to confirm your appointment
-            {selectedDentist ? (
+            EGDN will contact you at <strong className="text-text">{form.phone}</strong> within{' '}
+            <strong className="text-text">
+              {form.visitType === 'teleconsult' ? '1 business hour' : '1 business day'}
+            </strong>{' '}
+            to confirm your{' '}
+            {form.visitType === 'teleconsult' ? 'teleconsultation' : 'appointment'}
+            {form.visitType === 'in-person' && selectedDentist ? (
               <>
                 {' '}with <strong className="text-text">{selectedDentist.name}</strong>
               </>
-            ) : (
+            ) : form.visitType === 'in-person' ? (
               <>
                 {' '}at a partner clinic in <strong className="text-text">{region?._id}</strong>
               </>
-            )}
+            ) : null}
             .
           </p>
 
@@ -304,10 +389,21 @@ export default function BookingWizard({ regions, dentists, specialties }: Bookin
               What happens next
             </h3>
             <ol className="ml-5 flex list-decimal flex-col gap-2 text-[14px] leading-[1.5] text-text marker:font-bold marker:text-brand">
-              <li>EGDN reviews your request and matches you with the right clinic.</li>
-              <li>We confirm the appointment by phone within 1 business day.</li>
-              <li>You receive an SMS with the final date, time, and clinic details.</li>
-              <li>On the day, bring your member ID — the clinic handles the rest.</li>
+              {form.visitType === 'teleconsult' ? (
+                <>
+                  <li>EGDN reviews your request and assigns an on-call partner dentist.</li>
+                  <li>We call you back to confirm within 1 business hour.</li>
+                  <li>You receive a secure video-call link by SMS and email.</li>
+                  <li>Join the call at your scheduled time — no clinic visit needed.</li>
+                </>
+              ) : (
+                <>
+                  <li>EGDN reviews your request and matches you with the right clinic.</li>
+                  <li>We confirm the appointment by phone within 1 business day.</li>
+                  <li>You receive an SMS with the final date, time, and clinic details.</li>
+                  <li>On the day, bring your member ID — the clinic handles the rest.</li>
+                </>
+              )}
             </ol>
           </div>
 
@@ -331,7 +427,7 @@ export default function BookingWizard({ regions, dentists, specialties }: Bookin
   }
 
   // ─── Wizard form ─────────────────────────────────────────────────────────
-  const stepLabels = ['Your info', 'Where & when', 'Visit details'] as const;
+  const stepLabels = ['Your info', 'Visit type', 'Where & when', 'Visit details'] as const;
 
   return (
     <div className="grid items-start gap-8 md:grid-cols-[minmax(0,1fr)_320px] md:gap-8 lg:grid-cols-[minmax(0,1fr)_360px] lg:gap-10">
@@ -342,7 +438,7 @@ export default function BookingWizard({ regions, dentists, specialties }: Bookin
             to fill the space; the line turns brand-light once the step is done. */}
         <ol className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-0">
           {stepLabels.map((label, i) => {
-            const n = (i + 1) as 1 | 2 | 3;
+            const n = (i + 1) as 1 | 2 | 3 | 4;
             const state = step === n ? 'active' : step > n ? 'done' : 'todo';
             const isLast = i === stepLabels.length - 1;
             return (
@@ -407,7 +503,7 @@ export default function BookingWizard({ regions, dentists, specialties }: Bookin
               <>
                 <header className="mb-6">
                   <span className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:text-[12px]">
-                    Step 1 of 3
+                    Step 1 of 4
                   </span>
                   <h2 className="mt-1.5 font-display text-[24px] font-semibold text-text sm:text-[28px]">
                     Your information
@@ -473,21 +569,64 @@ export default function BookingWizard({ regions, dentists, specialties }: Bookin
               </>
             )}
 
-            {/* ===== Step 2 ===== */}
+            {/* ===== Step 2: Visit type ===== */}
             {step === 2 && (
               <>
                 <header className="mb-6">
                   <span className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:text-[12px]">
-                    Step 2 of 3
+                    Step 2 of 4
                   </span>
                   <h2 className="mt-1.5 font-display text-[24px] font-semibold text-text sm:text-[28px]">
-                    Where &amp; when
+                    How would you like to be seen?
                   </h2>
                   <p className="mt-2 text-[15px] text-text-muted">
-                    Pick a region and city. You can choose a specific dentist or let EGDN match you.
+                    Choose between an in-person clinic visit or a virtual consultation. You can change this later.
                   </p>
                 </header>
 
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <VisitTypeCard
+                    active={form.visitType === 'in-person'}
+                    onClick={() => update('visitType', 'in-person')}
+                    icon={<ClinicIcon />}
+                    label="In-person visit"
+                    sub="Get treated at a partner clinic near you. Best for cleanings, exams, and procedures."
+                    meta="Confirmed within 1 business day"
+                  />
+                  <VisitTypeCard
+                    active={form.visitType === 'teleconsult'}
+                    onClick={() => update('visitType', 'teleconsult')}
+                    icon={<VideoIcon />}
+                    label="Teleconsultation"
+                    sub="Talk to a partner dentist over video for advice, second opinions, or a referral."
+                    meta={
+                      <span className="inline-flex items-center gap-1 text-brand">
+                        <BoltIcon /> Confirmed within 1 business hour
+                      </span>
+                    }
+                  />
+                </div>
+              </>
+            )}
+
+            {/* ===== Step 3: Where & when ===== */}
+            {step === 3 && (
+              <>
+                <header className="mb-6">
+                  <span className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:text-[12px]">
+                    Step 3 of 4
+                  </span>
+                  <h2 className="mt-1.5 font-display text-[24px] font-semibold text-text sm:text-[28px]">
+                    {form.visitType === 'teleconsult' ? 'When works for you?' : 'Where & when'}
+                  </h2>
+                  <p className="mt-2 text-[15px] text-text-muted">
+                    {form.visitType === 'teleconsult'
+                      ? 'Pick a date for your virtual consult. EGDN matches you with an on-call partner dentist and confirms within 1 business hour.'
+                      : 'Pick a region and city. You can choose a specific dentist or let EGDN match you.'}
+                  </p>
+                </header>
+
+                {form.visitType === 'in-person' && (
                 <div className="grid gap-5 sm:grid-cols-2">
                   <Field id="region" label="Region" error={errors.regionId}>
                     <SelectShell hasError={!!errors.regionId}>
@@ -534,6 +673,7 @@ export default function BookingWizard({ regions, dentists, specialties }: Bookin
                     </SelectShell>
                   </Field>
                 </div>
+                )}
 
                 <div className="mt-5">
                   <Label>
@@ -627,9 +767,9 @@ export default function BookingWizard({ regions, dentists, specialties }: Bookin
                           placeholder={
                             selectedDentist
                               ? 'Search to choose a different dentist…'
-                              : `Search ${matchingDentists.length} dentist${matchingDentists.length === 1 ? '' : 's'} by name…`
+                              : `Search ${matchingDentists.length} dentist${matchingDentists.length === 1 ? '' : 's'} by name or phone number…`
                           }
-                          aria-label="Search dentists by name"
+                          aria-label="Search dentists by name or phone number"
                           aria-expanded={dentistQuery.trim().length > 0}
                           className="block h-11 w-full rounded-input border border-border bg-surface pl-10 pr-3.5 text-[14px] text-text transition-colors placeholder:text-text-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-[rgba(27,127,168,0.12)]"
                         />
@@ -713,12 +853,12 @@ export default function BookingWizard({ regions, dentists, specialties }: Bookin
               </>
             )}
 
-            {/* ===== Step 3 ===== */}
-            {step === 3 && (
+            {/* ===== Step 4: Visit details ===== */}
+            {step === 4 && (
               <>
                 <header className="mb-6">
                   <span className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:text-[12px]">
-                    Step 3 of 3
+                    Step 4 of 4
                   </span>
                   <h2 className="mt-1.5 font-display text-[24px] font-semibold text-text sm:text-[28px]">
                     Visit details
@@ -818,7 +958,7 @@ export default function BookingWizard({ regions, dentists, specialties }: Bookin
               </a>
             )}
 
-            {step < 3 ? (
+            {step < 4 ? (
               <Button type="button" onClick={goNext} size="default">
                 Continue
                 <ArrowRight />
@@ -845,23 +985,33 @@ export default function BookingWizard({ regions, dentists, specialties }: Bookin
             <SummaryRow label="Member" value={form.name} />
             <SummaryRow label="Member ID" value={form.memberId} />
             <SummaryRow label="Contact" value={form.phone} />
-            <SummaryRow label="Region" value={region?._id} />
             <SummaryRow
-              label="City"
-              value={form.city || (region ? 'Any in region' : '')}
-              muted={!form.city}
+              label="Visit type"
+              value={form.visitType === 'teleconsult' ? 'Teleconsultation' : 'In-person'}
             />
-            <SummaryRow
-              label="Dentist"
-              value={
-                selectedDentist
-                  ? selectedDentist.name
-                  : form.regionId
-                    ? 'EGDN to match'
-                    : ''
-              }
-              muted={!selectedDentist}
-            />
+            {form.visitType === 'in-person' && (
+              <SummaryRow label="Region" value={region?._id} />
+            )}
+            {form.visitType === 'in-person' && (
+              <SummaryRow
+                label="City"
+                value={form.city || (region ? 'Any in region' : '')}
+                muted={!form.city}
+              />
+            )}
+            {form.visitType === 'in-person' && (
+              <SummaryRow
+                label="Dentist"
+                value={
+                  selectedDentist
+                    ? selectedDentist.name
+                    : form.regionId
+                      ? 'EGDN to match'
+                      : ''
+                }
+                muted={!selectedDentist}
+              />
+            )}
             <SummaryRow label="Specialty" value={form.specialty || 'Any'} muted={!form.specialty} />
             <SummaryRow
               label="Date"
@@ -878,7 +1028,8 @@ export default function BookingWizard({ regions, dentists, specialties }: Bookin
             </li>
             <li className="flex items-center gap-2">
               <span className="text-brand"><Check size={14} /></span>
-              Confirmed within 1 business day
+              Confirmed within{' '}
+              {form.visitType === 'teleconsult' ? '1 business hour' : '1 business day'}
             </li>
             <li className="flex items-center gap-2">
               <span className="text-brand"><Check size={14} /></span>
@@ -1043,6 +1194,61 @@ function DentistPickItem({
         )}
       </span>
       {children}
+    </button>
+  );
+}
+
+function VisitTypeCard({
+  active,
+  onClick,
+  icon,
+  label,
+  sub,
+  meta,
+}: {
+  active: boolean;
+  onClick: () => void;
+  icon: React.ReactNode;
+  label: string;
+  sub: string;
+  meta: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={[
+        'relative flex h-full flex-col items-start gap-4 rounded-card border bg-bg p-5 text-left transition-colors sm:p-6',
+        active
+          ? 'border-brand bg-brand-light shadow-[0_0_0_1px_var(--color-brand)]'
+          : 'border-border hover:border-text-muted',
+      ].join(' ')}
+    >
+      <span className="flex w-full items-start justify-between gap-3">
+        <span
+          className={[
+            'grid h-11 w-11 shrink-0 place-items-center rounded-full transition-colors',
+            active ? 'bg-brand text-white' : 'bg-brand-light text-brand',
+          ].join(' ')}
+        >
+          {icon}
+        </span>
+        <span
+          className={[
+            'relative mt-1 h-[18px] w-[18px] shrink-0 rounded-full border-2 bg-bg transition-colors',
+            active ? 'border-brand' : 'border-border',
+          ].join(' ')}
+          aria-hidden
+        >
+          {active && <span className="absolute inset-[3px] rounded-full bg-brand" />}
+        </span>
+      </span>
+      <span className="flex flex-col gap-1">
+        <span className="text-[16px] font-semibold leading-tight text-text">{label}</span>
+        <span className="text-[13px] leading-[1.5] text-text-muted">{sub}</span>
+      </span>
+      <span className="mt-auto pt-1 text-[12px] font-medium text-text-muted">{meta}</span>
     </button>
   );
 }

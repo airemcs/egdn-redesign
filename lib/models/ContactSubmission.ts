@@ -4,9 +4,16 @@ const ContactSubmissionSchema = new Schema(
   {
     name: { type: String, required: true },
     email: { type: String, required: true },
-    contactNumber: { type: String, required: true },
+    // contactNumber is now optional — the redesigned form treats phone as an
+    // optional field. Historical submissions stay valid because Mongoose
+    // doesn't re-validate existing documents.
+    contactNumber: { type: String },
     subject: { type: String, required: true },
     message: { type: String, required: true },
+    // Optional context captured by the redesigned form
+    role: { type: String, enum: ['member', 'company', 'provider', 'general'] },
+    memberId: { type: String },
+    company: { type: String },
   },
   { timestamps: { createdAt: true, updatedAt: false } }
 );

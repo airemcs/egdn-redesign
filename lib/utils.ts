@@ -65,3 +65,18 @@ export function formatDentistName(name: string): string {
   }
   return formatSingleDentistName(name);
 }
+
+/**
+ * Split a phone-number string that may contain multiple numbers separated by
+ * "/", ",", ";", or "|" into a clean array. Empty/whitespace-only entries
+ * are dropped.
+ *
+ *   "0917-890-9467 / 0905-576-8685" → ["0917-890-9467", "0905-576-8685"]
+ *   "(02) 8836-7181"               → ["(02) 8836-7181"]
+ */
+export function splitPhoneNumbers(raw: string): string[] {
+  return raw
+    .split(/\s*[/,;|]\s*/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+}

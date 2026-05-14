@@ -43,7 +43,7 @@ const steps = [
 export default function HowItWorksPage() {
   return (
     <>
-      <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
+      <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
         <h1 className="font-display text-3xl font-bold text-text lg:text-4xl">How It Works</h1>
         <p className="mt-3 text-[16px] text-text-muted">
           Using your EGDN dental benefit is straightforward. Here's what to expect.
@@ -76,15 +76,6 @@ export default function HowItWorksPage() {
             ))}
           </div>
         </ol>
-
-        {/* Coverage note */}
-        <div className="mt-14 rounded-card border border-border bg-surface p-6">
-          <h2 className="font-display text-xl font-semibold text-text">What's covered?</h2>
-          <p className="mt-2 text-[15px] text-text-muted leading-relaxed">
-            Coverage depends on your employer's specific plan. For questions about what your plan
-            includes, <Link href="/contact" className="text-brand hover:underline">contact EGDN directly</Link>.
-          </p>
-        </div>
       </div>
 
       <CtaSection

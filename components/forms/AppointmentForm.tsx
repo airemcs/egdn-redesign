@@ -31,9 +31,74 @@ function minDate(): string {
   return d.toISOString().split('T')[0];
 }
 
+const ClinicIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <path d="M3 21h18" />
+    <path d="M5 21V7l7-4 7 4v14" />
+    <path d="M10 11h4" />
+    <path d="M12 9v4" />
+    <path d="M10 17h4" />
+  </svg>
+);
+
+const VideoIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <rect x="2" y="6" width="14" height="12" rx="2" />
+    <polyline points="22 8 16 12 22 16 22 8" />
+  </svg>
+);
+
+const BoltIcon = () => (
+  <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+    <path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z" />
+  </svg>
+);
+
+function VisitTypeCard({
+  active,
+  onClick,
+  icon,
+  label,
+  meta,
+}: {
+  active: boolean;
+  onClick: () => void;
+  icon: React.ReactNode;
+  label: string;
+  meta: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={[
+        'flex h-full flex-col gap-1.5 rounded-input border bg-bg p-3 text-left transition-colors',
+        active
+          ? 'border-brand bg-brand-light'
+          : 'border-border hover:border-text-muted',
+      ].join(' ')}
+    >
+      <span className="flex items-center gap-2">
+        <span
+          className={[
+            'grid h-7 w-7 shrink-0 place-items-center rounded-full transition-colors',
+            active ? 'bg-brand text-white' : 'bg-brand-light text-brand',
+          ].join(' ')}
+        >
+          {icon}
+        </span>
+        <span className="text-[13px] font-semibold leading-tight text-text">{label}</span>
+      </span>
+      <span className="mt-auto text-[11px] font-medium text-text-muted">{meta}</span>
+    </button>
+  );
+}
+
 export default function AppointmentForm({ dentist }: AppointmentFormProps) {
   const isProfile = !!dentist;
   const [selectedClinic, setSelectedClinic] = useState(dentist?.clinics[0]?.clinicName ?? '');
+  const [visitType, setVisitType] = useState<'in-person' | 'teleconsult'>('in-person');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -47,16 +112,33 @@ export default function AppointmentForm({ dentist }: AppointmentFormProps) {
     const form = e.currentTarget;
     const data = new FormData(form);
 
+    const modeLabel =
+      visitType === 'teleconsult' ? 'Teleconsultation (virtual)' : 'In-person visit';
+    const rawNotes = (data.get('notes') as string) ?? '';
+    const composedNotes = [`Mode: ${modeLabel}`, rawNotes].filter(Boolean).join('\n');
+
     const body = {
       memberName: data.get('memberName') as string,
       memberId: data.get('memberId') as string,
       dentistName: isProfile ? dentist!.name : (data.get('dentistName') as string),
-      clinicName: isProfile ? selectedClinic : (data.get('dentistName') as string),
+      clinicName:
+        visitType === 'teleconsult'
+          ? 'Virtual consultation'
+          : isProfile
+            ? selectedClinic
+            : (data.get('dentistName') as string),
       preferredDate: data.get('preferredDate') as string,
       preferredTime: data.get('preferredTime') as string,
       contactNumber: data.get('contactNumber') as string,
-      notes: data.get('notes') as string,
-      source: isProfile ? 'profile' : 'standalone',
+      notes: composedNotes,
+      source:
+        visitType === 'teleconsult'
+          ? isProfile
+            ? 'profile-teleconsult'
+            : 'teleconsult'
+          : isProfile
+            ? 'profile'
+            : 'standalone',
       ...(isProfile && { dentistId: dentist!.id }),
     };
 
@@ -95,7 +177,9 @@ export default function AppointmentForm({ dentist }: AppointmentFormProps) {
       <div className="rounded-card border border-border bg-surface p-6 text-center">
         <p className="font-semibold text-text">Your request has been sent.</p>
         <p className="mt-1 text-[14px] text-text-muted">
-          EGDN will contact you within 1 business day to confirm your appointment.
+          EGDN will contact you within{' '}
+          {visitType === 'teleconsult' ? '1 business hour' : '1 business day'} to confirm your{' '}
+          {visitType === 'teleconsult' ? 'teleconsultation' : 'appointment'}.
         </p>
       </div>
     );
@@ -103,6 +187,35 @@ export default function AppointmentForm({ dentist }: AppointmentFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+      {/* Visit type — in-person vs teleconsultation. Sets the SLA copy and
+          routes the submission either to the chosen clinic or to EGDN's
+          on-call virtual queue. */}
+      <div>
+        <span className="mb-2 block text-[13px] font-medium text-text">
+          How would you like to be seen?
+        </span>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <VisitTypeCard
+            active={visitType === 'in-person'}
+            onClick={() => setVisitType('in-person')}
+            icon={<ClinicIcon />}
+            label="In-person visit"
+            meta="Confirmed within 1 business day"
+          />
+          <VisitTypeCard
+            active={visitType === 'teleconsult'}
+            onClick={() => setVisitType('teleconsult')}
+            icon={<VideoIcon />}
+            label="Teleconsultation"
+            meta={
+              <span className="inline-flex items-center gap-1 text-brand">
+                <BoltIcon /> Confirmed within 1 business hour
+              </span>
+            }
+          />
+        </div>
+      </div>
+
       {/* Member identity */}
       <div className="grid gap-5 sm:grid-cols-2">
         <Input
@@ -182,17 +295,21 @@ export default function AppointmentForm({ dentist }: AppointmentFormProps) {
 
       {/* Selected Dentist — readonly display at the bottom of the form so the
           form input fields lead, and the pre-chosen dentist sits as a summary
-          right above the submit button. */}
+          right above the submit button. For teleconsult the clinic location
+          isn't relevant; we annotate the line with "virtual consult" and hide
+          the clinic location selector. */}
       {isProfile && (
         <div className="flex flex-col gap-1.5">
           <span className="text-[13px] font-medium text-text">Selected Dentist</span>
           <div className="rounded-input border border-border bg-bg px-4 py-3 text-[15px] text-text">
             <strong className="font-semibold">{dentist!.name}</strong>
-            {selectedClinic && (
-              <span className="text-text-muted"> — {selectedClinic}</span>
+            {visitType === 'teleconsult' ? (
+              <span className="text-text-muted"> — virtual consult</span>
+            ) : (
+              selectedClinic && <span className="text-text-muted"> — {selectedClinic}</span>
             )}
           </div>
-          {dentist!.clinics.length > 1 && (
+          {visitType === 'in-person' && dentist!.clinics.length > 1 && (
             <div className="mt-1.5">
               <Select
                 id="clinicName"

@@ -10,14 +10,27 @@ const fieldBase =
   'focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 ' +
   'disabled:opacity-50';
 
-export default function Textarea({ label, error, id, className = '', ...rest }: TextareaProps) {
+export default function Textarea({
+  label,
+  error,
+  id,
+  className = '',
+  required,
+  ...rest
+}: TextareaProps) {
   return (
     <div className="flex flex-col gap-1.5">
       <label htmlFor={id} className="text-[13px] font-medium text-text">
         {label}
+        {required && (
+          <span className="ml-0.5 text-error" aria-hidden="true">
+            *
+          </span>
+        )}
       </label>
       <textarea
         id={id}
+        required={required}
         className={[fieldBase, error ? 'border-error' : '', className].join(' ')}
         aria-describedby={error ? `${id}-error` : undefined}
         {...rest}

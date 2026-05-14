@@ -5,7 +5,7 @@ import Dentist, { type DentistClinic } from '@/lib/models/Dentist';
 import Avatar from '@/components/ui/Avatar';
 import Breadcrumb from '@/components/ui/Breadcrumb';
 import AppointmentForm from '@/components/forms/AppointmentForm';
-import CtaSection from '@/components/sections/CtaSection';
+import { splitPhoneNumbers } from '@/lib/utils';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -124,7 +124,17 @@ export default async function DentistProfilePage({ params }: PageProps) {
                       <dt className="text-[12px] font-semibold uppercase tracking-[0.06em] text-text-muted">
                         {row.label}
                       </dt>
-                      <dd className="text-[14px] leading-snug text-text">{row.value}</dd>
+                      <dd className="text-[14px] leading-snug text-text">
+                        {row.label === 'Contact' && row.value ? (
+                          <div className="flex flex-col">
+                            {splitPhoneNumbers(row.value).map((p) => (
+                              <span key={p}>{p}</span>
+                            ))}
+                          </div>
+                        ) : (
+                          row.value
+                        )}
+                      </dd>
                     </div>
                   ))}
               </dl>
@@ -185,7 +195,17 @@ export default async function DentistProfilePage({ params }: PageProps) {
                         <dt className="text-[12px] font-semibold uppercase tracking-[0.06em] text-text-muted">
                           {row.label}
                         </dt>
-                        <dd className="text-[14px] leading-snug text-text">{row.value}</dd>
+                        <dd className="text-[14px] leading-snug text-text">
+                        {row.label === 'Contact' && row.value ? (
+                          <div className="flex flex-col">
+                            {splitPhoneNumbers(row.value).map((p) => (
+                              <span key={p}>{p}</span>
+                            ))}
+                          </div>
+                        ) : (
+                          row.value
+                        )}
+                      </dd>
                       </div>
                     ))}
                   </dl>
@@ -233,8 +253,6 @@ export default async function DentistProfilePage({ params }: PageProps) {
 
         </div>
       </div>
-
-      <CtaSection />
     </>
   );
 }

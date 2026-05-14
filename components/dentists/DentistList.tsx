@@ -1,5 +1,6 @@
 import DentistCard from './DentistCard';
 import FilterDropdown from './FilterDropdown';
+import DentistSearchInput from './DentistSearchInput';
 import { Suspense } from 'react';
 
 interface Dentist {
@@ -11,7 +12,6 @@ interface Dentist {
   address: string;
   contactNumber: string;
   specializations: string[];
-  multipleLocations?: boolean;
 }
 
 interface DentistListProps {
@@ -21,6 +21,7 @@ interface DentistListProps {
   specializations: string[];
   selectedCity?: string;
   selectedSpecialization?: string;
+  selectedName?: string;
 }
 
 const FilterFallback = ({ placeholder }: { placeholder: string }) => (
@@ -35,33 +36,39 @@ export default function DentistList({
   specializations,
   selectedCity,
   selectedSpecialization,
+  selectedName,
 }: DentistListProps) {
   return (
     <div>
-      {/* Filter card — both dropdowns under a shared "Filter by" label,
-          two-column on sm+ and stacked on mobile. */}
+      {/* Filter card — name search on top (full-width), then city +
+          specialization dropdowns in a 2-col grid (stacked on mobile). */}
       <div className="mb-5 sm:mb-6">
         <div className="rounded-card border border-border bg-surface p-5 sm:p-6">
           <span className="mb-3 block text-[13px] font-medium text-text">Filter by</span>
-          <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
-            <Suspense fallback={<FilterFallback placeholder="All cities & municipalities" />}>
-              <FilterDropdown
-                options={cities}
-                selected={selectedCity}
-                paramName="city"
-                placeholder="All cities & municipalities"
-                ariaLabel="Filter by city"
-              />
+          <div className="flex flex-col gap-3 sm:gap-4">
+            <Suspense fallback={<FilterFallback placeholder="Search by dentist name or phone number…" />}>
+              <DentistSearchInput selected={selectedName} />
             </Suspense>
-            <Suspense fallback={<FilterFallback placeholder="All specializations" />}>
-              <FilterDropdown
-                options={specializations}
-                selected={selectedSpecialization}
-                paramName="specialization"
-                placeholder="All specializations"
-                ariaLabel="Filter by specialization"
-              />
-            </Suspense>
+            <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
+              <Suspense fallback={<FilterFallback placeholder="All cities & municipalities" />}>
+                <FilterDropdown
+                  options={cities}
+                  selected={selectedCity}
+                  paramName="city"
+                  placeholder="All cities & municipalities"
+                  ariaLabel="Filter by city"
+                />
+              </Suspense>
+              <Suspense fallback={<FilterFallback placeholder="All specializations" />}>
+                <FilterDropdown
+                  options={specializations}
+                  selected={selectedSpecialization}
+                  paramName="specialization"
+                  placeholder="All specializations"
+                  ariaLabel="Filter by specialization"
+                />
+              </Suspense>
+            </div>
           </div>
         </div>
         <p className="mt-3 text-[13px] text-text-muted">
@@ -73,6 +80,7 @@ export default function DentistList({
         <div className="rounded-card border border-border bg-surface p-10 text-center">
           <p className="text-[15px] text-text-muted">
             No dentists found
+            {selectedName ? ` matching "${selectedName}"` : ''}
             {selectedCity ? ` in ${selectedCity}` : ''}
             {selectedSpecialization ? ` for ${selectedSpecialization}` : ''}
             . Try a different filter or{' '}

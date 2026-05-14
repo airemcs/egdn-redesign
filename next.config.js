@@ -3,6 +3,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   devIndicators: false,
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+        pathname: '/**',
+      },
+    ],
+  },
   async redirects() {
     return [
       { source: '/our-dentists', destination: '/find-a-dentist', permanent: true },
@@ -12,7 +21,6 @@ const nextConfig = {
       { source: '/copy-of-nominate-your-dentist', destination: '/book-appointment', permanent: true },
       { source: '/memberfaqs', destination: '/faqs', permanent: true },
       { source: '/nominate-your-dentist', destination: '/nominate', permanent: true },
-      { source: '/non-members', destination: '/partner-with-us', permanent: true },
       { source: '/copy-of-dental-provider-s-faqs', destination: '/join-our-network', permanent: true },
       { source: '/contact-us', destination: '/contact', permanent: true },
       { source: '/generatedigitalid', destination: '/digital-id', permanent: true },

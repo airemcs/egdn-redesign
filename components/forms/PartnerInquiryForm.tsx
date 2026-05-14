@@ -15,6 +15,28 @@ const employeeCountOptions = [
   { value: '500+', label: '500+' },
 ];
 
+// Standard Philippine regions — matches the seeded Dentist data so the value
+// posted by this form is consistent with what the directory queries against.
+const regionOptions = [
+  { value: 'NCR', label: 'NCR — National Capital Region' },
+  { value: 'CAR', label: 'CAR — Cordillera' },
+  { value: 'Region I (Ilocos)', label: 'Region I — Ilocos' },
+  { value: 'Region II (Cagayan Valley)', label: 'Region II — Cagayan Valley' },
+  { value: 'Region III (Central Luzon)', label: 'Region III — Central Luzon' },
+  { value: 'Region IV-A (CALABARZON)', label: 'Region IV-A — CALABARZON' },
+  { value: 'Region IV-B (MIMAROPA)', label: 'Region IV-B — MIMAROPA' },
+  { value: 'Region V (Bicol)', label: 'Region V — Bicol' },
+  { value: 'Region VI (Western Visayas)', label: 'Region VI — Western Visayas' },
+  { value: 'Region VII (Central Visayas)', label: 'Region VII — Central Visayas' },
+  { value: 'Region VIII (Eastern Visayas)', label: 'Region VIII — Eastern Visayas' },
+  { value: 'Region IX (Zamboanga Peninsula)', label: 'Region IX — Zamboanga Peninsula' },
+  { value: 'Region X (Northern Mindanao)', label: 'Region X — Northern Mindanao' },
+  { value: 'Region XI (Davao)', label: 'Region XI — Davao' },
+  { value: 'Region XII (SOCCSKSARGEN)', label: 'Region XII — SOCCSKSARGEN' },
+  { value: 'Region XIII (Caraga)', label: 'Region XIII — Caraga' },
+  { value: 'BARMM (Bangsamoro)', label: 'BARMM — Bangsamoro' },
+];
+
 export default function PartnerInquiryForm({ type }: { type: FormType }) {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -42,7 +64,10 @@ export default function PartnerInquiryForm({ type }: { type: FormType }) {
     if (!body.email.trim()) errs.email = 'Required';
     if (!body.contactNumber.trim()) errs.contactNumber = 'Required';
 
-    if (Object.keys(errs).length > 0) { setErrors(errs); return; }
+    if (Object.keys(errs).length > 0) {
+      setErrors(errs);
+      return;
+    }
     setErrors({});
     setStatus('loading');
 
@@ -66,7 +91,7 @@ export default function PartnerInquiryForm({ type }: { type: FormType }) {
           {isEmployer ? 'Your inquiry has been sent.' : 'Your application has been submitted.'}
         </p>
         <p className="mt-1 text-[14px] text-text-muted">
-          We'll get back to you within 1 business day.
+          We&apos;ll get back to you within 1 business day.
         </p>
       </div>
     );
@@ -96,7 +121,13 @@ export default function PartnerInquiryForm({ type }: { type: FormType }) {
             placeholder="Select range"
           />
         ) : (
-          <Input id="region" name="region" label="Region" placeholder="e.g. Region IV-A (CALABARZON)" />
+          <Select
+            id="region"
+            name="region"
+            label="Region"
+            options={regionOptions}
+            placeholder="Select a region"
+          />
         )}
       </div>
       <Textarea
@@ -108,12 +139,17 @@ export default function PartnerInquiryForm({ type }: { type: FormType }) {
       {status === 'error' && (
         <p className="text-[14px] text-error">Something went wrong. Please try again.</p>
       )}
-      <Button type="submit" disabled={status === 'loading'} size="large">
+      <Button
+        type="submit"
+        disabled={status === 'loading'}
+        size="default"
+        className="w-full justify-center sm:w-auto"
+      >
         {status === 'loading'
           ? 'Sending…'
           : isEmployer
-          ? 'Send Inquiry'
-          : 'Apply to Join'}
+            ? 'Send Inquiry'
+            : 'Apply to Join'}
       </Button>
     </form>
   );

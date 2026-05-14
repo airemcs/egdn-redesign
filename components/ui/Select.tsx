@@ -18,16 +18,23 @@ export default function Select({
   options,
   placeholder,
   className = '',
+  required,
   ...rest
 }: SelectProps) {
   return (
     <div className="flex flex-col gap-1.5">
       <label htmlFor={id} className="text-[13px] font-medium text-text">
         {label}
+        {required && (
+          <span className="ml-0.5 text-error" aria-hidden="true">
+            *
+          </span>
+        )}
       </label>
       <div className="relative">
         <select
           id={id}
+          required={required}
           className={[fieldBase, error ? 'border-error' : '', className].join(' ')}
           aria-describedby={error ? `${id}-error` : undefined}
           {...rest}
