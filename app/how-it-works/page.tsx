@@ -23,7 +23,7 @@ const steps = [
   {
     n: 3,
     title: 'Find a partner dentist near you',
-    body: 'Browse 600+ clinics by region or city. Filter by location and find one that fits your schedule.',
+    body: 'Browse our network of partner clinics by region or city. Filter by location and find one that fits your schedule.',
     link: { label: 'Browse the directory →', href: '/find-a-dentist' },
   },
   {
@@ -34,8 +34,8 @@ const steps = [
   },
   {
     n: 5,
-    title: 'Present your ID, get treated',
-    body: 'Bring your member ID on the day. The clinic confirms your coverage with EGDN — you\'re all set.',
+    title: 'Present your IDs, get treated',
+    body: 'Bring your EGDN member ID and a valid government-issued ID. The clinic verifies your benefit with EGDN — covered procedures are processed through your plan; anything outside your plan is paid directly at the clinic.',
     link: null,
   },
 ];
@@ -76,11 +76,31 @@ export default function HowItWorksPage() {
             ))}
           </div>
         </ol>
+
+        {/* Coverage scope — flagged separately so members don't read step 5
+            as a blanket "everything is free" promise. Coverage depends on
+            the employer's specific EGDN plan; non-covered services are paid
+            at the clinic. */}
+        <div className="mt-12 rounded-card border border-border bg-surface p-6 sm:p-7">
+          <h3 className="font-display text-[18px] font-semibold text-text">
+            What&apos;s covered?
+          </h3>
+          <p className="mt-2 text-[15px] leading-relaxed text-text-muted">
+            Coverage depends on your employer&apos;s specific EGDN plan. Procedures included in
+            your plan are processed directly through your benefit; anything outside your plan —
+            cosmetic work, optional add-ons, lab fees not included, etc. — is paid at the clinic
+            on the day. If you&apos;re unsure about a procedure,{' '}
+            <Link href="/contact" className="text-brand hover:underline">
+              contact EGDN
+            </Link>{' '}
+            before your appointment to confirm.
+          </p>
+        </div>
       </div>
 
       <CtaSection
         headline="Ready to find your dentist?"
-        subtext="Browse 600+ partner clinics across 16 regions."
+        subtext="Browse partner clinics nationwide."
         primaryLabel="Find a Dentist"
         primaryHref="/find-a-dentist"
         secondaryLabel="Book an Appointment"

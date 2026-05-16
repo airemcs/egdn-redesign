@@ -36,7 +36,11 @@ function splitRegion(id: string): { name: string; sub?: string } {
   return { name, sub };
 }
 
-export default function RegionGrid({ regions }: { regions: Region[] }) {
+interface RegionGridProps {
+  regions: Region[];
+}
+
+export default function RegionGrid({ regions }: RegionGridProps) {
   if (regions.length === 0) {
     return (
       <p className="text-[15px] text-text-muted">No regions found. Check back soon.</p>
@@ -44,21 +48,20 @@ export default function RegionGrid({ regions }: { regions: Region[] }) {
   }
 
   return (
-    <div className="grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
+    <div className="grid grid-cols-2 gap-2.5">
       {regions.map((region) => {
         const { name, sub } = splitRegion(region._id);
         return (
         <Link
           key={region._id}
           href={`/find-a-dentist?region=${encodeURIComponent(region._id)}`}
-          className="group relative flex min-h-44 flex-col gap-4 rounded-card border border-border bg-surface p-6 transition-all duration-200 hover:-translate-y-0.5 hover:border-brand focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
+          className="group relative flex flex-col gap-1 rounded-[14px] border border-border bg-surface p-3.5 transition-all duration-200 hover:-translate-y-0.5 hover:border-brand focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
         >
-          {/* Top row: pin icon left, clinic count right */}
-          <div className="flex items-center justify-between">
-            <div className="flex h-9 w-9 items-center justify-center rounded-input bg-brand-light text-brand">
+          <div className="mb-1.5 flex items-center justify-between">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-light text-brand">
               <svg
-                width="16"
-                height="16"
+                width="14"
+                height="14"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -71,38 +74,31 @@ export default function RegionGrid({ regions }: { regions: Region[] }) {
                 <circle cx="12" cy="10" r="3" />
               </svg>
             </div>
-            <span className="text-[12px] font-semibold text-text-muted">
-              {region.count} {region.count === 1 ? 'clinic' : 'clinics'}
-            </span>
           </div>
 
           {/* Region name (short form, e.g. "Region IV-A") + subtitle (long form,
               e.g. "CALABARZON"). The full ID is preserved in the href so the
               server-side filter still matches "Region IV-A (CALABARZON)". */}
-          <div>
-            <div className="font-display text-[22px] font-semibold leading-[1.15] text-text">
-              {name}
-            </div>
-            {sub && (
-              <div className="mt-0.5 text-[13px] text-text-muted">{sub}</div>
-            )}
+          <div className="font-display text-[16px] font-semibold leading-[1.15] text-text">
+            {name}
           </div>
+          {sub && <div className="text-[11px] text-text-muted">{sub}</div>}
 
-          {/* Arrow on hover */}
-          <div className="absolute bottom-5 right-5 text-brand opacity-0 transition-all duration-200 group-hover:translate-x-0.5 group-hover:opacity-100">
+          <div className="mt-1 inline-flex items-center gap-1 text-[11px] font-semibold text-brand">
+            {region.count} clinics
             <svg
-              width="16"
-              height="16"
+              width="10"
+              height="10"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              strokeWidth="2"
+              strokeWidth="2.4"
               strokeLinecap="round"
               strokeLinejoin="round"
+              className="transition-transform duration-200 group-hover:translate-x-0.5"
               aria-hidden
             >
-              <line x1="5" y1="12" x2="19" y2="12" />
-              <polyline points="12 5 19 12 12 19" />
+              <polyline points="9 18 15 12 9 6" />
             </svg>
           </div>
         </Link>

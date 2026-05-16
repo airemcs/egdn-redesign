@@ -5,6 +5,8 @@ import Input from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
 import Textarea from '@/components/ui/Textarea';
 import Button from '@/components/ui/Button';
+import PhoneInput from '@/components/ui/PhoneInput';
+import { formatCity } from '@/lib/utils';
 
 interface Clinic {
   clinicName: string;
@@ -99,12 +101,13 @@ export default function AppointmentForm({ dentist }: AppointmentFormProps) {
   const isProfile = !!dentist;
   const [selectedClinic, setSelectedClinic] = useState(dentist?.clinics[0]?.clinicName ?? '');
   const [visitType, setVisitType] = useState<'in-person' | 'teleconsult'>('in-person');
+  const [phone, setPhone] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const clinicOptions = dentist?.clinics.map((c) => ({
     value: c.clinicName,
-    label: `${c.clinicName} — ${c.city}`,
+    label: `${c.clinicName} — ${formatCity(c.city)}`,
   })) ?? [];
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -129,7 +132,7 @@ export default function AppointmentForm({ dentist }: AppointmentFormProps) {
             : (data.get('dentistName') as string),
       preferredDate: data.get('preferredDate') as string,
       preferredTime: data.get('preferredTime') as string,
-      contactNumber: data.get('contactNumber') as string,
+      contactNumber: phone,
       notes: composedNotes,
       source:
         visitType === 'teleconsult'
@@ -271,14 +274,14 @@ export default function AppointmentForm({ dentist }: AppointmentFormProps) {
         />
       </div>
 
-      <Input
+      <PhoneInput
         id="contactNumber"
-        name="contactNumber"
-        label="Contact Number"
-        type="tel"
-        placeholder="+63 9XX XXX XXXX"
+        label="Mobile number"
         required
+        value={phone}
+        onChange={setPhone}
         error={errors.contactNumber}
+        seamless
       />
 
       <Textarea

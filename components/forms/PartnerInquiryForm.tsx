@@ -5,6 +5,7 @@ import Input from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
 import Textarea from '@/components/ui/Textarea';
 import Button from '@/components/ui/Button';
+import PhoneInput from '@/components/ui/PhoneInput';
 
 type FormType = 'employer' | 'clinic';
 
@@ -40,6 +41,9 @@ const regionOptions = [
 export default function PartnerInquiryForm({ type }: { type: FormType }) {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errors, setErrors] = useState<Record<string, string>>({});
+  // Phone is controlled so PhoneInput can manage formatting / +63 prefix; the
+  // other fields stay uncontrolled and read via FormData on submit.
+  const [phone, setPhone] = useState('');
 
   const isEmployer = type === 'employer';
 
@@ -52,7 +56,7 @@ export default function PartnerInquiryForm({ type }: { type: FormType }) {
       organizationName: data.get('organizationName') as string,
       contactName: data.get('contactName') as string,
       email: data.get('email') as string,
-      contactNumber: data.get('contactNumber') as string,
+      contactNumber: phone,
       ...(isEmployer && { employeeCount: data.get('employeeCount') as string }),
       ...(!isEmployer && { region: data.get('region') as string }),
       message: data.get('message') as string,
@@ -63,6 +67,9 @@ export default function PartnerInquiryForm({ type }: { type: FormType }) {
     if (!body.contactName.trim()) errs.contactName = 'Required';
     if (!body.email.trim()) errs.email = 'Required';
     if (!body.contactNumber.trim()) errs.contactNumber = 'Required';
+    if (!isEmployer && !(body as { region?: string }).region?.trim()) {
+      errs.region = 'Required';
+    }
 
     if (Object.keys(errs).length > 0) {
       setErrors(errs);
@@ -99,37 +106,63 @@ export default function PartnerInquiryForm({ type }: { type: FormType }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5" noValidate>
-      <Input
-        id="organizationName"
-        name="organizationName"
-        label={isEmployer ? 'Company Name' : 'Clinic Name'}
-        required
-        error={errors.organizationName}
-      />
-      <div className="grid gap-5 sm:grid-cols-2">
-        <Input id="contactName" name="contactName" label="Your Name" required error={errors.contactName} />
-        <Input id="email" name="email" label="Email" type="email" required error={errors.email} />
-      </div>
-      <div className="grid gap-5 sm:grid-cols-2">
-        <Input id="contactNumber" name="contactNumber" label="Contact Number" type="tel" required error={errors.contactNumber} />
-        {isEmployer ? (
-          <Select
-            id="employeeCount"
-            name="employeeCount"
-            label="Number of Employees"
-            options={employeeCountOptions}
-            placeholder="Select range"
+      {isEmployer ? (
+        // Employer layout — Company Name full-width, then pairs.
+        <>
+          <Input
+            id="organizationName"
+            name="organizationName"
+            label="Company Name"
+            placeholder="Your company"
+            required
+            error={errors.organizationName}
           />
-        ) : (
+          <div className="grid gap-5 sm:grid-cols-2">
+            <Input id="contactName" name="contactName" label="Your name" placeholder="Juan Dela Cruz" required error={errors.contactName} />
+            <Input id="email" name="email" label="Email" type="email" placeholder="you@email.com" required error={errors.email} />
+          </div>
+          <div className="grid gap-5 sm:grid-cols-2">
+            <PhoneInput id="contactNumber" label="Mobile number" required value={phone} onChange={setPhone} error={errors.contactNumber} seamless />
+            <Select
+              id="employeeCount"
+              name="employeeCount"
+              label="Number of Employees"
+              options={employeeCountOptions}
+              placeholder="Select range"
+            />
+          </div>
+        </>
+      ) : (
+        // Clinic layout — Clinic Name pairs with Your Name; Email pairs with
+        // Contact Number; Region gets its own full-width row so the long
+        // "Region IV-A — CALABARZON" labels don't get clipped in a half-col.
+        <>
+          <div className="grid gap-5 sm:grid-cols-2">
+            <Input
+              id="organizationName"
+              name="organizationName"
+              label="Clinic Name"
+              placeholder="Smile Dental Clinic"
+              required
+              error={errors.organizationName}
+            />
+            <Input id="contactName" name="contactName" label="Your name" placeholder="Juan Dela Cruz" required error={errors.contactName} />
+          </div>
+          <div className="grid gap-5 sm:grid-cols-2">
+            <Input id="email" name="email" label="Email" type="email" placeholder="you@email.com" required error={errors.email} />
+            <PhoneInput id="contactNumber" label="Mobile number" required value={phone} onChange={setPhone} error={errors.contactNumber} seamless />
+          </div>
           <Select
             id="region"
             name="region"
             label="Region"
             options={regionOptions}
             placeholder="Select a region"
+            required
+            error={errors.region}
           />
-        )}
-      </div>
+        </>
+      )}
       <Textarea
         id="message"
         name="message"

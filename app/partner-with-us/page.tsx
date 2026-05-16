@@ -55,7 +55,7 @@ const benefits = [
   {
     title: 'Nationwide coverage',
     body:
-      'Partner clinics across 16 regions of the Philippines, so your team is covered wherever they are based or assigned.',
+      'Partner clinics across the Philippines, so your team is covered wherever they are based or assigned.',
     icon: <MapPinIcon />,
   },
   {
@@ -124,8 +124,8 @@ export default function PartnerWithUsPage() {
               className="text-[16px] leading-[1.55] text-text-muted lg:text-[19px]"
               style={{ textWrap: 'pretty' } as React.CSSProperties}
             >
-              EGDN makes it easy to offer dental coverage across 600+ partner clinics nationwide —
-              no complicated setup, no billing surprises.
+              EGDN makes it easy to offer dental coverage across our nationwide network of partner
+              clinics — no complicated setup, no billing surprises.
             </p>
           </div>
         </div>

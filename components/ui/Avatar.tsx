@@ -4,6 +4,9 @@ interface AvatarProps {
   name: string;
   src?: string;
   size?: number;
+  /** 'circle' (default) or 'rounded' for a squircle look used on the
+   * mobile-native dentist profile design. */
+  shape?: 'circle' | 'rounded';
 }
 
 function initials(name: string): string {
@@ -16,7 +19,9 @@ function initials(name: string): string {
     .toUpperCase();
 }
 
-export default function Avatar({ name, src, size = 80 }: AvatarProps) {
+export default function Avatar({ name, src, size = 80, shape = 'circle' }: AvatarProps) {
+  const radius = shape === 'rounded' ? 'rounded-3xl' : 'rounded-full';
+
   if (src) {
     return (
       <Image
@@ -24,7 +29,7 @@ export default function Avatar({ name, src, size = 80 }: AvatarProps) {
         alt={name}
         width={size}
         height={size}
-        className="rounded-full object-cover"
+        className={`${radius} object-cover`}
         style={{ width: size, height: size }}
       />
     );
@@ -32,7 +37,7 @@ export default function Avatar({ name, src, size = 80 }: AvatarProps) {
 
   return (
     <div
-      className="flex items-center justify-center rounded-full bg-brand-light font-body font-semibold text-brand select-none"
+      className={`flex items-center justify-center ${radius} bg-brand-light font-body font-semibold text-brand select-none`}
       style={{ width: size, height: size, fontSize: size * 0.35 }}
       aria-label={name}
     >

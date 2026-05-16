@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 import NominationForm from '@/components/forms/NominationForm';
 
@@ -20,30 +21,41 @@ const HandshakeIcon = () => (
 export default function NominatePage() {
   return (
     <>
-      {/* ── Page header ─ matches the find-a-dentist / contact heading
-          pattern: eyebrow → h1 → subtitle, all in a max-w-[720px] block. ── */}
-      <section className="mx-auto max-w-300 px-5 pt-12 pb-4 sm:px-6 sm:pt-16 lg:px-10">
-        <div className="max-w-[720px]">
-          <span className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:text-[12px]">
-            Help us grow the network
-          </span>
-          <h1 className="mb-3 mt-1.5 font-display text-[28px] font-bold leading-[1.2] text-text sm:text-[34px] lg:text-[40px]">
-            Nominate a dentist.
-          </h1>
-          <p
-            className="text-[16px] leading-[1.55] text-text-muted lg:text-[19px]"
-            style={{ textWrap: 'pretty' } as React.CSSProperties}
-          >
-            Want your dentist to join our growing community? Share their contact information with
-            us and we&apos;ll take care of the rest.
-          </p>
+      {/* ── Hero ─ full-bleed Unsplash image with the same cream gradient
+          overlay used by partner-with-us / join-our-network heroes. ── */}
+      <section className="relative overflow-hidden border-b border-border">
+        <Image
+          src="https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=1920&q=80&auto=format&fit=crop"
+          alt=""
+          fill
+          className="object-cover object-center"
+          priority
+        />
+        <div className="hero-overlay absolute inset-0 z-[1]" />
+
+        <div className="relative z-[2] mx-auto flex min-h-[420px] w-full max-w-300 items-end px-5 pt-12 pb-8 sm:min-h-125 sm:items-center sm:px-6 sm:py-16 lg:min-h-135 lg:px-10 lg:py-24">
+          <div className="max-w-[560px]">
+            <span className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:text-[12px]">
+              Help us grow the network
+            </span>
+            <h1 className="mb-3 mt-2 font-display text-[28px] font-bold leading-[1.2] text-text sm:mt-3 sm:text-[34px] lg:text-[40px]">
+              Nominate a dentist.
+            </h1>
+            <p
+              className="text-[16px] leading-[1.55] text-text-muted lg:text-[19px]"
+              style={{ textWrap: 'pretty' } as React.CSSProperties}
+            >
+              Want your dentist to join our growing community? Share their contact information
+              with us and we&apos;ll take care of the rest.
+            </p>
+          </div>
         </div>
       </section>
 
       {/* ── Form + sidebar ─ same 1.35fr_1fr split as the contact and
           partner-with-us pages. Form card on the left; "how nominations
           work" explainer + a directory-check shortcut on the right. ── */}
-      <section className="mx-auto max-w-300 px-5 pt-8 pb-16 sm:px-6 sm:pt-10 sm:pb-20 lg:px-10 lg:pt-12 lg:pb-24">
+      <section className="mx-auto max-w-300 px-5 pt-10 pb-16 sm:px-6 sm:pt-14 sm:pb-20 lg:px-10 lg:pt-20 lg:pb-24">
         <div className="grid gap-3.5 lg:grid-cols-[1.35fr_1fr] lg:items-start lg:gap-10">
           {/* Form card */}
           <div className="rounded-card border border-border bg-surface p-6 sm:p-8 lg:p-10">

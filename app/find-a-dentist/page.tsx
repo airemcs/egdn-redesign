@@ -1,14 +1,17 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import { connectDB } from '@/lib/mongodb';
 import Dentist, { type DentistClinic } from '@/lib/models/Dentist';
 import Breadcrumb from '@/components/ui/Breadcrumb';
 import RegionGrid from '@/components/dentists/RegionGrid';
 import DentistList from '@/components/dentists/DentistList';
+import DentistCard from '@/components/dentists/DentistCard';
+import DentistSearchInput from '@/components/dentists/DentistSearchInput';
 import CtaSection from '@/components/sections/CtaSection';
 
 export const metadata: Metadata = {
   title: 'Find a Dentist — EGDN',
-  description: 'Search 600+ partner dental clinics across 16 regions in the Philippines.',
+  description: 'Search our nationwide network of partner dental clinics across the Philippines.',
 };
 
 interface PageProps {
@@ -25,10 +28,94 @@ export default async function FindADentistPage({ searchParams }: PageProps) {
 
   await connectDB();
 
-  // ── No region selected — show region picker ──────────────────────────────
+  // ── No region selected ────────────────────────────────────────────────────
   if (!region) {
-    // Standard Philippine region order — NCR, CAR, then I → XIII numerically.
-    // Anything not in this list (future regions, typos) falls to the bottom.
+    // ── Global search (name/phone set, no region) ────────────────────────
+    // Mirrors the mobile design's "Search results" screen: matches across
+    // every region, no region constraint applied.
+    if (name?.trim()) {
+      const trimmed = name.trim();
+      const escapedName = trimmed.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const digits = trimmed.replace(/\D/g, '');
+      const or: Record<string, unknown>[] = [
+        { name: { $regex: escapedName, $options: 'i' } },
+      ];
+      if (digits.length >= 3) {
+        const phoneRegex = digits.split('').join('\\D*');
+        or.push({ 'clinics.contactNumber': { $regex: phoneRegex } });
+      }
+      const globalFilter: Record<string, unknown> = { $or: or };
+      if (specialization) globalFilter.specializations = specialization;
+
+      const rawResults = await Dentist.find(globalFilter)
+        .select('name slug specializations clinics')
+        .limit(60)
+        .lean();
+      const results = rawResults.map((d) => {
+        const clinic = d.clinics[0];
+        return {
+          _id: String(d._id),
+          name: d.name,
+          slug: d.slug,
+          specializations: d.specializations,
+          clinicName: clinic?.clinicName ?? '',
+          city: clinic?.city ?? '',
+          address: clinic?.address ?? '',
+          contactNumber: clinic?.contactNumber ?? '',
+        };
+      });
+
+      return (
+        <>
+          <section className="mx-auto max-w-110 px-5 pt-8 pb-2">
+            <Breadcrumb crumbs={[{ label: 'Home', href: '/' }, { label: 'Find a Dentist', href: '/find-a-dentist' }, { label: 'Search' }]} />
+            <span className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand">
+              {results.length} {results.length === 1 ? 'match' : 'matches'}
+            </span>
+            <h1 className="mt-1.5 font-display text-[26px] font-bold leading-[1.15] tracking-[-0.4px] text-text">
+              Results for &ldquo;{trimmed}&rdquo;
+            </h1>
+          </section>
+
+          <section className="mx-auto max-w-110 px-5 py-5">
+            {/* Refine the search */}
+            <div className="mb-4">
+              <Suspense fallback={null}>
+                <DentistSearchInput
+                  selected={trimmed}
+                  placeholder="Search dentists, clinics, cities…"
+                />
+              </Suspense>
+            </div>
+
+            {results.length === 0 ? (
+              <div className="rounded-card border border-border bg-surface p-8 text-center">
+                <p className="text-[14px] leading-normal text-text-muted">
+                  No dentists or clinics match &ldquo;{trimmed}&rdquo;. Try a different spelling, browse by{' '}
+                  <a href="/find-a-dentist" className="text-brand hover:underline">region</a>, or{' '}
+                  <a href="/nominate" className="text-brand hover:underline">nominate a clinic</a> if they should be in the network.
+                </p>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-2.5">
+                {results.map((d) => (
+                  <DentistCard key={d._id} {...d} />
+                ))}
+              </div>
+            )}
+          </section>
+
+          <CtaSection
+            headline="Can't find a dentist nearby?"
+            subtext="Nominate a clinic and we'll look into adding them to the network."
+            primaryLabel="Nominate a Dentist"
+            primaryHref="/nominate"
+          />
+        </>
+      );
+    }
+
+    // ── Default landing: search bar + region grid ────────────────────────
     const REGION_ORDER = [
       'NCR',
       'CAR',
@@ -61,35 +148,76 @@ export default async function FindADentistPage({ searchParams }: PageProps) {
       return a._id.localeCompare(b._id);
     });
 
+    // Round total clinic count down to the nearest 100 for the marketing
+    // subtitle ("600+ partner clinics"). Falls back to a flat "partner
+    // clinics" phrasing if we somehow have fewer than 100.
+    const totalClinics = regions.reduce((sum, r) => sum + r.count, 0);
+    const roundedClinics = Math.floor(totalClinics / 100) * 100;
+
     return (
       <>
         {/* ── Page header ────────────────────────────────────────────────── */}
-        <section className="mx-auto max-w-300 px-5 pt-12 pb-4 sm:px-6 sm:pt-16 lg:px-10">
+        <section className="mx-auto max-w-110 px-5 pt-8 pb-4">
           <Breadcrumb crumbs={[{ label: 'Home', href: '/' }, { label: 'Find a Dentist' }]} />
-          {/* Only the title block (eyebrow + h1 + subtitle) is constrained —
-              breadcrumb stays at full container width. Matches the design's
-              <div className="section-head" style={{maxWidth: 720}}> pattern. */}
-          <div className="max-w-[720px]">
-            <span className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:text-[12px]">
-              Find a dentist
-            </span>
-            <h1 className="mb-3 font-display text-[28px] font-bold leading-[1.2] text-text sm:text-[34px] lg:text-[40px]">
-              Find a Dentist
-            </h1>
-            <p
-              className="text-[16px] leading-[1.55] text-text-muted lg:text-[19px]"
-              style={{ textWrap: 'pretty' } as React.CSSProperties}
+          <h1 className="mb-2 font-display text-[28px] font-bold leading-[1.1] tracking-[-0.5px] text-text">
+            Find your dentist.
+          </h1>
+          <p
+            className="text-[14px] leading-normal text-text-muted"
+            style={{ textWrap: 'pretty' } as React.CSSProperties}
+          >
+            {roundedClinics >= 100
+              ? `Search the EGDN directory of ${roundedClinics}+ partner clinics.`
+              : 'Search the EGDN directory of partner clinics.'}
+          </p>
+        </section>
+
+        {/* ── Global search bar + "Use my current location" placeholder ──── */}
+        <section className="mx-auto max-w-110 px-5 pt-4">
+          <div className="space-y-2.5">
+            <Suspense fallback={null}>
+              <DentistSearchInput placeholder="Search dentists, clinics, cities…" />
+            </Suspense>
+            {/* Geolocation entry point. Non-functional placeholder — the
+                "find nearby clinics" feature ships in a later phase. Kept in
+                the page so the design slot is locked in now. */}
+            <button
+              type="button"
+              title="Coming soon"
+              aria-label="Use my current location (coming soon)"
+              className="flex w-full items-center justify-center gap-2 rounded-[14px] border border-dashed border-border-strong bg-transparent px-3.5 py-3 text-[13px] font-semibold text-brand transition-colors hover:bg-brand-tint/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
             >
-              Choose your region to see partner clinics near you.
-            </p>
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden
+              >
+                <circle cx="12" cy="12" r="10" />
+                <circle cx="12" cy="12" r="3" fill="currentColor" stroke="none" />
+              </svg>
+              Use my current location
+            </button>
           </div>
         </section>
 
         {/* ── Region cards ───────────────────────────────────────────────── */}
-        <section className="mx-auto max-w-300 px-5 pt-8 pb-16 sm:px-6 sm:pt-10 lg:px-10 lg:pb-24">
+        <section className="mx-auto max-w-110 px-5 pt-6 pb-16">
+          <div className="mb-3 flex items-baseline justify-between">
+            <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-text-muted">
+              Browse by region
+            </span>
+            <span className="text-[11px] text-text-muted">
+              {regions.length} {regions.length === 1 ? 'region' : 'regions'}
+            </span>
+          </div>
           <RegionGrid regions={regions} />
         </section>
-
       </>
     );
   }
@@ -158,7 +286,7 @@ export default async function FindADentistPage({ searchParams }: PageProps) {
   return (
     <>
       {/* ── Page header ────────────────────────────────────────────────────── */}
-      <section className="mx-auto max-w-300 px-5 pt-12 pb-4 sm:px-6 sm:pt-16 lg:px-10">
+      <section className="mx-auto max-w-110 px-5 pt-8 pb-2">
         <Breadcrumb
           crumbs={[
             { label: 'Home', href: '/' },
@@ -166,30 +294,22 @@ export default async function FindADentistPage({ searchParams }: PageProps) {
             { label: region },
           ]}
         />
-        <div className="max-w-[720px]">
-          <span className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:text-[12px]">
-            Browse the network
-          </span>
-          <h1 className="mb-3 font-display text-[28px] font-bold leading-[1.2] text-text sm:text-[34px] lg:text-[40px]">
-            Dentists in {region}
-          </h1>
-          <p
-            className="text-[16px] leading-[1.55] text-text-muted lg:text-[19px]"
-            style={{ textWrap: 'pretty' } as React.CSSProperties}
-          >
-            {dentists.length} partner {dentists.length === 1 ? 'clinic' : 'clinics'}
-            {city ? ` in ${city}` : ''}.
-          </p>
-        </div>
+        <span className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand">
+          {allInRegion.length} partner {allInRegion.length === 1 ? 'clinic' : 'clinics'}
+        </span>
+        <h1 className="mt-1.5 font-display text-[26px] font-bold leading-[1.15] tracking-[-0.4px] text-text">
+          Dentists in {region}
+        </h1>
       </section>
 
       {/* ── Dentist list ───────────────────────────────────────────────────── */}
-      <section className="mx-auto max-w-300 px-5 py-8 sm:px-6 sm:py-10 lg:px-10">
+      <section className="mx-auto max-w-110 px-5 py-5">
         <DentistList
           dentists={dentists}
           region={region}
           cities={cities}
           specializations={specializations}
+          total={allInRegion.length}
           selectedCity={city}
           selectedSpecialization={specialization}
           selectedName={name}

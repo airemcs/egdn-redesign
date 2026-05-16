@@ -36,6 +36,7 @@ export default function Navbar() {
   }, [open]);
 
   return (
+    <>
     <header
       className={[
         'sticky top-0 z-50 flex h-18 items-center transition-all duration-200',
@@ -92,10 +93,17 @@ export default function Navbar() {
           </svg>
         </button>
       </div>
+    </header>
 
-      {/* Mobile overlay */}
+      {/* Mobile overlay — rendered as a SIBLING of the header, not a
+          descendant. The scrolled header uses backdrop-filter which creates
+          a containing block; if the overlay lives inside the header,
+          `position: fixed` is clamped to the 72px header height and the
+          page bleeds through underneath. Hoisting it out anchors the fixed
+          overlay to the viewport as intended. z-60 so it sits above the
+          sticky header. */}
       {open && (
-        <div className="fixed inset-0 z-50 flex flex-col bg-bg animate-[mFadeIn_200ms_cubic-bezier(0.2,0.6,0.2,1)]">
+        <div className="fixed inset-0 z-60 flex flex-col bg-bg animate-[mFadeIn_200ms_cubic-bezier(0.2,0.6,0.2,1)]">
           {/* Header — matches sticky navbar height (56px) with bottom border */}
           <div className="flex h-14 items-center justify-between border-b border-border px-5">
             <Link href="/" className="flex items-center gap-2.5" onClick={() => setOpen(false)}>
@@ -165,6 +173,6 @@ export default function Navbar() {
           </nav>
         </div>
       )}
-    </header>
+    </>
   );
 }

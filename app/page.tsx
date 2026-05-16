@@ -227,9 +227,9 @@ export default async function HomePage() {
           </div>
 
           {/* Member ID card — container aspect matches the source image
-              (1195×672 ≈ 16:9) so object-cover fills the frame with no
+              (1536×1024 = 3:2) so object-cover fills the frame with no
               letterboxing, and the card sits centered by default. */}
-          <div className="relative aspect-1195/672 overflow-hidden rounded-card border border-border">
+          <div className="relative aspect-3/2 overflow-hidden rounded-card border border-border">
             <Image
               src="/images/member-card.png"
               alt="EGDN member ID card"

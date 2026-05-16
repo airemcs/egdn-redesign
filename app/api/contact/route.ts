@@ -3,6 +3,23 @@ import ContactSubmission from '@/lib/models/ContactSubmission';
 import { sendNotification } from '@/lib/email';
 
 const VALID_ROLES = ['member', 'company', 'provider', 'general'] as const;
+type Role = (typeof VALID_ROLES)[number];
+
+// Topic dropdown was removed from the contact form — the role already routes
+// the inquiry. We auto-compose a subject line so the underlying
+// ContactSubmission.subject required field still validates and inbox triage
+// retains a human-readable label.
+const ROLE_LABEL: Record<Role, string> = {
+  member: 'Member inquiry',
+  company: 'Company / HR inquiry',
+  provider: 'Dental provider inquiry',
+  general: 'General inquiry',
+};
+
+function composeSubject(role: Role | undefined, name: string): string {
+  const prefix = role ? ROLE_LABEL[role] : 'General inquiry';
+  return `${prefix} — ${name}`;
+}
 
 export async function POST(request: Request) {
   try {
@@ -10,22 +27,27 @@ export async function POST(request: Request) {
       name,
       email,
       contactNumber,
-      subject,
       message,
       role,
       memberId,
       company,
+      region,
+      employeeCount,
     } = await request.json();
 
-    // Required: name, email, subject, message. Phone (contactNumber) and the
-    // role/memberId/company context fields are optional.
-    if (!name || !email || !subject || !message) {
+    // Required: name, email, message. Phone (contactNumber) and the
+    // role/memberId/company/region/employeeCount context fields are optional —
+    // client-side enforces stricter rules per role. Subject is auto-derived
+    // from role + name so we never expose a topic picker in the UI.
+    if (!name || !email || !message) {
       return Response.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
     if (role && !VALID_ROLES.includes(role)) {
       return Response.json({ error: 'Invalid role' }, { status: 400 });
     }
+
+    const subject = composeSubject(role, name);
 
     await connectDB();
     await ContactSubmission.create({
@@ -37,6 +59,8 @@ export async function POST(request: Request) {
       role: role || undefined,
       memberId: memberId || undefined,
       company: company || undefined,
+      region: region || undefined,
+      employeeCount: employeeCount || undefined,
     });
 
     await sendNotification(
@@ -47,6 +71,8 @@ export async function POST(request: Request) {
        ${role ? `<p><b>Reaching out as:</b> ${role}</p>` : ''}
        ${memberId ? `<p><b>Member ID:</b> ${memberId}</p>` : ''}
        ${company ? `<p><b>Company / Clinic:</b> ${company}</p>` : ''}
+       ${region ? `<p><b>Region:</b> ${region}</p>` : ''}
+       ${employeeCount ? `<p><b>Employees:</b> ${employeeCount}</p>` : ''}
        <p><b>Subject:</b> ${subject}</p>
        <p><b>Message:</b> ${message}</p>`,
     );

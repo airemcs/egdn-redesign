@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import Button from '@/components/ui/Button';
+import PhoneInput from '@/components/ui/PhoneInput';
 
 export interface DentistSummary {
   slug: string;
@@ -92,11 +93,27 @@ const BoltIcon = () => (
   </svg>
 );
 
-const minDateString = () => {
+const minDateString = (daysFromToday: number) => {
   const d = new Date();
-  d.setDate(d.getDate() + 3);
+  d.setDate(d.getDate() + daysFromToday);
   return d.toISOString().split('T')[0];
 };
+
+// Cutoff hours (24h) past which a slot is no longer bookable for today.
+// Morning ends at noon, Afternoon at 5 PM, Evening at 9 PM.
+const SLOT_CUTOFF_HOUR: Record<(typeof TIME_OPTIONS)[number], number> = {
+  Morning: 12,
+  Afternoon: 17,
+  Evening: 21,
+};
+
+const todayDateString = () => new Date().toISOString().split('T')[0];
+
+const isSlotPast = (slot: (typeof TIME_OPTIONS)[number]) =>
+  new Date().getHours() >= SLOT_CUTOFF_HOUR[slot];
+
+const allSlotsPastToday = () =>
+  TIME_OPTIONS.every((t) => isSlotPast(t));
 
 export default function BookingWizard({ regions, dentists, specialties }: BookingWizardProps) {
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
@@ -153,6 +170,16 @@ export default function BookingWizard({ regions, dentists, specialties }: Bookin
           .filter((d) => !next.city || d.city === next.city)
           .some((d) => d.specialty === next.specialty);
         if (!stillAvailable) next.specialty = '';
+      }
+      // When the user picks today (teleconsult) but their current time slot
+      // has already passed, shift to the next available slot. If every slot
+      // is past, leave the field unchanged — the date input's min will have
+      // already bumped to tomorrow so this shouldn't happen.
+      if (key === 'date' && next.date === todayDateString()) {
+        if (isSlotPast(next.time)) {
+          const nextOpen = TIME_OPTIONS.find((t) => !isSlotPast(t));
+          if (nextOpen) next.time = nextOpen;
+        }
       }
       return next;
     });
@@ -514,7 +541,7 @@ export default function BookingWizard({ regions, dentists, specialties }: Bookin
                 </header>
 
                 <div className="grid gap-5 sm:grid-cols-2">
-                  <Field id="name" label="Full name" error={errors.name}>
+                  <Field id="name" label="Your name" error={errors.name}>
                     <Input
                       id="name"
                       value={form.name}
@@ -537,14 +564,14 @@ export default function BookingWizard({ regions, dentists, specialties }: Bookin
                       hasError={!!errors.memberId}
                     />
                   </Field>
-                  <Field id="phone" label="Contact number" error={errors.phone}>
-                    <Input
+                  <Field id="phone" label="Mobile number" error={errors.phone}>
+                    <PhoneInput
                       id="phone"
-                      type="tel"
                       value={form.phone}
-                      onChange={(e) => update('phone', e.target.value)}
-                      placeholder="+63 9XX XXX XXXX"
+                      onChange={(v) => update('phone', v)}
                       hasError={!!errors.phone}
+                      bare
+                      seamless
                     />
                   </Field>
                   <Field
@@ -825,12 +852,22 @@ export default function BookingWizard({ regions, dentists, specialties }: Bookin
                     id="date"
                     label="Preferred date"
                     error={errors.date}
-                    helper="Earliest: 3 days from today."
+                    helper={
+                      form.visitType === 'teleconsult'
+                        ? allSlotsPastToday()
+                          ? "Today's slots are closed — earliest is tomorrow."
+                          : 'Same-day booking available.'
+                        : 'Earliest: 3 days from today.'
+                    }
                   >
                     <Input
                       id="date"
                       type="date"
-                      min={minDateString()}
+                      min={
+                        form.visitType === 'teleconsult'
+                          ? minDateString(allSlotsPastToday() ? 1 : 0)
+                          : minDateString(3)
+                      }
                       value={form.date}
                       onChange={(e) => update('date', e.target.value)}
                       hasError={!!errors.date}
@@ -839,11 +876,22 @@ export default function BookingWizard({ regions, dentists, specialties }: Bookin
                   <div>
                     <Label>Preferred time</Label>
                     <ChipRow>
-                      {TIME_OPTIONS.map((t) => (
-                        <Chip key={t} active={form.time === t} onClick={() => update('time', t)}>
-                          {t}
-                        </Chip>
-                      ))}
+                      {TIME_OPTIONS.map((t) => {
+                        // A slot is disabled only when today's date is picked
+                        // AND the slot's cutoff hour has already passed.
+                        const disabled =
+                          form.date === todayDateString() && isSlotPast(t);
+                        return (
+                          <Chip
+                            key={t}
+                            active={form.time === t}
+                            onClick={() => !disabled && update('time', t)}
+                            disabled={disabled}
+                          >
+                            {t}
+                          </Chip>
+                        );
+                      })}
                     </ChipRow>
                     <p className="mt-1.5 text-[12px] text-text-muted">
                       Final time confirmed by the clinic.
@@ -1100,7 +1148,7 @@ function Input({
     <input
       {...props}
       className={[
-        'block h-12 w-full rounded-input border bg-surface px-4 text-[14px] text-text transition-colors focus:outline-none focus:ring-2 focus:ring-[rgba(27,127,168,0.12)]',
+        'block h-12 w-full rounded-input border bg-surface px-4 text-[14px] text-text transition-colors placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-[rgba(27,127,168,0.12)]',
         hasError ? 'border-error focus:border-error' : 'border-border focus:border-brand',
       ].join(' ')}
     />
@@ -1141,21 +1189,26 @@ function ChipRow({ children }: { children: React.ReactNode }) {
 function Chip({
   active,
   onClick,
+  disabled,
   children,
 }: {
   active: boolean;
   onClick: () => void;
+  disabled?: boolean;
   children: React.ReactNode;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
+      disabled={disabled}
       className={[
         'inline-flex items-center gap-1.5 rounded-pill border px-3.5 py-2 text-[13px] font-medium transition-colors',
-        active
-          ? 'border-brand bg-brand text-white'
-          : 'border-border bg-bg text-text hover:border-text-muted',
+        disabled
+          ? 'cursor-not-allowed border-border bg-bg-deep text-text-muted line-through opacity-60'
+          : active
+            ? 'border-brand bg-brand text-white'
+            : 'border-border bg-bg text-text hover:border-text-muted',
       ].join(' ')}
     >
       {children}

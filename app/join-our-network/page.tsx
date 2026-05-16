@@ -136,7 +136,7 @@ export default function JoinOurNetworkPage() {
 
       {/* ── Benefits ─────────────────────────────────────────────────────── */}
       <section className="mx-auto max-w-300 px-5 py-10 sm:px-6 sm:py-14 lg:px-10 lg:py-20">
-        <div className="mb-6 max-w-[720px] sm:mb-10">
+        <div className="mb-6 sm:mb-10">
           <span className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:text-[12px]">
             Why partner with EGDN
           </span>

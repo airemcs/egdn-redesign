@@ -14,6 +14,13 @@ const ContactSubmissionSchema = new Schema(
     role: { type: String, enum: ['member', 'company', 'provider', 'general'] },
     memberId: { type: String },
     company: { type: String },
+    // Provider-role: Philippine region where the clinic is located. Stored as
+    // the same string value as the seeded dentist data so cross-form joins
+    // remain consistent.
+    region: { type: String },
+    // Company-role: rough employee headcount bucket — same options as the
+    // partner-with-us employer inquiry form.
+    employeeCount: { type: String },
   },
   { timestamps: { createdAt: true, updatedAt: false } }
 );

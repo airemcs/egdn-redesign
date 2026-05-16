@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import PhoneInput from '@/components/ui/PhoneInput';
 
 type Role = 'member' | 'company' | 'provider' | 'general';
 
@@ -13,14 +14,14 @@ interface RoleOption {
 
 const ROLE_OPTIONS: RoleOption[] = [
   {
+    id: 'general',
+    label: 'General Inquiry',
+    sub: 'Press, partnerships, or other questions.',
+  },
+  {
     id: 'member',
     label: 'EGDN Member',
     sub: 'I have a member ID or my employer offers EGDN.',
-  },
-  {
-    id: 'company',
-    label: 'Company / HR',
-    sub: 'I want to add dental coverage for my team.',
   },
   {
     id: 'provider',
@@ -28,41 +29,40 @@ const ROLE_OPTIONS: RoleOption[] = [
     sub: 'I represent a clinic or dental practice.',
   },
   {
-    id: 'general',
-    label: 'General Inquiry',
-    sub: 'Press, partnerships, or other questions.',
+    id: 'company',
+    label: 'Company / HR',
+    sub: 'I want to add dental coverage for my team.',
   },
 ];
 
-const CONTACT_TOPICS: Record<Role, string[]> = {
-  member: [
-    'Help finding a dentist',
-    'Booking question',
-    'Coverage / benefits question',
-    'Member ID / Digital ID',
-    'Update my information',
-    'Something else',
-  ],
-  company: [
-    'Add EGDN to our benefits',
-    'Pricing & coverage details',
-    'Renew our partnership',
-    'Onboard new employees',
-    'Something else',
-  ],
-  provider: [
-    'Join the network',
-    'Update clinic information',
-    'Billing & reimbursement',
-    'Something else',
-  ],
-  general: [
-    'Press / media inquiry',
-    'Partnership opportunity',
-    'Feedback or suggestion',
-    'Something else',
-  ],
-};
+// Mirrors PartnerInquiryForm's region list so values stored match across forms.
+const REGION_OPTIONS = [
+  { value: 'NCR', label: 'NCR — National Capital Region' },
+  { value: 'CAR', label: 'CAR — Cordillera' },
+  { value: 'Region I (Ilocos)', label: 'Region I — Ilocos' },
+  { value: 'Region II (Cagayan Valley)', label: 'Region II — Cagayan Valley' },
+  { value: 'Region III (Central Luzon)', label: 'Region III — Central Luzon' },
+  { value: 'Region IV-A (CALABARZON)', label: 'Region IV-A — CALABARZON' },
+  { value: 'Region IV-B (MIMAROPA)', label: 'Region IV-B — MIMAROPA' },
+  { value: 'Region V (Bicol)', label: 'Region V — Bicol' },
+  { value: 'Region VI (Western Visayas)', label: 'Region VI — Western Visayas' },
+  { value: 'Region VII (Central Visayas)', label: 'Region VII — Central Visayas' },
+  { value: 'Region VIII (Eastern Visayas)', label: 'Region VIII — Eastern Visayas' },
+  { value: 'Region IX (Zamboanga Peninsula)', label: 'Region IX — Zamboanga Peninsula' },
+  { value: 'Region X (Northern Mindanao)', label: 'Region X — Northern Mindanao' },
+  { value: 'Region XI (Davao)', label: 'Region XI — Davao' },
+  { value: 'Region XII (SOCCSKSARGEN)', label: 'Region XII — SOCCSKSARGEN' },
+  { value: 'Region XIII (Caraga)', label: 'Region XIII — Caraga' },
+  { value: 'BARMM (Bangsamoro)', label: 'BARMM — Bangsamoro' },
+];
+
+// Mirrors PartnerInquiryForm's employer range list.
+const EMPLOYEE_COUNT_OPTIONS = [
+  { value: '1–50', label: '1–50' },
+  { value: '51–200', label: '51–200' },
+  { value: '201–500', label: '201–500' },
+  { value: '500+', label: '500+' },
+];
 
 const ArrowRight = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
@@ -81,22 +81,29 @@ export default function ContactForm() {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [form, setForm] = useState({
-    role: 'member' as Role,
+    role: 'general' as Role,
     name: '',
     email: '',
     phone: '',
-    topic: '',
     message: '',
     memberId: '',
     company: '',
+    region: '',
+    employeeCount: '',
     consent: false,
   });
 
   const update = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) => {
     setForm((f) => {
       const next = { ...f, [key]: value };
-      // Reset topic when role changes — topic options depend on role
-      if (key === 'role') next.topic = '';
+      // Clear role-specific fields when role changes so stale values don't
+      // get submitted when the user switches between role contexts.
+      if (key === 'role') {
+        next.memberId = '';
+        next.company = '';
+        next.region = '';
+        next.employeeCount = '';
+      }
       return next;
     });
     if (errors[key as string]) setErrors((e) => ({ ...e, [key as string]: '' }));
@@ -105,12 +112,23 @@ export default function ContactForm() {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const err: Record<string, string> = {};
+    const isProvider = form.role === 'provider';
+    const isCompany = form.role === 'company';
+
     if (!form.name.trim()) err.name = 'Required';
     if (!form.email.trim()) err.email = 'Required';
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) err.email = 'Enter a valid email';
-    if (!form.topic) err.topic = 'Select a topic';
+
+    // Provider / company roles mirror the requirements of the dedicated
+    // inquiry forms — org name, phone, and (for provider) region are all
+    // required so we never lose the details we'd otherwise gather there.
+    if (isProvider || isCompany) {
+      if (!form.company.trim()) err.company = 'Required';
+      if (!form.phone.trim()) err.phone = 'Required';
+    }
+    if (isProvider && !form.region) err.region = 'Required';
+
     if (!form.message.trim()) err.message = 'Please share a few details';
-    else if (form.message.trim().length < 10) err.message = 'A bit more detail, please (min 10 chars)';
     if (!form.consent) err.consent = 'Please agree before submitting';
     setErrors(err);
     if (Object.keys(err).length > 0) return;
@@ -124,14 +142,13 @@ export default function ContactForm() {
           name: form.name,
           email: form.email,
           contactNumber: form.phone || undefined,
-          subject: form.topic,
+          // subject is now auto-composed server-side from role + name.
           message: form.message,
           role: form.role,
           memberId: form.role === 'member' ? form.memberId || undefined : undefined,
-          company:
-            form.role === 'company' || form.role === 'provider'
-              ? form.company || undefined
-              : undefined,
+          company: isCompany || isProvider ? form.company || undefined : undefined,
+          region: isProvider ? form.region || undefined : undefined,
+          employeeCount: isCompany ? form.employeeCount || undefined : undefined,
         }),
       });
       if (!res.ok) throw new Error();
@@ -156,9 +173,9 @@ export default function ContactForm() {
     );
   }
 
-  const topics = CONTACT_TOPICS[form.role];
-  const showMemberId = form.role === 'member';
-  const showCompany = form.role === 'company' || form.role === 'provider';
+  const isProvider = form.role === 'provider';
+  const isCompany = form.role === 'company';
+  const isPartner = isProvider || isCompany;
 
   return (
     <form onSubmit={handleSubmit} noValidate className="space-y-5">
@@ -197,107 +214,175 @@ export default function ContactForm() {
         </div>
       </div>
 
-      {/* Name + Email */}
-      <div className="grid gap-5 sm:grid-cols-2">
-        <Field id="cname" label="Full name" required error={errors.name}>
-          <Input
-            id="cname"
-            value={form.name}
-            onChange={(e) => update('name', e.target.value)}
-            placeholder="Juan Dela Cruz"
-            hasError={!!errors.name}
-          />
-        </Field>
-        <Field id="cemail" label="Email" required error={errors.email}>
-          <Input
-            id="cemail"
-            type="email"
-            value={form.email}
-            onChange={(e) => update('email', e.target.value)}
-            placeholder="you@email.com"
-            hasError={!!errors.email}
-          />
-        </Field>
-      </div>
-
-      {/* Phone + (Member ID or Company) */}
-      <div className="grid gap-5 sm:grid-cols-2">
-        <Field
-          id="cphone"
-          label={
-            <>
-              Phone <span className="font-normal text-text-muted">(optional)</span>
-            </>
-          }
-        >
-          <Input
-            id="cphone"
-            type="tel"
-            value={form.phone}
-            onChange={(e) => update('phone', e.target.value)}
-            placeholder="+63 9XX XXX XXXX"
-          />
-        </Field>
-        {showMemberId && (
-          <Field
-            id="cmid"
-            label={
-              <>
-                Member ID <span className="font-normal text-text-muted">(optional)</span>
-              </>
-            }
-          >
-            <Input
-              id="cmid"
-              value={form.memberId}
-              onChange={(e) => update('memberId', e.target.value)}
-              placeholder="EGDN-000000"
-            />
-          </Field>
-        )}
-        {showCompany && (
-          <Field
-            id="ccomp"
-            label={form.role === 'company' ? 'Company name' : 'Clinic name'}
-          >
-            <Input
+      {isPartner ? (
+        // Provider / Company — mirrors the PartnerInquiryForm layout so we
+        // gather the same required details (org name + name pair, email +
+        // phone pair, then Region or Number of Employees on its own row).
+        <>
+          <div className="grid gap-5 sm:grid-cols-2">
+            <Field
               id="ccomp"
-              value={form.company}
-              onChange={(e) => update('company', e.target.value)}
-              placeholder={form.role === 'company' ? 'Your company' : 'Your clinic'}
-            />
-          </Field>
-        )}
-        {form.role === 'general' && <div className="hidden sm:block" />}
-      </div>
+              label={isCompany ? 'Company name' : 'Clinic name'}
+              required
+              error={errors.company}
+            >
+              <Input
+                id="ccomp"
+                value={form.company}
+                onChange={(e) => update('company', e.target.value)}
+                placeholder={isCompany ? 'Your company' : 'Your clinic'}
+                hasError={!!errors.company}
+              />
+            </Field>
+            <Field id="cname" label="Your name" required error={errors.name}>
+              <Input
+                id="cname"
+                value={form.name}
+                onChange={(e) => update('name', e.target.value)}
+                placeholder="Juan Dela Cruz"
+                hasError={!!errors.name}
+              />
+            </Field>
+          </div>
+          <div className="grid gap-5 sm:grid-cols-2">
+            <Field id="cemail" label="Email" required error={errors.email}>
+              <Input
+                id="cemail"
+                type="email"
+                value={form.email}
+                onChange={(e) => update('email', e.target.value)}
+                placeholder="you@email.com"
+                hasError={!!errors.email}
+              />
+            </Field>
+            <Field id="cphone" label="Mobile number" required error={errors.phone}>
+              <PhoneInput
+                id="cphone"
+                value={form.phone}
+                onChange={(v) => update('phone', v)}
+                hasError={!!errors.phone}
+                bare
+                seamless
+              />
+            </Field>
+          </div>
+          {isProvider && (
+            <Field id="cregion" label="Region" required error={errors.region}>
+              <div className="relative">
+                <select
+                  id="cregion"
+                  value={form.region}
+                  onChange={(e) => update('region', e.target.value)}
+                  className={[
+                    'block h-12 w-full cursor-pointer appearance-none rounded-input border bg-surface pl-4 pr-10 text-[14px] text-text transition-colors focus:outline-none focus:ring-2 focus:ring-[rgba(27,127,168,0.12)]',
+                    errors.region ? 'border-error focus:border-error' : 'border-border focus:border-brand',
+                  ].join(' ')}
+                >
+                  <option value="">Select a region…</option>
+                  {REGION_OPTIONS.map((r) => (
+                    <option key={r.value} value={r.value}>{r.label}</option>
+                  ))}
+                </select>
+                <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-text-muted">
+                  <ChevronDown />
+                </span>
+              </div>
+            </Field>
+          )}
+          {isCompany && (
+            <Field
+              id="cemp"
+              label={
+                <>
+                  Number of employees{' '}
+                  <span className="font-normal text-text-muted">(optional)</span>
+                </>
+              }
+            >
+              <div className="relative">
+                <select
+                  id="cemp"
+                  value={form.employeeCount}
+                  onChange={(e) => update('employeeCount', e.target.value)}
+                  className="block h-12 w-full cursor-pointer appearance-none rounded-input border border-border bg-surface pl-4 pr-10 text-[14px] text-text transition-colors focus:border-brand focus:outline-none focus:ring-2 focus:ring-[rgba(27,127,168,0.12)]"
+                >
+                  <option value="">Select range</option>
+                  {EMPLOYEE_COUNT_OPTIONS.map((o) => (
+                    <option key={o.value} value={o.value}>{o.label}</option>
+                  ))}
+                </select>
+                <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-text-muted">
+                  <ChevronDown />
+                </span>
+              </div>
+            </Field>
+          )}
+        </>
+      ) : (
+        // Member / General — name + email pair, then phone + (member ID).
+        <>
+          <div className="grid gap-5 sm:grid-cols-2">
+            <Field id="cname" label="Your name" required error={errors.name}>
+              <Input
+                id="cname"
+                value={form.name}
+                onChange={(e) => update('name', e.target.value)}
+                placeholder="Juan Dela Cruz"
+                hasError={!!errors.name}
+              />
+            </Field>
+            <Field id="cemail" label="Email" required error={errors.email}>
+              <Input
+                id="cemail"
+                type="email"
+                value={form.email}
+                onChange={(e) => update('email', e.target.value)}
+                placeholder="you@email.com"
+                hasError={!!errors.email}
+              />
+            </Field>
+          </div>
+          <div className="grid gap-5 sm:grid-cols-2">
+            <Field
+              id="cphone"
+              label={
+                <>
+                  Mobile number <span className="font-normal text-text-muted">(optional)</span>
+                </>
+              }
+            >
+              <PhoneInput
+                id="cphone"
+                value={form.phone}
+                onChange={(v) => update('phone', v)}
+                bare
+                seamless
+              />
+            </Field>
+            {form.role === 'member' ? (
+              <Field
+                id="cmid"
+                label={
+                  <>
+                    Member ID <span className="font-normal text-text-muted">(optional)</span>
+                  </>
+                }
+              >
+                <Input
+                  id="cmid"
+                  value={form.memberId}
+                  onChange={(e) => update('memberId', e.target.value)}
+                  placeholder="EGDN-000000"
+                />
+              </Field>
+            ) : (
+              <div className="hidden sm:block" />
+            )}
+          </div>
+        </>
+      )}
 
-      {/* Topic */}
-      <Field id="ctopic" label="What's this about?" error={errors.topic}>
-        <div className="relative">
-          <select
-            id="ctopic"
-            value={form.topic}
-            onChange={(e) => update('topic', e.target.value)}
-            className={[
-              'block h-12 w-full cursor-pointer appearance-none rounded-input border bg-surface pl-4 pr-10 text-[14px] text-text transition-colors focus:outline-none focus:ring-2 focus:ring-[rgba(27,127,168,0.12)]',
-              errors.topic ? 'border-error focus:border-error' : 'border-border focus:border-brand',
-            ].join(' ')}
-          >
-            <option value="">Choose a topic…</option>
-            {topics.map((t) => (
-              <option key={t} value={t}>
-                {t}
-              </option>
-            ))}
-          </select>
-          <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-text-muted">
-            <ChevronDown />
-          </span>
-        </div>
-      </Field>
-
-      {/* Message + char count */}
-      <Field id="cmsg" label="Your message" error={errors.message}>
+      <Field id="cmsg" label="Your message" required error={errors.message}>
         <textarea
           id="cmsg"
           value={form.message}
@@ -308,9 +393,6 @@ export default function ContactForm() {
             errors.message ? 'border-error focus:border-error' : 'border-border focus:border-brand',
           ].join(' ')}
         />
-        <p className="mt-1.5 text-[12px] text-text-muted">
-          {form.message.length} character{form.message.length === 1 ? '' : 's'}
-        </p>
       </Field>
 
       {/* Consent — styled card with inline link to privacy policy */}
@@ -411,7 +493,7 @@ function Input({
     <input
       {...props}
       className={[
-        'block h-12 w-full rounded-input border bg-surface px-4 text-[14px] text-text transition-colors focus:outline-none focus:ring-2 focus:ring-[rgba(27,127,168,0.12)]',
+        'block h-12 w-full rounded-input border bg-surface px-4 text-[14px] text-text transition-colors placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-[rgba(27,127,168,0.12)]',
         hasError ? 'border-error focus:border-error' : 'border-border focus:border-brand',
       ].join(' ')}
     />

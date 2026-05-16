@@ -1,6 +1,7 @@
 import DentistCard from './DentistCard';
-import FilterDropdown from './FilterDropdown';
 import DentistSearchInput from './DentistSearchInput';
+import FilterBar from './FilterBar';
+import ClearFiltersLink from './ClearFiltersLink';
 import { Suspense } from 'react';
 
 interface Dentist {
@@ -19,14 +20,25 @@ interface DentistListProps {
   region: string;
   cities: string[];
   specializations: string[];
+  /** Total partner clinics in this region, ignoring any active filter. Used
+   *  for the "Showing 12 of 64" line below the chip row. */
+  total: number;
   selectedCity?: string;
   selectedSpecialization?: string;
   selectedName?: string;
 }
 
-const FilterFallback = ({ placeholder }: { placeholder: string }) => (
+const SearchFallback = () => (
   <div className="flex h-12 items-center rounded-input border border-border bg-surface px-4">
-    <span className="text-[14px] text-text-muted">{placeholder}</span>
+    <span className="text-[14px] text-text-muted">Search dentists, clinics, cities…</span>
+  </div>
+);
+
+const FilterBarFallback = () => (
+  <div className="-mx-5 flex items-center gap-2 px-5 pb-1">
+    <span className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full border border-border bg-surface px-3.5 text-[12px] font-semibold text-text">
+      Filters
+    </span>
   </div>
 );
 
@@ -34,46 +46,43 @@ export default function DentistList({
   dentists,
   cities,
   specializations,
+  total,
   selectedCity,
   selectedSpecialization,
   selectedName,
 }: DentistListProps) {
+  const isFiltered = !!(selectedCity || selectedSpecialization || selectedName);
+
   return (
     <div>
-      {/* Filter card — name search on top (full-width), then city +
-          specialization dropdowns in a 2-col grid (stacked on mobile). */}
-      <div className="mb-5 sm:mb-6">
-        <div className="rounded-card border border-border bg-surface p-5 sm:p-6">
-          <span className="mb-3 block text-[13px] font-medium text-text">Filter by</span>
-          <div className="flex flex-col gap-3 sm:gap-4">
-            <Suspense fallback={<FilterFallback placeholder="Search by dentist name or phone number…" />}>
-              <DentistSearchInput selected={selectedName} />
-            </Suspense>
-            <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
-              <Suspense fallback={<FilterFallback placeholder="All cities & municipalities" />}>
-                <FilterDropdown
-                  options={cities}
-                  selected={selectedCity}
-                  paramName="city"
-                  placeholder="All cities & municipalities"
-                  ariaLabel="Filter by city"
-                />
-              </Suspense>
-              <Suspense fallback={<FilterFallback placeholder="All specializations" />}>
-                <FilterDropdown
-                  options={specializations}
-                  selected={selectedSpecialization}
-                  paramName="specialization"
-                  placeholder="All specializations"
-                  ariaLabel="Filter by specialization"
-                />
-              </Suspense>
-            </div>
-          </div>
-        </div>
-        <p className="mt-3 text-[13px] text-text-muted">
-          {dentists.length} {dentists.length === 1 ? 'result' : 'results'}
-        </p>
+      <div className="mb-3">
+        <Suspense fallback={<SearchFallback />}>
+          <DentistSearchInput
+            selected={selectedName}
+            placeholder="Search dentists, clinics, cities…"
+          />
+        </Suspense>
+      </div>
+
+      <Suspense fallback={<FilterBarFallback />}>
+        <FilterBar
+          cities={cities}
+          specializations={specializations}
+          selectedCity={selectedCity}
+          selectedSpecialization={selectedSpecialization}
+        />
+      </Suspense>
+
+      {/* "Showing 12 of 64 in Makati" + Clear filters link — matches the
+          design's row beneath the chip strip. */}
+      <div className="mt-3 mb-4 flex items-baseline justify-between gap-3">
+        <span className="text-[12px] text-text-muted">
+          {isFiltered ? `Showing ${dentists.length} of ${total}` : `Showing ${dentists.length}`}
+          {selectedCity ? ` in ${selectedCity}` : ''}
+        </span>
+        <Suspense fallback={null}>
+          <ClearFiltersLink />
+        </Suspense>
       </div>
 
       {dentists.length === 0 ? (
@@ -91,7 +100,7 @@ export default function DentistList({
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="flex flex-col gap-2.5">
           {dentists.map((d) => (
             <DentistCard key={d._id} {...d} />
           ))}

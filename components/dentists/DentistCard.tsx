@@ -1,6 +1,5 @@
-import Avatar from '@/components/ui/Avatar';
-import Button from '@/components/ui/Button';
-import { formatDentistName, splitPhoneNumbers } from '@/lib/utils';
+import Link from 'next/link';
+import { formatDentistName } from '@/lib/utils';
 
 interface DentistCardProps {
   name: string;
@@ -12,66 +11,95 @@ interface DentistCardProps {
   specializations: string[];
 }
 
+function initials(name: string): string {
+  const formatted = formatDentistName(name);
+  // Drop a leading honorific like "Dr." so the chip reads "MS" not "DM".
+  const stripped = formatted.replace(/^(Dr\.?|Doc\.?|Prof\.?)\s+/i, '');
+  return stripped
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0])
+    .join('')
+    .toUpperCase();
+}
+
 export default function DentistCard({
   name,
   slug,
   clinicName,
   city,
-  address,
-  contactNumber,
   specializations,
 }: DentistCardProps) {
+  const formattedName = formatDentistName(name);
+
   return (
-    <div className="rounded-card border border-border bg-surface p-6 flex flex-col gap-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-brand">
-      <div className="flex gap-4 items-start">
-        <Avatar name={name} size={56} />
-        <div className="flex-1 min-w-0">
-          {/* Head row — name + specialty tag stay on one line. Specialty chip
-              is shrink-0 so it always sits beside the name; the name truncates
-              with an ellipsis if it would otherwise push the chip off the row. */}
-          <div className="mb-1 flex items-center gap-x-2.5">
-            <h3
-              className="min-w-0 flex-1 truncate font-display text-[20px] font-semibold leading-tight text-text"
-              title={formatDentistName(name)}
-            >
-              {formatDentistName(name)}
-            </h3>
-            {specializations[0] && (
-              <span className="shrink-0 rounded-full bg-brand-light px-2.5 py-1 text-[12px] font-semibold text-brand">
-                {specializations[0]}
-              </span>
-            )}
-          </div>
-          <p className="text-[14px] text-text-muted leading-snug">{clinicName}</p>
-          <ul className="mt-3 space-y-1.5">
-            <li className="flex items-start gap-2 text-[13px] text-text">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0 text-text-muted" aria-hidden>
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                <circle cx="12" cy="10" r="3" />
-              </svg>
-              <span>{address}, {city}</span>
-            </li>
-            {contactNumber && (
-              <li className="flex items-start gap-2 text-[13px] text-text">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0 text-text-muted" aria-hidden>
-                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-                </svg>
-                <div className="flex flex-col">
-                  {splitPhoneNumbers(contactNumber).map((p) => (
-                    <span key={p}>{p}</span>
-                  ))}
-                </div>
-              </li>
-            )}
-          </ul>
-        </div>
+    <Link
+      href={`/dentist/${slug}`}
+      aria-label={`View profile for ${formattedName}`}
+      className="group flex items-start gap-3.5 rounded-[16px] border border-border bg-surface p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-brand focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
+    >
+      {/* Initials avatar — 48×48 squircle, brand-tinted */}
+      <div className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-brand-light font-body text-[15px] font-bold text-brand">
+        {initials(name)}
       </div>
 
-      <div className="flex justify-end">
-        <Button href={`/dentist/${slug}`} variant="secondary" size="default">
-          View Profile →
-        </Button>
+      <div className="min-w-0 flex-1">
+        <h3
+          className="truncate font-display text-[17px] font-semibold leading-[1.2] text-text"
+          title={formattedName}
+        >
+          {formattedName}
+        </h3>
+        {clinicName && (
+          <p className="mt-0.5 truncate text-[12px] text-text-muted">{clinicName}</p>
+        )}
+
+        {specializations[0] && (
+          <div className="mt-2.5 flex flex-wrap gap-1.5">
+            <span className="inline-flex items-center rounded-full bg-brand-light px-2.5 py-1 text-[11px] font-semibold text-brand">
+              {specializations[0]}
+            </span>
+          </div>
+        )}
+
+        {city && (
+          <div className="mt-3 flex items-center gap-1.5 text-[12px] font-medium text-text">
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="text-text-muted"
+              aria-hidden
+            >
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+              <circle cx="12" cy="10" r="3" />
+            </svg>
+            <span className="truncate">{city}</span>
+          </div>
+        )}
       </div>
-    </div>
+
+      {/* Chevron — visual affordance that the card is tappable */}
+      <svg
+        width="14"
+        height="14"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="mt-1 shrink-0 text-text-muted transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-brand"
+        aria-hidden
+      >
+        <polyline points="9 18 15 12 9 6" />
+      </svg>
+    </Link>
   );
 }

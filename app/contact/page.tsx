@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import Breadcrumb from '@/components/ui/Breadcrumb';
 import ContactForm from '@/components/forms/ContactForm';
 
 export const metadata: Metadata = {
@@ -71,11 +70,9 @@ const MapMiniIcon = () => (
 export default function ContactPage() {
   return (
     <>
-      {/* ── Page header ─ matches the find-a-dentist heading pattern:
-          breadcrumb at full container width, title block constrained to 720px,
-          tight rhythm (eyebrow → h1 → subtitle, no extra mt/mb on h1). ── */}
+      {/* ── Page header ─ title block constrained to 720px, tight rhythm
+          (eyebrow → h1 → subtitle, no extra mt/mb on h1). ── */}
       <section className="mx-auto max-w-300 px-5 pt-12 pb-4 sm:px-6 sm:pt-16 lg:px-10">
-        <Breadcrumb crumbs={[{ label: 'Home', href: '/' }, { label: 'Contact' }]} />
         <div className="max-w-[720px]">
           <span className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:text-[12px]">
             Get in touch

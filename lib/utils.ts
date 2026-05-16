@@ -67,6 +67,18 @@ export function formatDentistName(name: string): string {
 }
 
 /**
+ * Strip a trailing " City" suffix for display contexts where the suffix
+ * adds noise ("Quezon City" → "Quezon", "Makati City" → "Makati"). Leaves
+ * standalone names untouched ("Manila" → "Manila") and preserves cities
+ * where "City" is followed by more words ("City of San Fernando" → unchanged,
+ * which doesn't end in " City"). Only used for display — keep the raw
+ * value when handing the city to Google Maps or other external systems.
+ */
+export function formatCity(city: string): string {
+  return city.replace(/\s+City\s*$/i, '').trim();
+}
+
+/**
  * Split a phone-number string that may contain multiple numbers separated by
  * "/", ",", ";", or "|" into a clean array. Empty/whitespace-only entries
  * are dropped.

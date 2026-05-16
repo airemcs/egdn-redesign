@@ -4,10 +4,12 @@ import { useState } from 'react';
 import Input from '@/components/ui/Input';
 import Textarea from '@/components/ui/Textarea';
 import Button from '@/components/ui/Button';
+import PhoneInput from '@/components/ui/PhoneInput';
 
 export default function NominationForm() {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [phone, setPhone] = useState('');
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -15,7 +17,7 @@ export default function NominationForm() {
 
     const body = {
       nominatorName: data.get('nominatorName') as string,
-      contactNumber: data.get('contactNumber') as string,
+      contactNumber: phone,
       dentistName: data.get('dentistName') as string,
       clinicName: data.get('clinicName') as string,
       clinicAddress: data.get('clinicAddress') as string,
@@ -60,12 +62,12 @@ export default function NominationForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-5" noValidate>
       <div className="grid gap-5 sm:grid-cols-2">
-        <Input id="nominatorName" name="nominatorName" label="Your Name" required error={errors.nominatorName} />
-        <Input id="contactNumber" name="contactNumber" label="Your Contact Number" type="tel" required error={errors.contactNumber} />
+        <Input id="nominatorName" name="nominatorName" label="Your name" placeholder="Juan Dela Cruz" required error={errors.nominatorName} />
+        <PhoneInput id="contactNumber" label="Mobile number" required value={phone} onChange={setPhone} error={errors.contactNumber} seamless />
       </div>
-      <Input id="dentistName" name="dentistName" label="Dentist / Doctor Name" required error={errors.dentistName} />
-      <Input id="clinicName" name="clinicName" label="Clinic Name" required error={errors.clinicName} />
-      <Textarea id="clinicAddress" name="clinicAddress" label="Clinic Address" required error={errors.clinicAddress} />
+      <Input id="dentistName" name="dentistName" label="Dentist / Doctor Name" placeholder="Dr. Dela Cruz" required error={errors.dentistName} />
+      <Input id="clinicName" name="clinicName" label="Clinic Name" placeholder="Smile Dental Clinic" required error={errors.clinicName} />
+      <Textarea id="clinicAddress" name="clinicAddress" label="Clinic Address" placeholder="123 Salcedo St., Makati City" required error={errors.clinicAddress} />
       <Textarea
         id="reason"
         name="reason"

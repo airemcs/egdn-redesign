@@ -1,91 +1,42 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
-import CtaSection from '@/components/sections/CtaSection';
+import Button from '@/components/ui/Button';
 
 export const metadata: Metadata = {
-  title: 'Digital Member ID — EGDN',
-  description: 'Learn how to get your EGDN digital member ID.',
+  title: 'Digital Member ID — Coming Soon — EGDN',
+  description:
+    "EGDN's digital member ID portal is on the way. In the meantime, contact us directly to request or replace your member ID.",
+  robots: { index: false },
 };
+
+const ClockIcon = () => (
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <circle cx="12" cy="12" r="10" />
+    <polyline points="12 6 12 12 16 14" />
+  </svg>
+);
 
 export default function DigitalIdPage() {
   return (
-    <>
-      <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
-        <h1 className="font-display text-3xl font-bold text-text lg:text-4xl">
-          Your Digital Member ID
-        </h1>
-        <p className="mt-3 text-[16px] text-text-muted">
-          Your EGDN member ID is your pass to accessing dental care at any partner clinic.
-        </p>
-
-        {/* How to get it */}
-        <div className="mt-10 rounded-card border border-border bg-surface p-6">
-          <h2 className="font-display text-xl font-semibold text-text">How do I get mine?</h2>
-          <p className="mt-3 text-[15px] text-text-muted leading-relaxed">
-            Digital member IDs are issued directly by EGDN. If you haven't received yours, or need a
-            replacement, contact us using the details below and we'll sort it out. Please have your
-            full name and employer name ready when you reach out.
-          </p>
-        </div>
-
-        {/* Contact details */}
-        <div className="mt-6 rounded-card border border-border bg-surface p-6">
-          <h2 className="font-display text-xl font-semibold text-text mb-4">Contact for ID Requests</h2>
-          <dl className="space-y-3 text-[15px]">
-            <div className="flex gap-4">
-              <dt className="w-24 shrink-0 font-medium text-text">Hotline</dt>
-              <dd className="text-text-muted">(02) XXXX-XXXX {/* [CONFIRM WITH CLIENT] */}</dd>
-            </div>
-            <div className="flex gap-4">
-              <dt className="w-24 shrink-0 font-medium text-text">Email</dt>
-              <dd>
-                <a href="mailto:info@elitegroup.com.ph" className="text-brand hover:underline">
-                  info@elitegroup.com.ph {/* [CONFIRM WITH CLIENT] */}
-                </a>
-              </dd>
-            </div>
-            <div className="flex gap-4">
-              <dt className="w-24 shrink-0 font-medium text-text">Hours</dt>
-              <dd className="text-text-muted">Monday–Friday, 9:00 AM – 6:00 PM</dd>
-            </div>
-          </dl>
-        </div>
-
-        {/* What the ID contains */}
-        <div className="mt-6 rounded-card border border-border bg-surface p-6">
-          <h2 className="font-display text-xl font-semibold text-text mb-3">
-            What your ID contains
-          </h2>
-          <ul className="space-y-2 text-[15px] text-text-muted">
-            {['Member name', 'Member ID number', 'Plan type / employer', 'Validity period'].map((item) => (
-              <li key={item} className="flex items-center gap-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-brand shrink-0" aria-hidden />
-                {item}
-              </li>
-            ))}
-          </ul>
-          <p className="mt-3 text-[13px] text-text-muted italic">
-            Fields may vary depending on your employer's plan. {/* [CONFIRM WITH CLIENT] */}
-          </p>
-        </div>
-
-        <p className="mt-8 text-[14px] text-text-muted">
-          Need help with something else?{' '}
-          <Link href="/contact" className="text-brand hover:underline">
-            Contact us
-          </Link>
-          .
-        </p>
-      </div>
-
-      <CtaSection
-        headline="Ready to use your benefit?"
-        subtext="Find a trusted dentist near you and book your appointment today."
-        primaryLabel="Find a Dentist"
-        primaryHref="/find-a-dentist"
-        secondaryLabel="Book an Appointment"
-        secondaryHref="/book-appointment"
-      />
-    </>
+    <section className="mx-auto flex min-h-[60vh] max-w-[560px] flex-col items-center justify-center px-5 py-16 text-center sm:px-6 sm:py-20 lg:px-10">
+      <span className="grid h-14 w-14 place-items-center rounded-full bg-brand-light text-brand">
+        <ClockIcon />
+      </span>
+      <span className="mt-6 block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:text-[12px]">
+        Coming soon
+      </span>
+      <h1 className="mt-1.5 font-display text-[28px] font-bold leading-[1.2] text-text sm:text-[34px]">
+        Digital Member ID
+      </h1>
+      <p
+        className="mt-3 text-[16px] leading-[1.55] text-text-muted"
+        style={{ textWrap: 'pretty' } as React.CSSProperties}
+      >
+        This portal is still being built. In the meantime, reach out and we&apos;ll send your
+        member ID within 1 business day.
+      </p>
+      <Button href="/contact" variant="primary" size="default" className="mt-6">
+        Contact EGDN
+      </Button>
+    </section>
   );
 }

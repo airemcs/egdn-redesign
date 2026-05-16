@@ -11,7 +11,7 @@ interface CtaSectionProps {
 
 export default function CtaSection({
   headline = 'Ready to find your dentist?',
-  subtext = 'Browse 600+ partner clinics across 16 regions.',
+  subtext = 'Browse partner clinics nationwide.',
   primaryLabel = 'Find a Dentist',
   primaryHref = '/find-a-dentist',
   secondaryLabel,
