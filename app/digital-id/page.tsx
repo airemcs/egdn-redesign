@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Button from '@/components/ui/Button';
+import PageContainer from '@/components/layout/PageContainer';
 
 export const metadata: Metadata = {
   title: 'Digital Member ID — Coming Soon — EGDN',
@@ -17,7 +18,7 @@ const ClockIcon = () => (
 
 export default function DigitalIdPage() {
   return (
-    <section className="mx-auto flex min-h-[60vh] max-w-[560px] flex-col items-center justify-center px-5 py-16 text-center sm:px-6 sm:py-20 lg:px-10">
+    <PageContainer width="narrow" className="flex min-h-[60vh] flex-col items-center justify-center py-16 text-center sm:py-20">
       <span className="grid h-14 w-14 place-items-center rounded-full bg-brand-light text-brand">
         <ClockIcon />
       </span>
@@ -37,6 +38,6 @@ export default function DigitalIdPage() {
       <Button href="/contact" variant="primary" size="default" className="mt-6">
         Contact EGDN
       </Button>
-    </section>
+    </PageContainer>
   );
 }

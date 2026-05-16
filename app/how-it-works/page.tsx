@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import CtaSection from '@/components/sections/CtaSection';
+import PageContainer from '@/components/layout/PageContainer';
 
 export const metadata: Metadata = {
   title: 'How It Works — EGDN',
@@ -43,7 +44,7 @@ const steps = [
 export default function HowItWorksPage() {
   return (
     <>
-      <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
+      <PageContainer width="reading" className="py-12 sm:py-16 lg:py-20">
         <h1 className="font-display text-3xl font-bold text-text lg:text-4xl">How It Works</h1>
         <p className="mt-3 text-[16px] text-text-muted">
           Using your EGDN dental benefit is straightforward. Here's what to expect.
@@ -96,7 +97,7 @@ export default function HowItWorksPage() {
             before your appointment to confirm.
           </p>
         </div>
-      </div>
+      </PageContainer>
 
       <CtaSection
         headline="Ready to find your dentist?"

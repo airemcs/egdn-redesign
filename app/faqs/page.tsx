@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import Accordion from '@/components/ui/Accordion';
 import CtaSection from '@/components/sections/CtaSection';
+import PageContainer from '@/components/layout/PageContainer';
 
 export const metadata: Metadata = {
   title: 'FAQs — EGDN',
@@ -95,7 +96,7 @@ const groups = [
 export default function FaqsPage() {
   return (
     <>
-      <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
+      <PageContainer width="reading" className="py-12 sm:py-16 lg:py-20">
         <h1 className="font-display text-3xl font-bold text-text lg:text-4xl">
           Frequently Asked Questions
         </h1>
@@ -115,7 +116,7 @@ export default function FaqsPage() {
             </section>
           ))}
         </div>
-      </div>
+      </PageContainer>
 
       <CtaSection
         headline="Still have questions?"

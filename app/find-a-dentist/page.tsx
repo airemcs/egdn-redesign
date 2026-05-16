@@ -67,7 +67,7 @@ export default async function FindADentistPage({ searchParams }: PageProps) {
 
       return (
         <>
-          <section className="mx-auto max-w-110 px-5 pt-8 pb-2">
+          <section className="mx-auto max-w-110 px-5 sm:max-w-[640px] sm:px-6 lg:max-w-3xl lg:px-10 pt-8 pb-2">
             <Breadcrumb crumbs={[{ label: 'Home', href: '/' }, { label: 'Find a Dentist', href: '/find-a-dentist' }, { label: 'Search' }]} />
             <span className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand">
               {results.length} {results.length === 1 ? 'match' : 'matches'}
@@ -77,7 +77,7 @@ export default async function FindADentistPage({ searchParams }: PageProps) {
             </h1>
           </section>
 
-          <section className="mx-auto max-w-110 px-5 py-5">
+          <section className="mx-auto max-w-110 px-5 sm:max-w-[640px] sm:px-6 lg:max-w-3xl lg:px-10 py-5">
             {/* Refine the search */}
             <div className="mb-4">
               <Suspense fallback={null}>
@@ -157,7 +157,7 @@ export default async function FindADentistPage({ searchParams }: PageProps) {
     return (
       <>
         {/* ── Page header ────────────────────────────────────────────────── */}
-        <section className="mx-auto max-w-110 px-5 pt-8 pb-4">
+        <section className="mx-auto max-w-110 px-5 sm:max-w-[640px] sm:px-6 lg:max-w-3xl lg:px-10 pt-8 pb-4">
           <Breadcrumb crumbs={[{ label: 'Home', href: '/' }, { label: 'Find a Dentist' }]} />
           <h1 className="mb-2 font-display text-[28px] font-bold leading-[1.1] tracking-[-0.5px] text-text">
             Find your dentist.
@@ -173,7 +173,7 @@ export default async function FindADentistPage({ searchParams }: PageProps) {
         </section>
 
         {/* ── Global search bar + "Use my current location" placeholder ──── */}
-        <section className="mx-auto max-w-110 px-5 pt-4">
+        <section className="mx-auto max-w-110 px-5 sm:max-w-[640px] sm:px-6 lg:max-w-3xl lg:px-10 pt-4">
           <div className="space-y-2.5">
             <Suspense fallback={null}>
               <DentistSearchInput placeholder="Search dentists, clinics, cities…" />
@@ -207,7 +207,7 @@ export default async function FindADentistPage({ searchParams }: PageProps) {
         </section>
 
         {/* ── Region cards ───────────────────────────────────────────────── */}
-        <section className="mx-auto max-w-110 px-5 pt-6 pb-16">
+        <section className="mx-auto max-w-110 px-5 sm:max-w-[640px] sm:px-6 lg:max-w-3xl lg:px-10 pt-6 pb-16">
           <div className="mb-3 flex items-baseline justify-between">
             <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-text-muted">
               Browse by region
@@ -286,7 +286,7 @@ export default async function FindADentistPage({ searchParams }: PageProps) {
   return (
     <>
       {/* ── Page header ────────────────────────────────────────────────────── */}
-      <section className="mx-auto max-w-110 px-5 pt-8 pb-2">
+      <section className="mx-auto max-w-110 px-5 sm:max-w-[640px] sm:px-6 lg:max-w-3xl lg:px-10 pt-8 pb-2">
         <Breadcrumb
           crumbs={[
             { label: 'Home', href: '/' },
@@ -303,7 +303,7 @@ export default async function FindADentistPage({ searchParams }: PageProps) {
       </section>
 
       {/* ── Dentist list ───────────────────────────────────────────────────── */}
-      <section className="mx-auto max-w-110 px-5 py-5">
+      <section className="mx-auto max-w-110 px-5 sm:max-w-[640px] sm:px-6 lg:max-w-3xl lg:px-10 py-5">
         <DentistList
           dentists={dentists}
           region={region}
