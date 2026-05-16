@@ -104,11 +104,12 @@ export default function Navbar() {
           sticky header. */}
       {open && (
         <div className="fixed inset-0 z-60 flex flex-col bg-bg animate-[mFadeIn_200ms_cubic-bezier(0.2,0.6,0.2,1)]">
-          {/* Header — matches sticky navbar height (56px) with bottom border */}
-          <div className="flex h-14 items-center justify-between border-b border-border px-5">
+          {/* Header — matches sticky navbar height (72px) and px so the
+              logo doesn't shift when opening/closing the overlay. */}
+          <div className="flex h-18 items-center justify-between border-b border-border px-4 sm:px-6">
             <Link href="/" className="flex items-center gap-2.5" onClick={() => setOpen(false)}>
-              <span className="flex h-7 w-7 items-center justify-center rounded-[7px] bg-brand text-[11px] font-bold text-white tracking-wide select-none font-body">EG</span>
-              <span className="font-display text-[17px] font-bold text-text">EGDN</span>
+              <span className="flex h-8 w-8 items-center justify-center rounded-md bg-brand text-[11px] font-bold text-white tracking-wide select-none font-body">EG</span>
+              <span className="font-display text-xl font-bold text-text">EGDN</span>
             </Link>
             <button
               className="-mr-2 grid h-10 w-10 place-items-center rounded-lg text-text focus:outline-none focus-visible:ring-2 focus-visible:ring-brand active:bg-brand-light"

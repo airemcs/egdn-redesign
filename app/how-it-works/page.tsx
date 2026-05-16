@@ -50,11 +50,11 @@ export default function HowItWorksPage() {
         </p>
 
         {/* Steps */}
-        <ol className="mt-12 relative">
-          {/* Connector line */}
-          <div className="absolute left-5 top-6 bottom-6 w-px bg-border" aria-hidden />
+        <div className="relative mt-12">
+          {/* Connector line — anchored to circle centers (top: 20px = h-10/2) */}
+          <span aria-hidden className="absolute left-5 top-5 bottom-5 w-px bg-border" />
 
-          <div className="space-y-10">
+          <ol className="space-y-10">
             {steps.map((step) => (
               <li key={step.n} className="flex gap-6">
                 <div className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand text-text-on-brand font-semibold text-[14px]">
@@ -74,8 +74,8 @@ export default function HowItWorksPage() {
                 </div>
               </li>
             ))}
-          </div>
-        </ol>
+          </ol>
+        </div>
 
         {/* Coverage scope — flagged separately so members don't read step 5
             as a blanket "everything is free" promise. Coverage depends on

@@ -26,7 +26,13 @@
       "Bash(gunzip -c webfetch-1778921249498-1edhp5.bin)",
       "Bash(tar -tf extracted.tar)",
       "Bash(mkdir -p design)",
-      "Bash(tar -xf extracted.tar -C design)"
+      "Bash(tar -xf extracted.tar -C design)",
+      "Bash(gunzip -c webfetch-1778931454141-am3s5w.bin)",
+      "Bash(mkdir -p book)",
+      "Bash(tar -xf book.tar -C book)",
+      "Bash(gunzip -c webfetch-1778932346908-eg2zho.bin)",
+      "Bash(mkdir -p profile)",
+      "Bash(tar -xf profile.tar -C profile)"
     ]
   }
 }

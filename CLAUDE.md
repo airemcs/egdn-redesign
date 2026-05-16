@@ -1,5 +1,7 @@
 @AGENTS.md
 
+When asked to fix mobile issues, follow MOBILE_AUDIT.md. PRs land in order.
+
 Read CLAUDE.md, egdn-architecture.md, and egdn-implementation-checklist.md. 
 We're starting Phase A — Foundation. Scaffold the Next.js project with TypeScript, 
 Tailwind, and App Router. Then set up lib/mongodb.ts, all five Mongoose models 

@@ -50,32 +50,11 @@ export default async function DentistProfilePage({ params }: PageProps) {
           ]}
         />
 
-        {/* Profile header — squircle avatar with the EGDN-verified label
-            sitting to its right, bottom-aligned. Name + clinic + chips flow
-            underneath (mirrors the mobile design). Top spacing comes from
-            the Breadcrumb component's built-in mb-6. */}
+        {/* Profile header — squircle avatar above the name. Name + clinic +
+            chips flow underneath (mirrors the mobile design). Top spacing
+            comes from the Breadcrumb component's built-in mb-6. */}
         <div>
-          <div className="flex items-end gap-3">
-            <Avatar name={dentist.name} src={dentist.headshotUrl} size={84} shape="rounded" />
-            <span className="inline-flex items-center gap-1.5 pb-2 text-[12px] font-medium text-text-muted">
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="text-brand"
-                aria-hidden
-              >
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                <polyline points="9 12 11 14 15 10" />
-              </svg>
-              EGDN verified
-            </span>
-          </div>
+          <Avatar name={dentist.name} src={dentist.headshotUrl} size={84} shape="rounded" />
           <h1 className="mt-4 font-display text-[26px] font-bold leading-tight text-text sm:text-3xl lg:text-4xl">
             {dentist.name}
           </h1>
@@ -341,8 +320,10 @@ export default async function DentistProfilePage({ params }: PageProps) {
               ))}
           </aside>
 
-          {/* Booking form */}
-          <div id="book">
+          {/* Booking form — hidden on mobile (<md) where the sticky CTA
+              routes to /dentist/[slug]/book instead. Tablet/desktop keep
+              the inline form. */}
+          <div id="book" className="hidden md:block">
             <div className="rounded-card border border-border bg-surface p-5 sm:p-6 lg:p-8">
               <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.18em] text-brand sm:mb-3">
                 Book an appointment
@@ -369,15 +350,37 @@ export default async function DentistProfilePage({ params }: PageProps) {
         </div>
       </div>
 
-      {/* Sticky bottom CTA — mobile-only. Matches the design's hovering
-          "Request Appointment" button: full-width, brand-coloured, anchored
-          to the viewport bottom. Taps scroll to the inline booking form
-          (#book). Hidden on lg+ where the form sits next to the sidebar. */}
+      {/* Sticky bottom CTA — mobile (<md) routes to the new full-screen
+          booking form at /dentist/[slug]/book; tablet (md..<lg) keeps the
+          in-page scroll-to-form behavior since the inline card is still
+          visible there. Hidden on lg+ where the form sits next to the sidebar. */}
+      <a
+        href={`/dentist/${slug}/book`}
+        className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-bg px-4 pt-3 pb-[max(1.25rem,env(safe-area-inset-bottom))] md:hidden"
+      >
+        <span className="flex h-13 w-full items-center justify-center gap-2 rounded-xl bg-brand text-[15px] font-semibold text-white transition-colors hover:bg-[#166889]">
+          Book an Appointment
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden
+          >
+            <line x1="5" y1="12" x2="19" y2="12" />
+            <polyline points="12 5 19 12 12 19" />
+          </svg>
+        </span>
+      </a>
       <a
         href="#book"
-        className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-bg px-4 pt-3 pb-6 lg:hidden"
+        className="fixed bottom-0 left-0 right-0 z-40 hidden border-t border-border bg-bg px-4 pt-3 pb-[max(1.25rem,env(safe-area-inset-bottom))] md:block lg:hidden"
       >
-        <span className="flex h-13 w-full items-center justify-center gap-2 rounded-xl bg-brand text-[15px] font-semibold text-white shadow-[0_4px_14px_-4px_rgba(27,127,168,0.45)] transition-colors hover:bg-[#166889]">
+        <span className="flex h-13 w-full items-center justify-center gap-2 rounded-xl bg-brand text-[15px] font-semibold text-white transition-colors hover:bg-[#166889]">
           Book an Appointment
           <svg
             width="16"
