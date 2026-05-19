@@ -15,7 +15,7 @@ type ButtonProps = ButtonBaseProps & React.ButtonHTMLAttributes<HTMLButtonElemen
 
 const variants: Record<Variant, string> = {
   primary:
-    'bg-brand text-text-on-brand border-brand hover:bg-[#166889] hover:border-[#166889] hover:-translate-y-px',
+    'bg-brand text-text-on-brand border-brand hover:bg-[#0F4D63] hover:border-[#0F4D63] hover:-translate-y-px',
   secondary:
     'bg-surface text-brand border-[1.5px] border-brand hover:bg-brand-light hover:-translate-y-px',
   ghost: 'bg-transparent text-brand border-transparent hover:underline underline-offset-[3px]',

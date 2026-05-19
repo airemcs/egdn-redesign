@@ -437,7 +437,7 @@ export default function BookingWizard({ regions, dentists, specialties }: Bookin
           <div className="mt-6 flex flex-wrap justify-center gap-2.5">
             <a
               href="/find-a-dentist"
-              className="inline-flex items-center justify-center gap-2 rounded-pill border border-brand bg-brand px-6 py-3 text-[14px] font-semibold text-white transition-colors hover:bg-[#166889]"
+              className="inline-flex items-center justify-center gap-2 rounded-pill border border-brand bg-brand px-6 py-3 text-[14px] font-semibold text-white transition-colors hover:bg-[#0F4D63]"
             >
               Back to directory
             </a>

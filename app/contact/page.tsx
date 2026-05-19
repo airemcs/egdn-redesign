@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import ContactForm from '@/components/forms/ContactForm';
+import ContactSidebar from '@/components/sections/ContactSidebar';
 
 export const metadata: Metadata = {
   title: 'Contact Us — EGDN',
@@ -32,19 +33,6 @@ const faqs = [
   },
 ];
 
-const PhoneIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-  </svg>
-);
-
-const MailIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-    <polyline points="22,6 12,13 2,6" />
-  </svg>
-);
-
 const PinIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
@@ -74,10 +62,10 @@ export default function ContactPage() {
           (eyebrow → h1 → subtitle, no extra mt/mb on h1). ── */}
       <section className="mx-auto max-w-300 px-5 pt-12 pb-4 sm:px-6 sm:pt-16 lg:px-10">
         <div className="max-w-[720px]">
-          <span className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:text-[12px]">
+          <span className="eyebrow">
             Get in touch
           </span>
-          <h1 className="mb-3 font-display text-[28px] font-bold leading-[1.2] text-text sm:text-[34px] lg:text-[40px]">
+          <h1 className="mb-3 h1 text-text">
             We&apos;re here to help.
           </h1>
           <p
@@ -95,98 +83,19 @@ export default function ContactPage() {
         <div className="grid gap-3.5 lg:grid-cols-[1.35fr_1fr] lg:items-start lg:gap-10">
           {/* Form — first on mobile, left column on desktop */}
           <div className="rounded-card border border-border bg-surface p-6 sm:p-8 lg:p-10">
-            <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:mb-3 sm:text-[12px]">
+            <span className="eyebrow mb-2 sm:mb-3">
               Send a message
             </span>
             <h2 className="font-display text-[24px] font-semibold leading-tight text-text sm:text-[28px]">
               Tell us what&apos;s going on
             </h2>
-            <p className="mt-2 mb-7 text-[15px] text-text-muted sm:mt-3 sm:mb-9">
+            <p className="mt-2 mb-7 text-text-muted sm:mt-3 sm:mb-9">
               We typically reply within 1 business day. For urgent issues, call our hotline.
             </p>
             <ContactForm />
           </div>
 
-          {/* Sidebar — below form on mobile (Hours card first via order-first),
-              right column on desktop with tiles → hours in source order */}
-          <aside className="flex flex-col gap-3.5">
-            {/* Call us — three numbers (one landline, two mobile carriers).
-                Each number is a tel: link; the carrier tag and "Telephone/Mobile"
-                labels stay muted so the number is the focal point. */}
-            <div className="flex items-start gap-4 rounded-card border border-border bg-surface p-5 sm:p-[22px]">
-              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-brand-light text-brand">
-                <PhoneIcon />
-              </span>
-              <div className="min-w-0">
-                <div className="text-[12px] font-semibold uppercase tracking-[0.08em] text-text-muted">
-                  Call us
-                </div>
-                <ul className="mt-2 flex flex-col gap-1.5">
-                  <li className="flex flex-wrap items-baseline gap-x-1.5 text-[13px] text-text-muted">
-                    <span>Telephone:</span>
-                    <a
-                      href="tel:+63288367181"
-                      className="font-display text-[15px] font-semibold text-text"
-                    >
-                      (+632) 8836-7181
-                    </a>
-                  </li>
-                  <li className="flex flex-wrap items-baseline gap-x-1.5 text-[13px] text-text-muted">
-                    <span>Smart Mobile:</span>
-                    <a
-                      href="tel:+639209517005"
-                      className="font-display text-[15px] font-semibold text-text"
-                    >
-                      0920-951-7005
-                    </a>
-                  </li>
-                  <li className="flex flex-wrap items-baseline gap-x-1.5 text-[13px] text-text-muted">
-                    <span>Globe Mobile:</span>
-                    <a
-                      href="tel:+639173154926"
-                      className="font-display text-[15px] font-semibold text-text"
-                    >
-                      0917-315-4926
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-
-            <ContactTile
-              href="mailto:info@elitegroupph.com"
-              label="Email"
-              value="info@elitegroupph.com"
-              sub="Replies within 1 business day"
-              icon={<MailIcon />}
-              valueClassName="break-all"
-            />
-            <ContactTile
-              label="Office"
-              value="Zeta II Building, Makati"
-              sub="7th Floor, 191 Salcedo St., Legaspi Village"
-              icon={<PinIcon />}
-            />
-
-            {/* Hours card — order-first on mobile floats it above the tiles
-                (right after the form); on desktop it stays at the bottom of the
-                sidebar via lg:order-none (resets to default 0 = source order). */}
-            <div className="order-first rounded-card border border-border bg-surface p-5 sm:p-[22px] lg:order-0">
-              <h4 className="mb-3.5 text-[12px] font-semibold uppercase tracking-[0.08em] text-text-muted">
-                Office hours
-              </h4>
-              <dl className="flex flex-col gap-2.5 text-[14px]">
-                <div className="flex items-center justify-between border-b border-border pb-2.5">
-                  <dt className="font-medium text-text">Monday – Friday</dt>
-                  <dd className="text-text-muted tabular-nums">9:00 AM – 6:00 PM</dd>
-                </div>
-                <div className="flex items-center justify-between">
-                  <dt className="font-medium text-text">Saturday &amp; Sunday</dt>
-                  <dd className="text-error">Closed</dd>
-                </div>
-              </dl>
-            </div>
-          </aside>
+          <ContactSidebar variant="member" showOffice showHours />
         </div>
       </section>
 
@@ -195,13 +104,13 @@ export default function ContactPage() {
         <div className="mx-auto max-w-300 px-5 py-12 sm:px-6 sm:py-16 lg:px-10 lg:py-20">
           <div className="grid gap-10 lg:grid-cols-[1fr_1.2fr] lg:items-center lg:gap-16">
             <div>
-              <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:mb-3 sm:text-[12px]">
+              <span className="eyebrow mb-2 sm:mb-3">
                 Visit us
               </span>
               <h2 className="font-display text-[22px] font-semibold text-text sm:text-[26px] lg:text-[30px]">
                 Stop by our office.
               </h2>
-              <p className="mt-2 text-[15px] leading-relaxed text-text-muted sm:mt-3 sm:text-[16px]">
+              <p className="mt-2 leading-relaxed text-text-muted sm:mt-3">
                 Walk-ins are welcome during office hours. We're located in the heart of
                 Salcedo Village, Makati's central business district.
               </p>
@@ -283,49 +192,3 @@ export default function ContactPage() {
   );
 }
 
-function ContactTile({
-  href,
-  label,
-  value,
-  sub,
-  icon,
-  valueClassName = '',
-}: {
-  href?: string;
-  label: string;
-  value: string;
-  sub: string;
-  icon: React.ReactNode;
-  valueClassName?: string;
-}) {
-  const inner = (
-    <>
-      <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-brand-light text-brand">
-        {icon}
-      </span>
-      <div>
-        <div className="text-[12px] font-semibold uppercase tracking-[0.08em] text-text-muted">
-          {label}
-        </div>
-        <div className={`mt-1 font-display text-[19px] font-semibold leading-[1.25] text-text ${valueClassName}`}>
-          {value}
-        </div>
-        <div className="mt-1 text-[13px] leading-[1.4] text-text-muted">{sub}</div>
-      </div>
-    </>
-  );
-
-  const cls =
-    'flex items-start gap-4 rounded-card border border-border bg-surface p-5 sm:p-[22px]';
-
-  if (href) {
-    // Anchor stays so tel:/mailto: still works on tap, but cursor-default
-    // removes the pointer hover so the card visually matches the static Office tile.
-    return (
-      <a href={href} className={`${cls} cursor-default`}>
-        {inner}
-      </a>
-    );
-  }
-  return <div className={cls}>{inner}</div>;
-}

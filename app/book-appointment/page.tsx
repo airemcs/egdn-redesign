@@ -79,10 +79,10 @@ export default async function BookAppointmentPage() {
         <section className="mx-auto max-w-300 px-5 pt-12 pb-4 sm:px-6 sm:pt-16 lg:px-10">
           <Breadcrumb crumbs={[{ label: 'Home', href: '/' }, { label: 'Book an Appointment' }]} />
           <div className="max-w-[720px]">
-            <span className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:text-[12px]">
+            <span className="eyebrow">
               Member benefit
             </span>
-            <h1 className="mb-3 font-display text-[28px] font-bold leading-[1.2] text-text sm:text-[34px] lg:text-[40px]">
+            <h1 className="mb-3 h1 text-text">
               Book your appointment
             </h1>
             <p

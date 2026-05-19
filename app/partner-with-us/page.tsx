@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import PartnerInquiryForm from '@/components/forms/PartnerInquiryForm';
+import ContactSidebar from '@/components/sections/ContactSidebar';
 
 export const metadata: Metadata = {
   title: 'Partner With Us — EGDN',
@@ -35,19 +36,6 @@ const AwardIcon = () => (
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
     <circle cx="12" cy="8" r="6" />
     <polyline points="8.21 13.89 7 22 12 19 17 22 15.79 13.88" />
-  </svg>
-);
-
-const PhoneIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-  </svg>
-);
-
-const MailIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-    <polyline points="22,6 12,13 2,6" />
   </svg>
 );
 
@@ -114,10 +102,10 @@ export default function PartnerWithUsPage() {
 
         <div className="relative z-[2] mx-auto flex min-h-[420px] w-full max-w-300 items-end px-5 pt-12 pb-10 sm:min-h-125 sm:items-center sm:px-6 sm:py-16 lg:min-h-135 lg:px-10 lg:py-24">
           <div className="max-w-[560px]">
-            <span className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:text-[12px]">
+            <span className="eyebrow">
               For companies &amp; employers
             </span>
-            <h1 className="mb-3 mt-2 font-display text-[28px] font-bold leading-[1.2] text-text sm:mt-3 sm:text-[34px] lg:text-[40px]">
+            <h1 className="mb-3 mt-2 h1 text-text sm:mt-3">
               Give your employees a dental benefit they&apos;ll actually use.
             </h1>
             <p
@@ -134,7 +122,7 @@ export default function PartnerWithUsPage() {
       {/* ── Why partner with EGDN ─────────────────────────────────────────── */}
       <section className="mx-auto max-w-300 px-5 py-12 sm:px-6 sm:py-16 lg:px-10 lg:py-20">
         <div className="mb-6 max-w-[720px] sm:mb-10">
-          <span className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:text-[12px]">
+          <span className="eyebrow">
             Why partner with EGDN
           </span>
           <h2 className="mt-2 font-display text-[22px] font-semibold text-text sm:text-[26px] lg:text-[30px]">
@@ -145,7 +133,7 @@ export default function PartnerWithUsPage() {
           {benefits.map((b) => (
             <div
               key={b.title}
-              className="flex flex-col gap-3 rounded-card border border-border bg-surface p-6 transition-all duration-200 hover:-translate-y-0.5 hover:border-brand sm:p-7"
+              className="flex flex-col gap-3 rounded-card border border-border bg-surface p-6 transition-all duration-200 hover:-translate-y-0.5 hover:border-brand sm:p-8"
             >
               <span className="grid h-12 w-12 place-items-center rounded-xl bg-brand-light text-brand">
                 {b.icon}
@@ -164,7 +152,7 @@ export default function PartnerWithUsPage() {
       <section className="border-y border-border bg-surface">
         <div className="mx-auto max-w-300 px-5 py-12 sm:px-6 sm:py-16 lg:px-10 lg:py-20">
           <div className="mb-6 max-w-[720px] sm:mb-10">
-            <span className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:text-[12px]">
+            <span className="eyebrow">
               How it works
             </span>
             <h2 className="mt-2 font-display text-[22px] font-semibold text-text sm:text-[26px] lg:text-[30px]">
@@ -198,11 +186,11 @@ export default function PartnerWithUsPage() {
           Company Name, contact details, Number of Employees dropdown, message),
           contact tiles on the right. Same layout as /join-our-network and
           /contact for cross-page consistency. ── */}
-      <section className="mx-auto max-w-300 px-5 pt-10 pb-16 sm:px-6 sm:pt-14 sm:pb-20 lg:px-10 lg:pt-20 lg:pb-24">
+      <section className="mx-auto max-w-300 px-5 py-12 sm:px-6 sm:py-16 lg:px-10 lg:py-20">
         <div className="grid gap-3.5 lg:grid-cols-[1.35fr_1fr] lg:items-start lg:gap-10">
           {/* Form card */}
           <div className="rounded-card border border-border bg-surface p-6 sm:p-8 lg:p-10">
-            <span className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:text-[12px]">
+            <span className="eyebrow">
               Send an inquiry
             </span>
             <h2 className="font-display text-[24px] font-semibold leading-tight text-text sm:text-[28px]">
@@ -215,70 +203,7 @@ export default function PartnerWithUsPage() {
             <PartnerInquiryForm type="employer" />
           </div>
 
-          {/* Sidebar — Call us + Email tiles. */}
-          <aside className="flex flex-col gap-3.5">
-            {/* Call us — three numbers (one landline + Smart/Globe mobile). */}
-            <div className="flex items-start gap-4 rounded-card border border-border bg-surface p-5 sm:p-[22px]">
-              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-brand-light text-brand">
-                <PhoneIcon />
-              </span>
-              <div className="min-w-0">
-                <div className="text-[12px] font-semibold uppercase tracking-[0.08em] text-text-muted">
-                  Call us
-                </div>
-                <ul className="mt-2 flex flex-col gap-1.5">
-                  <li className="flex flex-wrap items-baseline gap-x-1.5 text-[13px] text-text-muted">
-                    <span>Telephone:</span>
-                    <a
-                      href="tel:+63288367181"
-                      className="font-display text-[15px] font-semibold text-text"
-                    >
-                      (+632) 8836-7181
-                    </a>
-                  </li>
-                  <li className="flex flex-wrap items-baseline gap-x-1.5 text-[13px] text-text-muted">
-                    <span>Smart Mobile:</span>
-                    <a
-                      href="tel:+639209517005"
-                      className="font-display text-[15px] font-semibold text-text"
-                    >
-                      0920-951-7005
-                    </a>
-                  </li>
-                  <li className="flex flex-wrap items-baseline gap-x-1.5 text-[13px] text-text-muted">
-                    <span>Globe Mobile:</span>
-                    <a
-                      href="tel:+639173154926"
-                      className="font-display text-[15px] font-semibold text-text"
-                    >
-                      0917-315-4926
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-
-            {/* Email tile */}
-            <a
-              href="mailto:info@elitegroupph.com"
-              className="flex items-start gap-4 rounded-card border border-border bg-surface p-5 sm:p-[22px] cursor-default"
-            >
-              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-brand-light text-brand">
-                <MailIcon />
-              </span>
-              <div>
-                <div className="text-[12px] font-semibold uppercase tracking-[0.08em] text-text-muted">
-                  Email
-                </div>
-                <div className="mt-1 font-display text-[19px] font-semibold leading-[1.25] text-text break-all">
-                  info@elitegroupph.com
-                </div>
-                <div className="mt-1 text-[13px] leading-[1.4] text-text-muted">
-                  Replies within 1 business day
-                </div>
-              </div>
-            </a>
-          </aside>
+          <ContactSidebar variant="employer" />
         </div>
       </section>
     </>

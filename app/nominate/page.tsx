@@ -35,10 +35,10 @@ export default function NominatePage() {
 
         <div className="relative z-[2] mx-auto flex min-h-[420px] w-full max-w-300 items-end px-5 pt-12 pb-10 sm:min-h-125 sm:items-center sm:px-6 sm:py-16 lg:min-h-135 lg:px-10 lg:py-24">
           <div className="max-w-[560px]">
-            <span className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:text-[12px]">
+            <span className="eyebrow">
               Help us grow the network
             </span>
-            <h1 className="mb-3 mt-2 font-display text-[28px] font-bold leading-[1.2] text-text sm:mt-3 sm:text-[34px] lg:text-[40px]">
+            <h1 className="mb-3 mt-2 h1 text-text sm:mt-3">
               Nominate a dentist.
             </h1>
             <p
@@ -59,7 +59,7 @@ export default function NominatePage() {
         <div className="grid gap-3.5 lg:grid-cols-[1.35fr_1fr] lg:items-start lg:gap-10">
           {/* Form card */}
           <div className="rounded-card border border-border bg-surface p-6 sm:p-8 lg:p-10">
-            <span className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:text-[12px]">
+            <span className="eyebrow">
               Submit a nomination
             </span>
             <h2 className="font-display text-[24px] font-semibold leading-tight text-text sm:text-[28px]">
@@ -74,8 +74,8 @@ export default function NominatePage() {
           {/* Sidebar — what happens next + directory shortcut */}
           <aside className="flex flex-col gap-3.5">
             {/* What happens next */}
-            <div className="rounded-card border border-border bg-surface p-5 sm:p-[22px]">
-              <h3 className="text-[12px] font-semibold uppercase tracking-[0.08em] text-text-muted">
+            <div className="rounded-card border border-border bg-surface p-5 sm:p-6">
+              <h3 className="eyebrow text-text-muted">
                 What happens next
               </h3>
               <ol className="mt-4 flex flex-col gap-4">
@@ -124,13 +124,13 @@ export default function NominatePage() {
             {/* Already in the network? — quick directory check */}
             <Link
               href="/find-a-dentist"
-              className="flex items-start gap-4 rounded-card border border-border bg-bg-deep p-5 transition-colors hover:border-brand sm:p-[22px]"
+              className="flex items-start gap-4 rounded-card border border-border bg-bg-deep p-5 transition-colors hover:border-brand sm:p-6"
             >
               <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-brand-light text-brand">
                 <HandshakeIcon />
               </span>
               <div className="min-w-0">
-                <div className="text-[12px] font-semibold uppercase tracking-[0.08em] text-text-muted">
+                <div className="eyebrow text-text-muted">
                   Already in the network?
                 </div>
                 <div className="mt-1 font-display text-[16px] font-semibold leading-[1.25] text-text sm:text-[17px]">

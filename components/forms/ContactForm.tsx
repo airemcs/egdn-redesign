@@ -436,7 +436,7 @@ export default function ContactForm() {
         <button
           type="submit"
           disabled={status === 'loading'}
-          className="inline-flex items-center justify-center gap-2 rounded-pill border border-brand bg-brand px-[24px] py-[12px] text-[14px] font-semibold leading-none text-white transition-colors hover:bg-[#166889] hover:border-[#166889] disabled:opacity-60"
+          className="inline-flex items-center justify-center gap-2 rounded-pill border border-brand bg-brand px-[24px] py-[12px] text-[14px] font-semibold leading-none text-white transition-colors hover:bg-[#0F4D63] hover:border-[#0F4D63] disabled:opacity-60"
         >
           {status === 'loading' ? 'Sending…' : 'Send message'}
           {status !== 'loading' && <ArrowRight />}

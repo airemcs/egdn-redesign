@@ -55,6 +55,10 @@ export default async function DentistProfilePage({ params }: PageProps) {
             comes from the Breadcrumb component's built-in mb-6. */}
         <div>
           <Avatar name={dentist.name} src={dentist.headshotUrl} size={84} shape="rounded" />
+          {/* Intentionally one step smaller than the .h1 page-title utility.
+              Dentist names are naturally shorter than page titles, so 26/30/36
+              reads better here than 28/34/40. Documented exception per
+              egdn-design-prompt.md. */}
           <h1 className="mt-4 font-display text-[26px] font-bold leading-tight text-text sm:text-3xl lg:text-4xl">
             {dentist.name}
           </h1>
@@ -215,7 +219,7 @@ export default async function DentistProfilePage({ params }: PageProps) {
                       key={row.label}
                       className="flex flex-col gap-0.5 border-b border-border py-2.5 last:border-0 sm:grid sm:grid-cols-[110px_1fr] sm:items-baseline sm:gap-2"
                     >
-                      <dt className="text-[11px] font-semibold uppercase tracking-[0.06em] text-text-muted sm:text-[12px]">
+                      <dt className="eyebrow text-text-muted">
                         {row.label}
                       </dt>
                       <dd className="text-[14px] leading-snug text-text">
@@ -270,7 +274,7 @@ export default async function DentistProfilePage({ params }: PageProps) {
                   className="mt-4 rounded-card border border-border bg-surface p-5 sm:p-6"
                 >
                   <h3 className="mb-3 font-body text-[15px] font-semibold text-text">
-                    Location {i + 2}
+                    {clinic.clinicName || `Location ${i + 2}`}
                   </h3>
                   <dl>
                     {(
@@ -286,7 +290,7 @@ export default async function DentistProfilePage({ params }: PageProps) {
                         key={row.label}
                         className="flex flex-col gap-0.5 border-b border-border py-2.5 last:border-0 sm:grid sm:grid-cols-[110px_1fr] sm:items-baseline sm:gap-2"
                       >
-                        <dt className="text-[11px] font-semibold uppercase tracking-[0.06em] text-text-muted sm:text-[12px]">
+                        <dt className="eyebrow text-text-muted">
                           {row.label}
                         </dt>
                         <dd className="text-[14px] leading-snug text-text">
@@ -325,7 +329,7 @@ export default async function DentistProfilePage({ params }: PageProps) {
               the inline form. */}
           <div id="book" className="hidden md:block">
             <div className="rounded-card border border-border bg-surface p-5 sm:p-6 lg:p-8">
-              <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.18em] text-brand sm:mb-3">
+              <span className="eyebrow mb-2 sm:mb-3">
                 Book an appointment
               </span>
               <h2 className="font-display text-[22px] font-semibold leading-tight text-text sm:text-2xl lg:text-3xl">
@@ -356,9 +360,9 @@ export default async function DentistProfilePage({ params }: PageProps) {
           visible there. Hidden on lg+ where the form sits next to the sidebar. */}
       <a
         href={`/dentist/${slug}/book`}
-        className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-bg px-4 pt-3 pb-[max(1.25rem,env(safe-area-inset-bottom))] md:hidden"
+        className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-bg px-4 pt-3 pb-[max(1.25rem,env(safe-area-inset-bottom))] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-inset md:hidden"
       >
-        <span className="flex h-13 w-full items-center justify-center gap-2 rounded-xl bg-brand text-[15px] font-semibold text-white transition-colors hover:bg-[#166889]">
+        <span className="flex h-13 w-full items-center justify-center gap-2 rounded-xl bg-brand text-[15px] font-semibold text-white transition-colors hover:bg-[#0F4D63]">
           Book an Appointment
           <svg
             width="16"
@@ -378,9 +382,9 @@ export default async function DentistProfilePage({ params }: PageProps) {
       </a>
       <a
         href="#book"
-        className="fixed bottom-0 left-0 right-0 z-40 hidden border-t border-border bg-bg px-4 pt-3 pb-[max(1.25rem,env(safe-area-inset-bottom))] md:block lg:hidden"
+        className="fixed bottom-0 left-0 right-0 z-40 hidden border-t border-border bg-bg px-4 pt-3 pb-[max(1.25rem,env(safe-area-inset-bottom))] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-inset md:block lg:hidden"
       >
-        <span className="flex h-13 w-full items-center justify-center gap-2 rounded-xl bg-brand text-[15px] font-semibold text-white transition-colors hover:bg-[#166889]">
+        <span className="flex h-13 w-full items-center justify-center gap-2 rounded-xl bg-brand text-[15px] font-semibold text-white transition-colors hover:bg-[#0F4D63]">
           Book an Appointment
           <svg
             width="16"

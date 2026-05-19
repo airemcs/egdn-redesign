@@ -48,14 +48,14 @@ export default function RegionGrid({ regions }: RegionGridProps) {
   }
 
   return (
-    <div className="grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-4 lg:gap-6">
+    <div className="grid grid-cols-2 gap-2.5 sm:gap-4 md:grid-cols-4 lg:gap-6">
       {regions.map((region) => {
         const { name, sub } = splitRegion(region._id);
         return (
         <Link
           key={region._id}
           href={`/find-a-dentist?region=${encodeURIComponent(region._id)}`}
-          className="group relative flex min-h-[124px] flex-col gap-1 rounded-[14px] border border-border bg-surface p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-brand focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 sm:min-h-44 sm:gap-3 sm:p-6"
+          className="group relative flex min-h-[124px] flex-col gap-1 rounded-[14px] border border-border bg-surface p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-brand focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 sm:min-h-44 sm:gap-3 sm:p-6"
         >
           <div className="mb-1.5 flex items-center justify-between sm:mb-2">
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-light text-brand sm:h-9 sm:w-9 sm:rounded-input">

@@ -139,7 +139,7 @@ export default function FilterSheet({
           <button
             type="button"
             onClick={apply}
-            className="h-[52px] w-full rounded-[14px] bg-brand text-[15px] font-semibold text-white transition-opacity hover:opacity-90"
+            className="h-[52px] w-full rounded-[14px] bg-brand text-[15px] font-semibold text-white transition-opacity hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
           >
             Apply filters
           </button>
@@ -152,7 +152,7 @@ export default function FilterSheet({
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="px-5 py-4">
-      <h3 className="m-0 mb-2.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-text-muted">
+      <h3 className="eyebrow text-text-muted m-0 mb-2.5">
         {title}
       </h3>
       {children}
@@ -205,8 +205,8 @@ function Chip({
       onClick={onClick}
       className={
         active
-          ? 'rounded-full border border-brand bg-brand px-3 py-1.5 text-[12px] font-semibold text-white'
-          : 'rounded-full border border-border bg-surface px-3 py-1.5 text-[12px] font-semibold text-text hover:border-text-muted'
+          ? "relative rounded-full border border-brand bg-brand px-3 py-1.5 text-[12px] font-semibold text-white before:absolute before:inset-x-0 before:-inset-y-2 before:content-[''] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
+          : "relative rounded-full border border-border bg-surface px-3 py-1.5 text-[12px] font-semibold text-text hover:border-text-muted before:absolute before:inset-x-0 before:-inset-y-2 before:content-[''] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
       }
     >
       {label}

@@ -13,6 +13,16 @@ const links = [
   { href: '/contact', label: 'Contact' },
 ];
 
+// Secondary B2B routes surfaced under a divider in the mobile menu only —
+// these stay accessible from mobile nav without crowding the desktop header.
+// /join-our-network's noindex is preserved until product decides whether to
+// ship it for indexing.
+const secondaryLinks = [
+  { href: '/partner-with-us', label: 'For companies' },
+  { href: '/join-our-network', label: 'Join the network' },
+  { href: '/nominate', label: 'Nominate a dentist' },
+];
+
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -112,7 +122,7 @@ export default function Navbar() {
               <span className="font-display text-xl font-bold text-text">EGDN</span>
             </Link>
             <button
-              className="-mr-2 grid h-10 w-10 place-items-center rounded-lg text-text focus:outline-none focus-visible:ring-2 focus-visible:ring-brand active:bg-brand-light"
+              className="-mr-2 grid h-11 w-11 place-items-center rounded-lg text-text focus:outline-none focus-visible:ring-2 focus-visible:ring-brand active:bg-brand-light"
               onClick={() => setOpen(false)}
               aria-label="Close menu"
             >
@@ -160,6 +170,45 @@ export default function Navbar() {
                 </Link>
               );
             })}
+
+            {/* Secondary B2B routes — separated by a divider with a small
+                eyebrow. Lower-prominence body type than the primary list. */}
+            <div className="mt-6 border-t border-border pt-4">
+              <span className="eyebrow text-text-muted">
+                For business
+              </span>
+              {secondaryLinks.map((l) => {
+                const active =
+                  pathname === l.href || pathname.startsWith(l.href + '/');
+                return (
+                  <Link
+                    key={l.href}
+                    href={l.href}
+                    onClick={() => setOpen(false)}
+                    className={[
+                      'flex items-center justify-between py-3.5 font-body text-[15px] font-medium transition-colors',
+                      active ? 'text-brand' : 'text-text',
+                    ].join(' ')}
+                  >
+                    <span>{l.label}</span>
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className={active ? 'text-brand' : 'text-text-muted'}
+                      aria-hidden
+                    >
+                      <polyline points="9 18 15 12 9 6" />
+                    </svg>
+                  </Link>
+                );
+              })}
+            </div>
 
             <div className="mt-auto pt-5 pb-7">
               <Button

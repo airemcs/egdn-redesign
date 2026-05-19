@@ -20,23 +20,30 @@ export default function Accordion({ items }: AccordionProps) {
         const isOpen = openIndex === i;
         return (
           <div key={i}>
-            <button
-              className="flex w-full items-center justify-between py-5 text-left text-[15px] font-semibold text-text focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
-              onClick={() => setOpen(i, isOpen)}
-              aria-expanded={isOpen}
-            >
-              <span>{item.question}</span>
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 20 20"
-                fill="none"
-                aria-hidden
-                className={['shrink-0 text-brand transition-transform duration-200', isOpen ? 'rotate-180' : ''].join(' ')}
+            {/* Wrap the question button in <h3> so heading navigation surfaces
+                every FAQ question. `display: contents` keeps the visual layout
+                untouched (the <h3> contributes only its semantic role to the
+                accessibility tree). Verify in Safari 17 — older Safari had
+                a11y bugs with display:contents on headings. */}
+            <h3 className="m-0" style={{ display: 'contents' }}>
+              <button
+                className="flex w-full items-center justify-between py-5 text-left text-[15px] font-semibold text-text focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
+                onClick={() => setOpen(i, isOpen)}
+                aria-expanded={isOpen}
               >
-                <path d="M5 7.5l5 5 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </button>
+                <span>{item.question}</span>
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  aria-hidden
+                  className={['shrink-0 text-brand transition-transform duration-200', isOpen ? 'rotate-180' : ''].join(' ')}
+                >
+                  <path d="M5 7.5l5 5 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+            </h3>
             <div
               className="grid transition-[grid-template-rows] duration-200 ease-in-out"
               style={{ gridTemplateRows: isOpen ? '1fr' : '0fr' }}

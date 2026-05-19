@@ -45,7 +45,7 @@ export default function HowItWorksPage() {
   return (
     <>
       <PageContainer width="reading" className="py-12 sm:py-16 lg:py-20">
-        <h1 className="font-display text-3xl font-bold text-text lg:text-4xl">How It Works</h1>
+        <h1 className="h1 text-text">How It Works</h1>
         <p className="mt-3 text-[16px] text-text-muted">
           Using your EGDN dental benefit is straightforward. Here's what to expect.
         </p>

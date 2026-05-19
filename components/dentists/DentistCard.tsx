@@ -55,11 +55,23 @@ export default function DentistCard({
           <p className="mt-0.5 truncate text-[12px] text-text-muted">{clinicName}</p>
         )}
 
-        {specializations[0] && (
+        {specializations.length > 0 && (
           <div className="mt-2.5 flex flex-wrap gap-1.5">
-            <span className="inline-flex items-center rounded-full bg-brand-light px-2.5 py-1 text-[11px] font-semibold text-brand">
-              {specializations[0]}
-            </span>
+            {/* Mobile: only the primary specialty fits without crowding the
+                tight 2-col / 1-col card. From `sm:` (tablet+desktop) we have
+                room to show the full set so members see the dentist's
+                breadth without tapping into the profile. */}
+            {specializations.map((s, i) => (
+              <span
+                key={s}
+                className={[
+                  'items-center rounded-full bg-brand-light px-2.5 py-1 text-[11px] font-semibold text-brand',
+                  i === 0 ? 'inline-flex' : 'hidden sm:inline-flex',
+                ].join(' ')}
+              >
+                {s}
+              </span>
+            ))}
           </div>
         )}
 

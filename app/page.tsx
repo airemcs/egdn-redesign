@@ -126,7 +126,7 @@ export default async function HomePage() {
       <section className="relative overflow-hidden border-b border-border">
         <Image
           src="/images/hero.jpg"
-          alt="Warm clinic setting"
+          alt=""
           fill
           className="object-cover object-center"
           priority
@@ -136,10 +136,10 @@ export default async function HomePage() {
         {/* Content — flex+min-height live here to match .hero-full-content */}
         <div className="relative z-[2] mx-auto flex min-h-[420px] w-full max-w-300 items-end px-5 pt-12 pb-10 sm:min-h-125 sm:items-center sm:px-6 sm:py-16 lg:min-h-135 lg:px-10 lg:py-24">
           <div className="max-w-[560px]">
-            <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:mb-3 sm:text-[12px]">
+            <span className="eyebrow mb-2 sm:mb-3">
               Quality dental care, nationwide
             </span>
-            <h1 className="mt-3 mb-[14px] font-display text-[28px] font-bold leading-[1.2] text-text sm:mt-4 sm:mb-[18px] sm:text-[34px] lg:text-[40px]">
+            <h1 className="mt-3 mb-3.5 h1 text-text sm:mt-4 sm:mb-4.5">
               Your dental benefit, everywhere you need it.
             </h1>
             <p
@@ -187,7 +187,7 @@ export default async function HomePage() {
 
       {/* ── Stats bar ──────────────────────────────────────────────────────── */}
       <section className="border-y border-border bg-bg-deep">
-        <div className="mx-auto max-w-300 px-5 py-6 sm:px-6 sm:py-[40px] lg:px-10">
+        <div className="mx-auto max-w-300 px-5 py-6 sm:px-6 sm:py-10 lg:px-10">
           <dl className="grid grid-cols-3 gap-3 sm:gap-0">
             {stats.map((s, i) => (
               <div
@@ -214,13 +214,13 @@ export default async function HomePage() {
       <section className="mx-auto max-w-300 px-5 py-12 sm:px-6 sm:py-16 lg:px-10 lg:py-20">
         <div className="mb-6 grid items-center gap-6 sm:mb-[40px] sm:gap-8 lg:grid-cols-2 lg:gap-12">
           <div className="max-w-[640px]">
-            <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:mb-3 sm:text-[12px]">
+            <span className="eyebrow mb-2 sm:mb-3">
               How it works
             </span>
             <h2 className="font-display text-[22px] font-semibold text-text sm:text-[26px] lg:text-[30px]">
               Using your benefit is simple.
             </h2>
-            <p className="mt-2 text-[15px] leading-relaxed text-text-muted sm:mt-3 sm:text-[16px] lg:text-[17px]">
+            <p className="mt-2 leading-relaxed text-text-muted sm:mt-3 lg:text-[17px]">
               Three steps from start to treatment. Your EGDN member card is your key to any
               partner clinic in the network.
             </p>
@@ -240,20 +240,20 @@ export default async function HomePage() {
           </div>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-3 sm:gap-[24px]">
+        <ol className="grid list-none gap-3 p-0 sm:grid-cols-3 sm:gap-[24px]">
           {steps.map((c) => (
-            <div
+            <li
               key={c.n}
-              className="flex flex-col gap-1.5 rounded-card border border-border bg-surface px-5 py-[18px] transition-all duration-200 hover:-translate-y-0.5 hover:border-brand sm:gap-3 sm:p-7 lg:p-[40px]"
+              className="flex flex-col gap-1.5 rounded-card border border-border bg-surface p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-brand sm:gap-3 sm:p-6 lg:p-10"
             >
               <span className="font-display text-[24px] font-bold leading-none text-brand sm:text-[28px] lg:text-[32px]">
                 {c.n}
               </span>
               <h3 className="mt-0.5 font-body text-[16px] font-semibold text-text sm:mt-1 sm:text-[18px]">{c.title}</h3>
-              <p className="text-[14px] leading-relaxed text-text-muted">{c.body}</p>
-            </div>
+              <p className="meta leading-relaxed">{c.body}</p>
+            </li>
           ))}
-        </div>
+        </ol>
 
         <div className="mt-4 sm:mt-[24px]">
           <Button href="/how-it-works" variant="ghost">
@@ -272,17 +272,18 @@ export default async function HomePage() {
               <Image src="/images/about-egdn.jpg" alt="..." fill className="rounded-card object-cover" />
               wrapped in <div className="relative aspect-[5/4] overflow-hidden rounded-card">
             */}
-            <div className="relative aspect-5/4 overflow-hidden rounded-card border border-border bg-linear-to-br from-brand-tint via-bg-deep to-bg-deep">
-              <span
-                className="absolute inset-0 grid place-items-center select-none font-display text-[140px] font-bold leading-none tracking-[-0.04em] text-brand/10 lg:text-[180px]"
-                aria-hidden
-              >
-                EG
+            {/* Image slot — replace with a real <Image> (clinic or member
+                photo) when an asset is available. The dashed border + bracket
+                copy is intentional: it signals "needs an image" to whoever
+                opens this file, rather than reading like a finished panel. */}
+            <div className="relative grid aspect-5/4 place-items-center overflow-hidden rounded-card border-2 border-dashed border-border-strong bg-bg-deep">
+              <span className="font-mono text-[12px] uppercase tracking-[0.1em] text-text-muted">
+                [ photo: clinic / member ]
               </span>
             </div>
 
             <div>
-              <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:mb-3 sm:text-[12px]">
+              <span className="eyebrow mb-2 sm:mb-3">
                 About EGDN
               </span>
               <h2 className="font-display text-[22px] font-semibold text-text sm:text-[26px] lg:text-[30px]">
@@ -305,7 +306,7 @@ export default async function HomePage() {
       {/* asymmetric padding — CTA below has its own top padding, so pb is intentionally smaller */}
       <section className="mx-auto max-w-300 px-5 py-12 sm:px-6 sm:py-16 lg:px-10 lg:py-20">
         <div className="mb-6 sm:mb-[40px]">
-          <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:mb-3 sm:text-[12px]">
+          <span className="eyebrow mb-2 sm:mb-3">
             Find your path
           </span>
           <h2 className="font-display text-[22px] font-semibold text-text sm:text-[26px] lg:text-[30px]">
@@ -318,10 +319,10 @@ export default async function HomePage() {
             <Link
               key={c.href}
               href={c.href}
-              className="group flex flex-col gap-2 rounded-card border border-border bg-surface p-5 text-text transition-all duration-200 hover:-translate-y-0.5 hover:border-brand sm:min-h-45 sm:justify-between sm:gap-0 sm:p-7 lg:min-h-55 lg:p-[40px]"
+              className="group flex flex-col gap-2 rounded-card border border-border bg-surface p-5 text-text transition-all duration-200 hover:-translate-y-0.5 hover:border-brand sm:min-h-45 sm:justify-between sm:gap-0 sm:p-6 lg:min-h-55 lg:p-8"
             >
               <div>
-                <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-text-muted sm:text-[12px]">
+                <span className="eyebrow text-text-muted">
                   {c.eyebrow}
                 </span>
                 <h3 className="mt-2 font-display text-[19px] font-semibold leading-[1.25] text-text sm:mt-3 lg:text-[22px]">

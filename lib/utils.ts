@@ -39,24 +39,22 @@ function formatSingleDentistName(name: string): string {
   if (!titleMatch) return titleCase(trimmed);
 
   // Normalize spaced hyphens ("ESCAÑO - PARREÑAS" → "ESCAÑO-PARREÑAS") so the
-  // hyphenated last name stays one token.
+  // hyphenated last name stays one token. Reading order (First Middle Last)
+  // is preserved — we only title-case the tokens.
   const rest = titleMatch[2].replace(/\s*-\s*/g, '-').trim();
-  const tokens = rest.split(/\s+/);
-  if (tokens.length < 2) return `Dr. ${titleCase(rest)}`;
-
-  const last = tokens.pop()!;
-  const firstMiddle = tokens.join(' ');
-  return `Dr. ${titleCase(last)}, ${titleCase(firstMiddle)}`;
+  return `Dr. ${titleCase(rest)}`;
 }
 
 /**
- * Reformat a dentist's full name from "Dr. FIRST MIDDLE LAST" to
- * "Dr. Last, First Middle". Handles slash-separated multi-doctor names
- * by reformatting each part independently.
+ * Title-case a dentist's full name in natural reading order:
  *
- *   "DR. MELISSA ANGELICA M. GATMAITAN" → "Dr. Gatmaitan, Melissa Angelica M."
+ *   "DR. MELISSA ANGELICA M. GATMAITAN" → "Dr. Melissa Angelica M. Gatmaitan"
  *   "DR. RAMON E. GUERRERO / DR. DINA GUERRERO"
- *     → "Dr. Guerrero, Ramon E. / Dr. Guerrero, Dina"
+ *     → "Dr. Ramon E. Guerrero / Dr. Dina Guerrero"
+ *
+ * Slash-separated multi-doctor names are reformatted per part. Initial
+ * sequences like "M." stay all-caps; hyphenated last names ("CARDEÑO-TORRES")
+ * stay one token.
  */
 export function formatDentistName(name: string): string {
   const parts = name.split(/\s*\/\s*/);

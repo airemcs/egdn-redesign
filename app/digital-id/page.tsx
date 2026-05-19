@@ -22,10 +22,10 @@ export default function DigitalIdPage() {
       <span className="grid h-14 w-14 place-items-center rounded-full bg-brand-light text-brand">
         <ClockIcon />
       </span>
-      <span className="mt-6 block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:text-[12px]">
+      <span className="eyebrow mt-6">
         Coming soon
       </span>
-      <h1 className="mt-1.5 font-display text-[28px] font-bold leading-[1.2] text-text sm:text-[34px]">
+      <h1 className="mt-1.5 h1 text-text">
         Digital Member ID
       </h1>
       <p

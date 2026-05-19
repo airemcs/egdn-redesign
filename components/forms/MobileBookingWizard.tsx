@@ -478,12 +478,12 @@ export default function MobileBookingWizard({
       </div>
 
       {/* Sticky footer CTA */}
-      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-bg px-4 pt-3 pb-7">
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-bg px-4 pt-3 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
         <button
           type="button"
           onClick={step === 4 ? handleSubmit : goNext}
           disabled={status === 'loading'}
-          className="flex h-13 w-full items-center justify-center gap-2 rounded-[14px] bg-brand text-[15px] font-semibold text-white shadow-[0_4px_14px_-4px_rgba(27,127,168,0.45)] transition-opacity hover:opacity-90 disabled:opacity-60"
+          className="flex h-13 w-full items-center justify-center gap-2 rounded-[14px] bg-brand text-[15px] font-semibold text-white transition-opacity hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 disabled:opacity-60"
         >
           {status === 'loading' ? 'Sending…' : ctaLabel}
           {status !== 'loading' && <IconArrow />}
@@ -1105,16 +1105,16 @@ function SuccessScreen({
         </ol>
       </div>
 
-      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-bg px-4 pt-3 pb-7">
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-bg px-4 pt-3 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
         <a
           href="/"
-          className="flex h-13 w-full items-center justify-center rounded-[14px] bg-brand text-[15px] font-semibold text-white shadow-[0_4px_14px_-4px_rgba(27,127,168,0.45)]"
+          className="flex h-13 w-full items-center justify-center rounded-[14px] bg-brand text-[15px] font-semibold text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
         >
           Done
         </a>
         <a
           href="/find-a-dentist"
-          className="mt-1 flex h-10 w-full items-center justify-center text-[13px] font-medium text-text-muted"
+          className="mt-1 flex h-10 w-full items-center justify-center text-[13px] font-medium text-text-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
         >
           Back to directory
         </a>
