@@ -48,17 +48,17 @@ export default function RegionGrid({ regions }: RegionGridProps) {
   }
 
   return (
-    <div className="grid grid-cols-2 gap-2.5">
+    <div className="grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-4 lg:gap-6">
       {regions.map((region) => {
         const { name, sub } = splitRegion(region._id);
         return (
         <Link
           key={region._id}
           href={`/find-a-dentist?region=${encodeURIComponent(region._id)}`}
-          className="group relative flex flex-col gap-1 rounded-[14px] border border-border bg-surface p-3.5 transition-all duration-200 hover:-translate-y-0.5 hover:border-brand focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
+          className="group relative flex min-h-[124px] flex-col gap-1 rounded-[14px] border border-border bg-surface p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-brand focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 sm:min-h-44 sm:gap-3 sm:p-6"
         >
-          <div className="mb-1.5 flex items-center justify-between">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-light text-brand">
+          <div className="mb-1.5 flex items-center justify-between sm:mb-2">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-light text-brand sm:h-9 sm:w-9 sm:rounded-input">
               <svg
                 width="14"
                 height="14"
@@ -69,6 +69,7 @@ export default function RegionGrid({ regions }: RegionGridProps) {
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 aria-hidden
+                className="sm:h-4 sm:w-4"
               >
                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
                 <circle cx="12" cy="10" r="3" />
@@ -79,12 +80,12 @@ export default function RegionGrid({ regions }: RegionGridProps) {
           {/* Region name (short form, e.g. "Region IV-A") + subtitle (long form,
               e.g. "CALABARZON"). The full ID is preserved in the href so the
               server-side filter still matches "Region IV-A (CALABARZON)". */}
-          <div className="font-display text-[16px] font-semibold leading-[1.15] text-text">
+          <div className="font-display text-[16px] font-semibold leading-[1.15] text-text sm:text-[20px]">
             {name}
           </div>
-          {sub && <div className="text-[11px] text-text-muted">{sub}</div>}
+          {sub && <div className="text-[11px] text-text-muted sm:text-[13px]">{sub}</div>}
 
-          <div className="mt-1 inline-flex items-center gap-1 text-[11px] font-semibold text-brand">
+          <div className="mt-1 inline-flex items-center gap-1 text-[11px] font-semibold text-brand sm:mt-auto sm:text-[12px]">
             {region.count} clinics
             <svg
               width="10"

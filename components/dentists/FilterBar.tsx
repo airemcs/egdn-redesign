@@ -39,43 +39,50 @@ export default function FilterBar({
   return (
     <>
       {/* Negative horizontal margins let the chip row run edge-to-edge when
-          it overflows on narrow screens. */}
-      <div className="-mx-5 flex items-center gap-2 overflow-x-auto px-5 pb-1">
-        <button
-          type="button"
-          onClick={() => setOpen(true)}
-          className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full border border-border bg-surface px-3.5 text-[12px] font-semibold text-text transition-colors hover:border-text-muted"
-        >
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden
+          it overflows on narrow screens. The gradient fade on the right edge
+          hints at off-screen content when chips overflow. */}
+      <div className="relative -mx-5">
+        <div className="flex items-center gap-2 overflow-x-auto px-5 pb-1">
+          <button
+            type="button"
+            onClick={() => setOpen(true)}
+            className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full border border-border bg-surface px-3.5 text-[12px] font-semibold text-text transition-colors hover:border-text-muted"
           >
-            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
-          </svg>
-          Filters
-          {activeCount > 0 && (
-            <span className="grid h-4 min-w-[16px] place-items-center rounded-full bg-brand px-1 text-[10px] font-bold text-white">
-              {activeCount}
-            </span>
-          )}
-        </button>
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden
+            >
+              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+            </svg>
+            Filters
+            {activeCount > 0 && (
+              <span className="grid h-4 min-w-[16px] place-items-center rounded-full bg-brand px-1 text-[10px] font-bold text-white">
+                {activeCount}
+              </span>
+            )}
+          </button>
 
-        {selectedCity && (
-          <ActiveChip label={selectedCity} onRemove={() => clearFilter('city')} />
-        )}
-        {selectedSpecialization && (
-          <ActiveChip
-            label={selectedSpecialization}
-            onRemove={() => clearFilter('specialization')}
-          />
-        )}
+          {selectedCity && (
+            <ActiveChip label={selectedCity} onRemove={() => clearFilter('city')} />
+          )}
+          {selectedSpecialization && (
+            <ActiveChip
+              label={selectedSpecialization}
+              onRemove={() => clearFilter('specialization')}
+            />
+          )}
+        </div>
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-linear-to-l from-bg to-transparent"
+        />
       </div>
 
       <FilterSheet

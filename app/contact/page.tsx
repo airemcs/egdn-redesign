@@ -192,7 +192,7 @@ export default function ContactPage() {
 
       {/* ── Office / Map ───────────────────────────────────────────────────── */}
       <section className="border-y border-border bg-surface">
-        <div className="mx-auto max-w-300 px-5 py-12 sm:px-6 sm:py-14 lg:px-10 lg:py-20">
+        <div className="mx-auto max-w-300 px-5 py-12 sm:px-6 sm:py-16 lg:px-10 lg:py-20">
           <div className="grid gap-10 lg:grid-cols-[1fr_1.2fr] lg:items-center lg:gap-16">
             <div>
               <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:mb-3 sm:text-[12px]">
@@ -230,8 +230,15 @@ export default function ContactPage() {
               </dl>
             </div>
 
-            {/* Map illustration — stylized placeholder, not a real map */}
-            <div className="relative aspect-5/3 overflow-hidden rounded-card border border-border bg-surface">
+            {/* Map illustration — stylized placeholder that links to the real
+                map in Google Maps. */}
+            <a
+              href={MAPS_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Open EGDN office in Google Maps"
+              className="relative block aspect-5/3 overflow-hidden rounded-card border border-border bg-surface transition-colors hover:border-brand"
+            >
               <div
                 className="absolute inset-0"
                 style={{
@@ -265,7 +272,10 @@ export default function ContactPage() {
                   />
                 </div>
               </div>
-            </div>
+              <span className="absolute bottom-3 right-3 inline-flex items-center gap-1 rounded-full bg-surface/95 px-2.5 py-1 text-[11px] font-semibold text-brand">
+                Open in Maps →
+              </span>
+            </a>
           </div>
         </div>
       </section>

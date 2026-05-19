@@ -84,7 +84,7 @@ export default function Navbar() {
 
         {/* Mobile hamburger */}
         <button
-          className="md:hidden flex items-center justify-center p-2 text-text focus:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
+          className="md:hidden -mr-2 flex h-11 w-11 items-center justify-center text-text focus:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
           onClick={() => setOpen(true)}
           aria-label="Open menu"
         >

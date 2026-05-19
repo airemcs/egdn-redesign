@@ -33,7 +33,7 @@ export default function NominatePage() {
         />
         <div className="hero-overlay absolute inset-0 z-[1]" />
 
-        <div className="relative z-[2] mx-auto flex min-h-[420px] w-full max-w-300 items-end px-5 pt-12 pb-8 sm:min-h-125 sm:items-center sm:px-6 sm:py-16 lg:min-h-135 lg:px-10 lg:py-24">
+        <div className="relative z-[2] mx-auto flex min-h-[420px] w-full max-w-300 items-end px-5 pt-12 pb-10 sm:min-h-125 sm:items-center sm:px-6 sm:py-16 lg:min-h-135 lg:px-10 lg:py-24">
           <div className="max-w-[560px]">
             <span className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:text-[12px]">
               Help us grow the network
@@ -55,7 +55,7 @@ export default function NominatePage() {
       {/* ── Form + sidebar ─ same 1.35fr_1fr split as the contact and
           partner-with-us pages. Form card on the left; "how nominations
           work" explainer + a directory-check shortcut on the right. ── */}
-      <section className="mx-auto max-w-300 px-5 pt-10 pb-16 sm:px-6 sm:pt-14 sm:pb-20 lg:px-10 lg:pt-20 lg:pb-24">
+      <section className="mx-auto max-w-300 px-5 py-12 sm:px-6 sm:py-16 lg:px-10 lg:py-20">
         <div className="grid gap-3.5 lg:grid-cols-[1.35fr_1fr] lg:items-start lg:gap-10">
           {/* Form card */}
           <div className="rounded-card border border-border bg-surface p-6 sm:p-8 lg:p-10">

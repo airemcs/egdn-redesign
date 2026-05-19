@@ -114,7 +114,7 @@ export default function JoinOurNetworkPage() {
         />
         <div className="hero-overlay absolute inset-0 z-[1]" />
 
-        <div className="relative z-[2] mx-auto flex min-h-[420px] w-full max-w-300 items-end px-5 pt-12 pb-8 sm:min-h-125 sm:items-center sm:px-6 sm:py-16 lg:min-h-135 lg:px-10 lg:py-24">
+        <div className="relative z-[2] mx-auto flex min-h-[420px] w-full max-w-300 items-end px-5 pt-12 pb-10 sm:min-h-125 sm:items-center sm:px-6 sm:py-16 lg:min-h-135 lg:px-10 lg:py-24">
           <div className="max-w-[560px]">
             <span className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:text-[12px]">
               For dental providers
@@ -135,7 +135,7 @@ export default function JoinOurNetworkPage() {
       </section>
 
       {/* ── Benefits ─────────────────────────────────────────────────────── */}
-      <section className="mx-auto max-w-300 px-5 py-10 sm:px-6 sm:py-14 lg:px-10 lg:py-20">
+      <section className="mx-auto max-w-300 px-5 py-12 sm:px-6 sm:py-16 lg:px-10 lg:py-20">
         <div className="mb-6 sm:mb-10">
           <span className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:text-[12px]">
             Why partner with EGDN
@@ -164,7 +164,7 @@ export default function JoinOurNetworkPage() {
 
       {/* ── Eligibility ──────────────────────────────────────────────────── */}
       <section className="border-y border-border bg-surface">
-        <div className="mx-auto max-w-300 px-5 py-10 sm:px-6 sm:py-14 lg:px-10 lg:py-20">
+        <div className="mx-auto max-w-300 px-5 py-12 sm:px-6 sm:py-16 lg:px-10 lg:py-20">
           <div className="mb-6 max-w-[720px] sm:mb-10">
             <span className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:text-[12px]">
               Eligibility

@@ -67,17 +67,17 @@ export default async function FindADentistPage({ searchParams }: PageProps) {
 
       return (
         <>
-          <section className="mx-auto max-w-110 px-5 sm:max-w-[640px] sm:px-6 lg:max-w-3xl lg:px-10 pt-8 pb-2">
+          <section className="mx-auto max-w-110 px-5 sm:max-w-[640px] sm:px-6 lg:max-w-300 lg:px-10 pt-10 sm:pt-14 lg:pt-20 pb-2">
             <Breadcrumb crumbs={[{ label: 'Home', href: '/' }, { label: 'Find a Dentist', href: '/find-a-dentist' }, { label: 'Search' }]} />
-            <span className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand">
+            <span className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:text-[12px]">
               {results.length} {results.length === 1 ? 'match' : 'matches'}
             </span>
-            <h1 className="mt-1.5 font-display text-[26px] font-bold leading-[1.15] tracking-[-0.4px] text-text">
+            <h1 className="mt-1.5 font-display text-[26px] font-bold leading-[1.15] tracking-[-0.4px] text-text sm:text-[32px] sm:tracking-[-0.5px] lg:text-[40px]">
               Results for &ldquo;{trimmed}&rdquo;
             </h1>
           </section>
 
-          <section className="mx-auto max-w-110 px-5 sm:max-w-[640px] sm:px-6 lg:max-w-3xl lg:px-10 py-5">
+          <section className="mx-auto max-w-110 px-5 sm:max-w-[640px] sm:px-6 lg:max-w-300 lg:px-10 py-5">
             {/* Refine the search */}
             <div className="mb-4">
               <Suspense fallback={null}>
@@ -97,7 +97,7 @@ export default async function FindADentistPage({ searchParams }: PageProps) {
                 </p>
               </div>
             ) : (
-              <div className="flex flex-col gap-2.5">
+              <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 sm:gap-4 lg:gap-5">
                 {results.map((d) => (
                   <DentistCard key={d._id} {...d} />
                 ))}
@@ -157,13 +157,13 @@ export default async function FindADentistPage({ searchParams }: PageProps) {
     return (
       <>
         {/* ── Page header ────────────────────────────────────────────────── */}
-        <section className="mx-auto max-w-110 px-5 sm:max-w-[640px] sm:px-6 lg:max-w-3xl lg:px-10 pt-8 pb-4">
+        <section className="mx-auto max-w-110 px-5 sm:max-w-[640px] sm:px-6 lg:max-w-300 lg:px-10 pt-10 sm:pt-14 lg:pt-20 pb-4">
           <Breadcrumb crumbs={[{ label: 'Home', href: '/' }, { label: 'Find a Dentist' }]} />
-          <h1 className="mb-2 font-display text-[28px] font-bold leading-[1.1] tracking-[-0.5px] text-text">
+          <h1 className="mb-2 font-display text-[28px] font-bold leading-[1.1] tracking-[-0.5px] text-text sm:text-[34px] sm:leading-[1.15] sm:tracking-[-0.6px] lg:text-[40px]">
             Find your dentist.
           </h1>
           <p
-            className="text-[14px] leading-normal text-text-muted"
+            className="text-[14px] leading-normal text-text-muted sm:text-[16px] lg:text-[19px]"
             style={{ textWrap: 'pretty' } as React.CSSProperties}
           >
             {roundedClinics >= 100
@@ -172,47 +172,20 @@ export default async function FindADentistPage({ searchParams }: PageProps) {
           </p>
         </section>
 
-        {/* ── Global search bar + "Use my current location" placeholder ──── */}
-        <section className="mx-auto max-w-110 px-5 sm:max-w-[640px] sm:px-6 lg:max-w-3xl lg:px-10 pt-4">
-          <div className="space-y-2.5">
-            <Suspense fallback={null}>
-              <DentistSearchInput placeholder="Search dentists, clinics, cities…" />
-            </Suspense>
-            {/* Geolocation entry point. Non-functional placeholder — the
-                "find nearby clinics" feature ships in a later phase. Kept in
-                the page so the design slot is locked in now. */}
-            <button
-              type="button"
-              title="Coming soon"
-              aria-label="Use my current location (coming soon)"
-              className="flex w-full items-center justify-center gap-2 rounded-[14px] border border-dashed border-border-strong bg-transparent px-3.5 py-3 text-[13px] font-semibold text-brand transition-colors hover:bg-brand-tint/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
-            >
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden
-              >
-                <circle cx="12" cy="12" r="10" />
-                <circle cx="12" cy="12" r="3" fill="currentColor" stroke="none" />
-              </svg>
-              Use my current location
-            </button>
-          </div>
+        {/* ── Global search bar ──────────────────────────────────────────── */}
+        <section className="mx-auto max-w-110 px-5 sm:max-w-[640px] sm:px-6 lg:max-w-300 lg:px-10 pt-4">
+          <Suspense fallback={null}>
+            <DentistSearchInput placeholder="Search dentists, clinics, cities…" />
+          </Suspense>
         </section>
 
         {/* ── Region cards ───────────────────────────────────────────────── */}
-        <section className="mx-auto max-w-110 px-5 sm:max-w-[640px] sm:px-6 lg:max-w-3xl lg:px-10 pt-6 pb-16">
-          <div className="mb-3 flex items-baseline justify-between">
-            <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-text-muted">
+        <section className="mx-auto max-w-110 px-5 sm:max-w-[640px] sm:px-6 lg:max-w-300 lg:px-10 pt-6 pb-16">
+          <div className="mb-3 flex items-baseline justify-between sm:mb-4">
+            <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-text-muted sm:text-[12px]">
               Browse by region
             </span>
-            <span className="text-[11px] text-text-muted">
+            <span className="text-[11px] text-text-muted sm:text-[12px]">
               {regions.length} {regions.length === 1 ? 'region' : 'regions'}
             </span>
           </div>
@@ -286,7 +259,7 @@ export default async function FindADentistPage({ searchParams }: PageProps) {
   return (
     <>
       {/* ── Page header ────────────────────────────────────────────────────── */}
-      <section className="mx-auto max-w-110 px-5 sm:max-w-[640px] sm:px-6 lg:max-w-3xl lg:px-10 pt-8 pb-2">
+      <section className="mx-auto max-w-110 px-5 sm:max-w-[640px] sm:px-6 lg:max-w-300 lg:px-10 pt-10 sm:pt-14 lg:pt-20 pb-2">
         <Breadcrumb
           crumbs={[
             { label: 'Home', href: '/' },
@@ -294,16 +267,16 @@ export default async function FindADentistPage({ searchParams }: PageProps) {
             { label: region },
           ]}
         />
-        <span className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand">
+        <span className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:text-[12px]">
           {allInRegion.length} partner {allInRegion.length === 1 ? 'clinic' : 'clinics'}
         </span>
-        <h1 className="mt-1.5 font-display text-[26px] font-bold leading-[1.15] tracking-[-0.4px] text-text">
+        <h1 className="mt-1.5 font-display text-[26px] font-bold leading-[1.15] tracking-[-0.4px] text-text sm:text-[32px] sm:tracking-[-0.5px] lg:text-[38px]">
           Dentists in {region}
         </h1>
       </section>
 
       {/* ── Dentist list ───────────────────────────────────────────────────── */}
-      <section className="mx-auto max-w-110 px-5 sm:max-w-[640px] sm:px-6 lg:max-w-3xl lg:px-10 py-5">
+      <section className="mx-auto max-w-110 px-5 sm:max-w-[640px] sm:px-6 lg:max-w-300 lg:px-10 py-5">
         <DentistList
           dentists={dentists}
           region={region}

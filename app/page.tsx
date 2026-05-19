@@ -134,7 +134,7 @@ export default async function HomePage() {
         <div className="hero-overlay absolute inset-0 z-[1]" />
 
         {/* Content — flex+min-height live here to match .hero-full-content */}
-        <div className="relative z-[2] mx-auto flex min-h-[420px] w-full max-w-300 items-end px-5 pt-12 pb-4 sm:min-h-125 sm:items-center sm:px-6 sm:py-16 lg:min-h-135 lg:px-10 lg:py-24">
+        <div className="relative z-[2] mx-auto flex min-h-[420px] w-full max-w-300 items-end px-5 pt-12 pb-10 sm:min-h-125 sm:items-center sm:px-6 sm:py-16 lg:min-h-135 lg:px-10 lg:py-24">
           <div className="max-w-[560px]">
             <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:mb-3 sm:text-[12px]">
               Quality dental care, nationwide
@@ -160,7 +160,7 @@ export default async function HomePage() {
             </div>
 
             {/* Trust block */}
-            <div className="mt-[22px] flex max-w-[420px] items-center gap-3 border-t border-border pt-3.5 sm:mt-[40px] sm:gap-[14px] sm:pt-4">
+            <div className="mt-[22px] flex max-w-[420px] items-center gap-3 sm:mt-[40px] sm:gap-[14px] sm:border-t sm:border-border sm:pt-4">
               <div className="flex shrink-0">
                 {[
                   { initials: 'MS', bg: '#E8D9C7' },
@@ -188,7 +188,7 @@ export default async function HomePage() {
       {/* ── Stats bar ──────────────────────────────────────────────────────── */}
       <section className="border-y border-border bg-bg-deep">
         <div className="mx-auto max-w-300 px-5 py-6 sm:px-6 sm:py-[40px] lg:px-10">
-          <dl className="flex items-stretch gap-3 sm:grid sm:grid-cols-3 sm:gap-0">
+          <dl className="grid grid-cols-3 gap-3 sm:gap-0">
             {stats.map((s, i) => (
               <div
                 key={s.label}
@@ -211,7 +211,7 @@ export default async function HomePage() {
       </section>
 
       {/* ── How it works ───────────────────────────────────────────────────── */}
-      <section className="mx-auto max-w-300 px-5 py-10 sm:px-6 sm:py-14 lg:px-10 lg:py-20">
+      <section className="mx-auto max-w-300 px-5 py-12 sm:px-6 sm:py-16 lg:px-10 lg:py-20">
         <div className="mb-6 grid items-center gap-6 sm:mb-[40px] sm:gap-8 lg:grid-cols-2 lg:gap-12">
           <div className="max-w-[640px]">
             <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:mb-3 sm:text-[12px]">
@@ -265,7 +265,7 @@ export default async function HomePage() {
 
       {/* ── About EGDN ─────────────────────────────────────────────────────── */}
       <section className="border-y border-border bg-surface">
-        <div className="mx-auto max-w-300 px-5 py-10 sm:px-6 sm:py-14 lg:px-10 lg:py-20">
+        <div className="mx-auto max-w-300 px-5 py-12 sm:px-6 sm:py-16 lg:px-10 lg:py-20">
           <div className="grid gap-8 sm:gap-10 lg:grid-cols-2 lg:gap-[64px] lg:items-center">
             {/*
               Image placeholder — replace this entire <div> with:
@@ -303,7 +303,7 @@ export default async function HomePage() {
 
       {/* ── Audience cards ─────────────────────────────────────────────────── */}
       {/* asymmetric padding — CTA below has its own top padding, so pb is intentionally smaller */}
-      <section className="mx-auto max-w-300 px-5 py-10 sm:px-6 sm:py-14  lg:px-10 lg:py-20">
+      <section className="mx-auto max-w-300 px-5 py-12 sm:px-6 sm:py-16 lg:px-10 lg:py-20">
         <div className="mb-6 sm:mb-[40px]">
           <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand sm:mb-3 sm:text-[12px]">
             Find your path

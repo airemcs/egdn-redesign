@@ -34,7 +34,7 @@ export default async function DentistProfilePage({ params }: PageProps) {
 
   return (
     <>
-      <div className="mx-auto max-w-300 px-5 pt-8 pb-28 sm:px-6 sm:pt-12 sm:pb-32 lg:px-10 lg:py-20">
+      <div className="mx-auto max-w-300 px-5 pt-10 pb-28 sm:px-6 sm:pt-14 sm:pb-32 lg:px-10 lg:py-20">
 
         {/* Breadcrumb */}
         <Breadcrumb

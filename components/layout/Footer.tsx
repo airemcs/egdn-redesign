@@ -44,7 +44,7 @@ export default function Footer() {
           <FooterColumn title="Company" links={companyLinks} />
         </div>
 
-        <div className="mt-7 border-t border-border pt-[18px] flex items-center justify-between text-[12px] text-text-muted sm:mt-16 sm:pt-6 sm:text-[13px]">
+        <div className="mt-7 border-t border-border pt-[18px] flex flex-col-reverse gap-4 text-[12px] text-text-muted sm:mt-16 sm:pt-6 sm:flex-row sm:items-center sm:justify-between sm:gap-0 sm:text-[13px]">
           <span>© {new Date().getFullYear()} Elite Group Dental Network. All rights reserved.</span>
           <div className="flex gap-3">
             <a
