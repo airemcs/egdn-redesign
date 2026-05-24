@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { connectDB } from '@/lib/mongodb';
-import Dentist from '@/lib/models/Dentist';
+import { findDentistBySlug } from '@/lib/dentist-source';
 import MobileProfileBookingForm from '@/components/forms/MobileProfileBookingForm';
 import { formatDentistName } from '@/lib/utils';
 
@@ -11,8 +10,7 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  await connectDB();
-  const dentist = await Dentist.findOne({ slug }).select('name').lean();
+  const dentist = await findDentistBySlug(slug);
   if (!dentist) return { title: 'Book Appointment — EGDN' };
   return {
     title: `Book with ${dentist.name} — EGDN`,
@@ -36,8 +34,7 @@ function initialsOf(name: string): string {
 
 export default async function DentistBookPage({ params }: PageProps) {
   const { slug } = await params;
-  await connectDB();
-  const dentist = await Dentist.findOne({ slug }).lean();
+  const dentist = await findDentistBySlug(slug);
   if (!dentist) notFound();
 
   const firstClinic = dentist.clinics[0];

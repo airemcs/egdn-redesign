@@ -15,6 +15,14 @@ export async function POST(request: Request) {
       return Response.json({ error: 'Invalid type' }, { status: 400 });
     }
 
+    // Preview-mode short-circuit (bundled-JSON deploy without MONGODB_URI).
+    if (!process.env.MONGODB_URI) {
+      console.info('[partner-inquiries POST] preview mode — submission logged:', {
+        type, organizationName, contactName, email, contactNumber, employeeCount, region, message,
+      });
+      return Response.json({ ok: true }, { status: 201 });
+    }
+
     await connectDB();
     await PartnerInquiry.create({
       type,

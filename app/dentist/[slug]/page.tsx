@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { connectDB } from '@/lib/mongodb';
-import Dentist, { type DentistClinic } from '@/lib/models/Dentist';
+import type { DentistClinic } from '@/lib/models/Dentist';
+import { findDentistBySlug } from '@/lib/dentist-source';
 import Avatar from '@/components/ui/Avatar';
 import Breadcrumb from '@/components/ui/Breadcrumb';
 import AppointmentForm from '@/components/forms/AppointmentForm';
@@ -13,8 +13,7 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  await connectDB();
-  const dentist = await Dentist.findOne({ slug }).select('name').lean();
+  const dentist = await findDentistBySlug(slug);
   if (!dentist) return {};
   return {
     title: `${dentist.name} — EGDN`,
@@ -25,8 +24,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function DentistProfilePage({ params }: PageProps) {
   const { slug } = await params;
 
-  await connectDB();
-  const dentist = await Dentist.findOne({ slug }).lean();
+  const dentist = await findDentistBySlug(slug);
 
   if (!dentist) notFound();
 
@@ -54,7 +52,7 @@ export default async function DentistProfilePage({ params }: PageProps) {
             chips flow underneath (mirrors the mobile design). Top spacing
             comes from the Breadcrumb component's built-in mb-6. */}
         <div>
-          <Avatar name={dentist.name} src={dentist.headshotUrl} size={84} shape="rounded" />
+          <Avatar name={dentist.name} src={dentist.headshotUrl ?? undefined} size={84} shape="rounded" />
           {/* Intentionally one step smaller than the .h1 page-title utility.
               Dentist names are naturally shorter than page titles, so 26/30/36
               reads better here than 28/34/40. Documented exception per

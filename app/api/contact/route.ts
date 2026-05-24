@@ -49,6 +49,17 @@ export async function POST(request: Request) {
 
     const subject = composeSubject(role, name);
 
+    // Preview-mode short-circuit: skip the DB write and the email send when
+    // MONGODB_URI isn't configured (bundled-JSON demo deploy). Reviewers can
+    // still walk the full success flow; the submission is logged so we can
+    // audit demo traffic later if needed.
+    if (!process.env.MONGODB_URI) {
+      console.info('[contact POST] preview mode — submission logged:', {
+        name, email, contactNumber, subject, message, role, memberId, company, region, employeeCount,
+      });
+      return Response.json({ ok: true }, { status: 201 });
+    }
+
     await connectDB();
     await ContactSubmission.create({
       name,

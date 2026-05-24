@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import Breadcrumb from '@/components/ui/Breadcrumb';
 import BookingWizard, { type DentistSummary } from '@/components/forms/BookingWizard';
 import MobileBookingWizard from '@/components/forms/MobileBookingWizard';
-import { connectDB } from '@/lib/mongodb';
-import Dentist, { type DentistClinic } from '@/lib/models/Dentist';
+import { findAllDentists, getRegionCounts } from '@/lib/dentist-source';
+import type { DentistClinic } from '@/lib/models/Dentist';
 import { formatDentistName } from '@/lib/utils';
 
 export const metadata: Metadata = {
@@ -26,21 +26,13 @@ function initialsOf(name: string): string {
 }
 
 async function fetchBookingData() {
-  await connectDB();
-
   // Region list (ordered by clinic count desc, alphabetical tiebreaker)
-  const regions = await Dentist.aggregate<{ _id: string; count: number }>([
-    { $unwind: '$clinics' },
-    { $group: { _id: '$clinics.region', count: { $sum: 1 } } },
-    { $sort: { count: -1, _id: 1 } },
-  ]);
+  const regions = await getRegionCounts({ sorted: true });
 
   // Per-dentist summary the client form needs. Each dentist is represented
   // once (using their first clinic) for the picker UI — the booking flow
   // doesn't need every clinic location at this stage.
-  const rawDentists = await Dentist.find({})
-    .select('name slug specializations clinics')
-    .lean();
+  const rawDentists = await findAllDentists();
 
   const dentists: DentistSummary[] = rawDentists.map((d) => {
     const clinic = (d.clinics?.[0] ?? {}) as DentistClinic;

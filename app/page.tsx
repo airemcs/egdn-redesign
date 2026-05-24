@@ -3,8 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import Button from '@/components/ui/Button';
 import CtaSection from '@/components/sections/CtaSection';
-import { connectDB } from '@/lib/mongodb';
-import Dentist from '@/lib/models/Dentist';
+import { getNetworkStats } from '@/lib/dentist-source';
 
 export const metadata: Metadata = {
   title: 'Elite Group Dental Network — Quality Dental Care, Wherever You Are',
@@ -15,41 +14,6 @@ export const metadata: Metadata = {
 // Re-render at most once an hour; the network only grows on a clinic-onboarding cadence.
 export const revalidate = 3600;
 
-async function getNetworkStats() {
-  await connectDB();
-  // Run the per-clinic aggregation and the per-dentist count in parallel —
-  // the aggregation $unwinds clinics so it can't count distinct dentists
-  // directly, hence the separate countDocuments call.
-  const [aggResult, dentistsCount] = await Promise.all([
-    Dentist.aggregate<{
-      clinics: number;
-      regions: number;
-      cities: number;
-    }>([
-      { $unwind: '$clinics' },
-      {
-        $group: {
-          _id: null,
-          clinics: { $sum: 1 },
-          regions: { $addToSet: '$clinics.region' },
-          // region+city composite — same city name in different regions stays distinct
-          cities: { $addToSet: { $concat: ['$clinics.region', '|', '$clinics.city'] } },
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          clinics: 1,
-          regions: { $size: '$regions' },
-          cities: { $size: '$cities' },
-        },
-      },
-    ]),
-    Dentist.countDocuments(),
-  ]);
-  const agg = aggResult[0] ?? { clinics: 0, regions: 0, cities: 0 };
-  return { ...agg, dentists: dentistsCount };
-}
 
 
 const audienceCards = [

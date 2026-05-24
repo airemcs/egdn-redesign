@@ -47,6 +47,27 @@ export async function POST(request: Request) {
       return Response.json({ error: msg }, { status: 400 });
     }
 
+    // Preview-mode short-circuit: when MONGODB_URI isn't configured we're
+    // running the bundled-JSON demo deploy. Skip the DB write entirely and
+    // just log the submission so reviewers can walk the full success flow
+    // without needing a connected database. The success response shape
+    // (`{ ok: true }`, 201) matches the live path so the client doesn't
+    // notice.
+    if (!process.env.MONGODB_URI) {
+      console.info('[appointments POST] preview mode — DB write skipped. Submission:', {
+        memberName,
+        memberId,
+        dentistName,
+        clinicName,
+        preferredDate,
+        preferredTime,
+        contactNumber,
+        notes,
+        source,
+      });
+      return Response.json({ ok: true }, { status: 201 });
+    }
+
     await connectDB();
 
     // DB write is the source of truth — if this fails, surface the error.
