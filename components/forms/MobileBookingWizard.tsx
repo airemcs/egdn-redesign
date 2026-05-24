@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import PhoneInput from '@/components/ui/PhoneInput';
 import { formatCity } from '@/lib/utils';
 import type { DentistSummary } from '@/components/forms/BookingWizard';
@@ -167,6 +167,20 @@ export default function MobileBookingWizard({
   const [refNum, setRefNum] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [consent, setConsent] = useState(true);
+  // Server-side or network error message surfaced from the API response.
+  const [errorMessage, setErrorMessage] = useState('');
+
+  // Ref to the wizard's outer container so we can scroll IT into view on step
+  // change instead of `window.scrollTo(0)` jumping above the global Navbar.
+  const wizardRef = useRef<HTMLDivElement>(null);
+
+  // Clear any stale validation errors whenever the step changes. Prevents
+  // errors set by a prior `handleSubmit` attempt from appearing on the next
+  // step the user opens (e.g. step 4's "Select a reason" error showing the
+  // instant they arrive on step 4 without touching anything).
+  useEffect(() => {
+    setErrors({});
+  }, [step]);
 
   const [form, setForm] = useState<FormShape>({
     // Step 1
@@ -297,14 +311,25 @@ export default function MobileBookingWizard({
     const err = validateStep(step);
     setErrors(err);
     if (Object.keys(err).length === 0) {
-      window.scrollTo({ top: 0, behavior: 'instant' });
       setStep((step + 1) as 1 | 2 | 3 | 4);
+      scrollWizardIntoView();
     }
   }
 
   function goBack() {
-    window.scrollTo({ top: 0, behavior: 'instant' });
     setStep((step - 1) as 1 | 2 | 3 | 4);
+    scrollWizardIntoView();
+  }
+
+  // Scroll the wizard's content area into view (just under the sticky
+  // progress header) instead of jumping to the very top of the page —
+  // otherwise the user lands above the global Navbar and has to scroll back
+  // down to find the new step's first field. `requestAnimationFrame` waits
+  // for the new step to render before scrolling.
+  function scrollWizardIntoView() {
+    requestAnimationFrame(() => {
+      wizardRef.current?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    });
   }
 
   async function handleSubmit() {
@@ -365,11 +390,15 @@ export default function MobileBookingWizard({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
       });
-      if (!res.ok) throw new Error();
+      if (!res.ok) {
+        const data: { error?: string } = await res.json().catch(() => ({}));
+        throw new Error(data.error || `Request failed (${res.status})`);
+      }
       setRefNum('EGDN-' + Math.floor(100000 + Math.random() * 900000));
       setStatus('success');
       window.scrollTo({ top: 0, behavior: 'instant' });
-    } catch {
+    } catch (err) {
+      setErrorMessage(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
       setStatus('error');
     }
   }
@@ -391,7 +420,10 @@ export default function MobileBookingWizard({
   const ctaLabel = step === 4 ? 'Request Appointment' : 'Continue';
 
   return (
-    <div className="flex min-h-[calc(100vh-72px)] flex-col bg-bg pb-32">
+    <div
+      ref={wizardRef}
+      className="flex min-h-[calc(100vh-72px)] flex-col bg-bg pb-32 scroll-mt-18"
+    >
       {/* Sticky progress header — sits just under the global Navbar (h-18). */}
       <div className="sticky top-18 z-30 border-b border-border bg-bg">
         <div className="flex min-h-[48px] items-center justify-between px-4 py-2.5">
@@ -473,6 +505,7 @@ export default function MobileBookingWizard({
             selectedDentist={selectedDentist}
             update={update}
             status={status}
+            errorMessage={errorMessage}
           />
         )}
       </div>
@@ -490,7 +523,7 @@ export default function MobileBookingWizard({
         </button>
         {status === 'error' && (
           <p className="mt-2 text-center text-[12px] text-error">
-            Something went wrong. Please try again.
+            {errorMessage || 'Something went wrong. Please try again.'}
           </p>
         )}
       </div>
@@ -881,6 +914,7 @@ function Step4({
   selectedDentist,
   update,
   status,
+  errorMessage,
 }: {
   form: Pick<FormShape, 'name' | 'visitType' | 'reason' | 'isFirstVisit' | 'notes' | 'regionId' | 'city' | 'date' | 'time'>;
   errors: Record<string, string>;
@@ -890,6 +924,7 @@ function Step4({
   selectedDentist: DentistSummary | undefined;
   update: Updater;
   status: 'idle' | 'loading' | 'success' | 'error';
+  errorMessage: string;
 }) {
   const isTele = form.visitType === 'teleconsult';
   return (
@@ -1004,7 +1039,7 @@ function Step4({
 
         {status === 'error' && (
           <p className="mt-3 text-[12px] text-error">
-            Something went wrong submitting your request. Please try again.
+            {errorMessage || 'Something went wrong submitting your request. Please try again.'}
           </p>
         )}
       </div>

@@ -13,6 +13,7 @@ interface Dentist {
   address: string;
   contactNumber: string;
   specializations: string[];
+  additionalLocationCount?: number;
 }
 
 interface DentistListProps {

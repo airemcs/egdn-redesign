@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Button from '@/components/ui/Button';
 import PhoneInput from '@/components/ui/PhoneInput';
 
@@ -20,6 +20,13 @@ interface BookingWizardProps {
   regions: { _id: string; count: number }[];
   dentists: DentistSummary[];
   specialties: string[];
+  /**
+   * Optional page chrome (breadcrumb + eyebrow + h1 + lead) rendered above
+   * the wizard. The wizard owns the visibility because it suppresses the
+   * header on the success screen — keeps the success card from being
+   * crowded by a stale "Book your appointment" title.
+   */
+  pageHeader?: React.ReactNode;
 }
 
 const REASON_OPTIONS = [
@@ -115,14 +122,42 @@ const isSlotPast = (slot: (typeof TIME_OPTIONS)[number]) =>
 const allSlotsPastToday = () =>
   TIME_OPTIONS.every((t) => isSlotPast(t));
 
-export default function BookingWizard({ regions, dentists, specialties }: BookingWizardProps) {
+export default function BookingWizard({
+  regions,
+  dentists,
+  specialties,
+  pageHeader,
+}: BookingWizardProps) {
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [refNum, setRefNum] = useState<string>('');
   const [errors, setErrors] = useState<Record<string, string>>({});
+  // Server-side or network error message surfaced from the API response.
+  // Distinct from `errors` (which is per-field client-side validation).
+  const [errorMessage, setErrorMessage] = useState('');
   // Local dentist search — kicks in when region has more than 5 matches.
   // Resets whenever the upstream filters (region/city/specialty) change.
   const [dentistQuery, setDentistQuery] = useState('');
+
+  // Ref to the wizard's form so we can scroll its top edge into view on step
+  // change instead of jumping to the very top of the page (which sat above the
+  // navbar and hero, forcing the user to re-find the form).
+  const formRef = useRef<HTMLFormElement>(null);
+  function scrollFormIntoView() {
+    // Wait one frame so the new step renders before we measure / scroll.
+    requestAnimationFrame(() => {
+      formRef.current?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    });
+  }
+
+  // Clear any stale validation errors whenever the step changes. Without
+  // this, errors set by a prior `handleSubmit` attempt (e.g. user hit Submit
+  // on step 4, then went Back, then Continue) could persist and show up as
+  // soon as a new step renders. The user wouldn't have done anything on the
+  // new step yet, so red errors there are confusing.
+  useEffect(() => {
+    setErrors({});
+  }, [step]);
 
   const [form, setForm] = useState({
     // Step 1
@@ -281,14 +316,14 @@ export default function BookingWizard({ regions, dentists, specialties }: Bookin
     const err = validateStep(step);
     setErrors(err);
     if (Object.keys(err).length === 0) {
-      window.scrollTo({ top: 0, behavior: 'instant' });
       setStep((step + 1) as 1 | 2 | 3 | 4);
+      scrollFormIntoView();
     }
   }
 
   function goBack() {
-    window.scrollTo({ top: 0, behavior: 'instant' });
     setStep((step - 1) as 1 | 2 | 3 | 4);
+    scrollFormIntoView();
   }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -350,13 +385,20 @@ export default function BookingWizard({ regions, dentists, specialties }: Bookin
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
       });
-      if (!res.ok) throw new Error();
+      if (!res.ok) {
+        // Surface the API's actual error message (if any) so users see what
+        // went wrong instead of a generic "Something went wrong". The
+        // route returns `{ error: '...' }` on validation failures and 500s.
+        const data: { error?: string } = await res.json().catch(() => ({}));
+        throw new Error(data.error || `Request failed (${res.status})`);
+      }
       // Reference number is client-side display only — the real source of
       // truth is the DB record's _id, but we keep a friendly user-visible code.
       setRefNum('EGDN-' + Math.floor(100000 + Math.random() * 900000));
       setStatus('success');
       window.scrollTo({ top: 0, behavior: 'instant' });
-    } catch {
+    } catch (err) {
+      setErrorMessage(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
       setStatus('error');
     }
   }
@@ -457,7 +499,9 @@ export default function BookingWizard({ regions, dentists, specialties }: Bookin
   const stepLabels = ['Your info', 'Visit type', 'Where & when', 'Visit details'] as const;
 
   return (
-    <div className="grid items-start gap-8 md:grid-cols-[minmax(0,1fr)_320px] md:gap-8 lg:grid-cols-[minmax(0,1fr)_360px] lg:gap-10">
+    <>
+      {pageHeader && <div className="mb-10 lg:mb-12">{pageHeader}</div>}
+      <div className="grid items-start gap-8 md:grid-cols-[minmax(0,1fr)_320px] md:gap-8 lg:grid-cols-[minmax(0,1fr)_360px] lg:gap-10">
       {/* MAIN — stepper + form */}
       <div className="min-w-0">
         {/* Stepper — stacked on mobile, row on sm+ with a connector line
@@ -520,9 +564,10 @@ export default function BookingWizard({ regions, dentists, specialties }: Bookin
         </ol>
 
         <form
+          ref={formRef}
           onSubmit={handleSubmit}
           noValidate
-          className="overflow-hidden rounded-card border border-border bg-surface"
+          className="overflow-hidden rounded-card border border-border bg-surface scroll-mt-24"
         >
           <div className="p-6 sm:p-8">
             {/* ===== Step 1 ===== */}
@@ -980,7 +1025,7 @@ export default function BookingWizard({ regions, dentists, specialties }: Bookin
 
                 {status === 'error' && (
                   <p className="mt-3 text-[13px] text-error">
-                    Something went wrong submitting your request. Please try again.
+                    {errorMessage || 'Something went wrong submitting your request. Please try again.'}
                   </p>
                 )}
               </>
@@ -1098,7 +1143,8 @@ export default function BookingWizard({ regions, dentists, specialties }: Bookin
           </p>
         </div>
       </aside>
-    </div>
+      </div>
+    </>
   );
 }
 

@@ -15,7 +15,16 @@ const AppointmentRequestSchema = new Schema(
     },
     contactNumber: { type: String, required: true },
     notes: { type: String },
-    source: { type: String, enum: ['profile', 'standalone'], required: true },
+    // Source matches the surface that submitted the request:
+    //   - profile               — in-person, dentist pre-selected from /dentist/[slug]
+    //   - profile-teleconsult   — teleconsult, dentist pre-selected
+    //   - standalone            — in-person, picked through /book-appointment wizard
+    //   - teleconsult           — teleconsult through /book-appointment wizard
+    source: {
+      type: String,
+      enum: ['profile', 'profile-teleconsult', 'standalone', 'teleconsult'],
+      required: true,
+    },
   },
   { timestamps: { createdAt: true, updatedAt: false } }
 );

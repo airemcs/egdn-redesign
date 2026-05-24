@@ -15,12 +15,14 @@ export const metadata: Metadata = {
 export const revalidate = 3600;
 
 function initialsOf(name: string): string {
-  // Pick first letter of given name + first letter of surname when possible.
-  const tokens = name.replace(/^(DR\.?|Dr\.?)\s+/i, '').split(/\s+/).filter(Boolean);
+  // Keep the "Dr." honorific as the first letter so the avatar consistently
+  // reads "D" + first-name initial (e.g. "DL" for "Dr. Lyn Obias"). Matches
+  // the DentistCard initials convention across the site.
+  const tokens = name.split(/\s+/).filter(Boolean);
   if (tokens.length === 0) return '?';
   const first = tokens[0][0];
-  const last = tokens[tokens.length - 1][0];
-  return (first + (tokens.length > 1 ? last : '')).toUpperCase();
+  const second = tokens[1]?.[0] ?? '';
+  return (first + second).toUpperCase();
 }
 
 async function fetchBookingData() {
@@ -74,29 +76,33 @@ export default async function BookAppointmentPage() {
         <MobileBookingWizard regions={regions} dentists={dentists} specialties={specialties} />
       </div>
 
-      {/* ── Desktop (md+) — existing page header + sidebar wizard, unchanged */}
+      {/* ── Desktop (md+) — page header lives INSIDE the wizard so the
+              wizard can hide it on the success screen (avoids a stale
+              "Book your appointment" title above the success card). */}
       <div className="hidden md:block">
-        <section className="mx-auto max-w-300 px-5 pt-12 pb-4 sm:px-6 sm:pt-16 lg:px-10">
-          <Breadcrumb crumbs={[{ label: 'Home', href: '/' }, { label: 'Book an Appointment' }]} />
-          <div className="max-w-[720px]">
-            <span className="eyebrow">
-              Member benefit
-            </span>
-            <h1 className="mb-3 h1 text-text">
-              Book your appointment
-            </h1>
-            <p
-              className="text-[16px] leading-[1.55] text-text-muted lg:text-[19px]"
-              style={{ textWrap: 'pretty' } as React.CSSProperties}
-            >
-              Tell us a bit about you and where you&apos;d like to be seen. EGDN will confirm your
-              booking by phone within 1 business day — no paperwork at the clinic.
-            </p>
-          </div>
-        </section>
-
-        <section className="mx-auto max-w-300 px-5 pt-8 pb-16 sm:px-6 sm:pt-10 lg:px-10 lg:pb-24">
-          <BookingWizard regions={regions} dentists={dentists} specialties={specialties} />
+        <section className="mx-auto max-w-300 px-5 pt-12 pb-16 sm:px-6 sm:pt-16 lg:px-10 lg:pb-24">
+          <BookingWizard
+            regions={regions}
+            dentists={dentists}
+            specialties={specialties}
+            pageHeader={
+              <>
+                <Breadcrumb crumbs={[{ label: 'Home', href: '/' }, { label: 'Book an Appointment' }]} />
+                <div className="max-w-[720px]">
+                  <span className="eyebrow">Member benefit</span>
+                  <h1 className="mb-3 h1 text-text">Book your appointment</h1>
+                  <p
+                    className="text-[16px] leading-[1.55] text-text-muted lg:text-[19px]"
+                    style={{ textWrap: 'pretty' } as React.CSSProperties}
+                  >
+                    Tell us a bit about you and where you&apos;d like to be seen. EGDN will
+                    confirm your booking by phone within 1 business day — no paperwork at
+                    the clinic.
+                  </p>
+                </div>
+              </>
+            }
+          />
         </section>
       </div>
     </>

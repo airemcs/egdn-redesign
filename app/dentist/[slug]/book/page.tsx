@@ -21,9 +21,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 function initialsOf(name: string): string {
+  // Keep the honorific as the first letter so the avatar reads "D" +
+  // first-name initial (e.g. "DL" for "Dr. Lyn Obias"). Matches the
+  // DentistCard convention across the site.
   const formatted = formatDentistName(name);
-  const stripped = formatted.replace(/^(Dr\.?|Doc\.?|Prof\.?)\s+/i, '');
-  return stripped
+  return formatted
     .split(/\s+/)
     .filter(Boolean)
     .slice(0, 2)

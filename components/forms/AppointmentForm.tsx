@@ -104,6 +104,7 @@ export default function AppointmentForm({ dentist }: AppointmentFormProps) {
   const [phone, setPhone] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errorMessage, setErrorMessage] = useState('');
 
   const clinicOptions = dentist?.clinics.map((c) => ({
     value: c.clinicName,
@@ -168,9 +169,13 @@ export default function AppointmentForm({ dentist }: AppointmentFormProps) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
       });
-      if (!res.ok) throw new Error();
+      if (!res.ok) {
+        const data: { error?: string } = await res.json().catch(() => ({}));
+        throw new Error(data.error || `Request failed (${res.status})`);
+      }
       setStatus('success');
-    } catch {
+    } catch (err) {
+      setErrorMessage(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
       setStatus('error');
     }
   }
@@ -328,7 +333,7 @@ export default function AppointmentForm({ dentist }: AppointmentFormProps) {
 
       {status === 'error' && (
         <p className="text-[14px] text-error">
-          Something went wrong. Please try again or contact us directly.
+          {errorMessage || 'Something went wrong. Please try again or contact us directly.'}
         </p>
       )}
 

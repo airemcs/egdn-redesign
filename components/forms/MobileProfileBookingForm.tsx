@@ -134,6 +134,7 @@ export default function MobileProfileBookingForm({
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [refNum, setRefNum] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errorMessage, setErrorMessage] = useState('');
 
   const earliestDate =
     visitType === 'teleconsult'
@@ -224,11 +225,15 @@ export default function MobileProfileBookingForm({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
       });
-      if (!res.ok) throw new Error();
+      if (!res.ok) {
+        const data: { error?: string } = await res.json().catch(() => ({}));
+        throw new Error(data.error || `Request failed (${res.status})`);
+      }
       setRefNum('EGDN-' + Math.floor(100000 + Math.random() * 900000));
       setStatus('success');
       window.scrollTo({ top: 0, behavior: 'instant' });
-    } catch {
+    } catch (err) {
+      setErrorMessage(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
       setStatus('error');
     }
   }
@@ -428,7 +433,7 @@ export default function MobileProfileBookingForm({
 
         {status === 'error' && (
           <p className="mt-3 text-[12px] text-error">
-            Something went wrong submitting your request. Please try again.
+            {errorMessage || 'Something went wrong submitting your request. Please try again.'}
           </p>
         )}
       </div>

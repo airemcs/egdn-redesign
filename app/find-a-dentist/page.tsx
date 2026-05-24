@@ -62,6 +62,7 @@ export default async function FindADentistPage({ searchParams }: PageProps) {
           city: clinic?.city ?? '',
           address: clinic?.address ?? '',
           contactNumber: clinic?.contactNumber ?? '',
+          additionalLocationCount: Math.max(0, (d.clinics?.length ?? 1) - 1),
         };
       });
 
@@ -241,6 +242,7 @@ export default async function FindADentistPage({ searchParams }: PageProps) {
       city: clinic?.city ?? '',
       address: clinic?.address ?? '',
       contactNumber: clinic?.contactNumber ?? '',
+      additionalLocationCount: Math.max(0, (d.clinics?.length ?? 1) - 1),
     };
   });
 

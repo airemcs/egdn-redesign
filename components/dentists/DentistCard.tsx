@@ -9,13 +9,21 @@ interface DentistCardProps {
   address: string;
   contactNumber: string;
   specializations: string[];
+  /**
+   * Number of OTHER clinics this dentist practices at, in addition to the
+   * one shown via `city`/`clinicName`. Surfaces a "+N more" indicator on
+   * `sm:` and up so members see a multi-clinic dentist at a glance without
+   * having to tap into the profile. Defaults to 0 (single-clinic).
+   */
+  additionalLocationCount?: number;
 }
 
 function initials(name: string): string {
   const formatted = formatDentistName(name);
-  // Drop a leading honorific like "Dr." so the chip reads "MS" not "DM".
-  const stripped = formatted.replace(/^(Dr\.?|Doc\.?|Prof\.?)\s+/i, '');
-  return stripped
+  // Headline initials keep the honorific as the first letter so every chip
+  // reads "Dr.+first-name initial" (e.g. "DL" for "Dr. Lyn Obias", "DM" for
+  // "Dr. Maria Santos"). Consistent doctor-prefix across all cards.
+  return formatted
     .split(/\s+/)
     .filter(Boolean)
     .slice(0, 2)
@@ -30,6 +38,7 @@ export default function DentistCard({
   clinicName,
   city,
   specializations,
+  additionalLocationCount = 0,
 }: DentistCardProps) {
   const formattedName = formatDentistName(name);
 
@@ -86,13 +95,21 @@ export default function DentistCard({
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="text-text-muted"
+              className="shrink-0 text-text-muted"
               aria-hidden
             >
               <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
               <circle cx="12" cy="10" r="3" />
             </svg>
             <span className="truncate">{city}</span>
+            {/* Multi-clinic indicator — web only. Mobile cards stay tight
+                with just the primary city; on tablet/desktop there's room
+                to surface that the dentist has additional locations. */}
+            {additionalLocationCount > 0 && (
+              <span className="hidden shrink-0 text-[10px] font-normal text-text-muted sm:inline">
+                +{additionalLocationCount} more
+              </span>
+            )}
           </div>
         )}
       </div>

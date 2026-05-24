@@ -77,13 +77,16 @@ export default function RegionGrid({ regions }: RegionGridProps) {
             </div>
           </div>
 
-          {/* Region name (short form, e.g. "Region IV-A") + subtitle (long form,
-              e.g. "CALABARZON"). The full ID is preserved in the href so the
-              server-side filter still matches "Region IV-A (CALABARZON)". */}
+          {/* Headline is the readable long form (e.g. "National Capital
+              Region", "CALABARZON"); the short code (e.g. "NCR", "Region
+              IV-A") drops to the subtitle. Long form reads better as the
+              primary at a glance; the code stays for cross-reference. The
+              full DB id is preserved in the href so the server-side filter
+              still matches "Region IV-A (CALABARZON)". */}
           <div className="font-display text-[16px] font-semibold leading-[1.15] text-text sm:text-[20px]">
-            {name}
+            {sub ?? name}
           </div>
-          {sub && <div className="text-[11px] text-text-muted sm:text-[13px]">{sub}</div>}
+          {sub && <div className="text-[11px] text-text-muted sm:text-[13px]">{name}</div>}
 
           <div className="mt-1 inline-flex items-center gap-1 text-[11px] font-semibold text-brand sm:mt-auto sm:text-[12px]">
             {region.count} clinics
